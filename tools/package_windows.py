@@ -81,6 +81,13 @@ def build(with_runtime: bool, out_dir: Path) -> Path:
                     f"{origin} is missing; run 'tools/winbox.sh fetch-native'"
                 )
 
+        # Batch files are stored with LF in the repository (see .gitattributes)
+        # but cmd.exe is happiest with CRLF, and the zip is what learners get.
+        for path in stage.rglob("*"):
+            if path.is_file() and path.suffix.lower() in {".cmd", ".bat"}:
+                text = path.read_bytes().replace(b"\r\n", b"\n")
+                path.write_bytes(text.replace(b"\n", b"\r\n"))
+
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as bundle:
             for path in sorted(stage.rglob("*")):
                 if path.is_file():
