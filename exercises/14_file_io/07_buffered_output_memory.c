@@ -37,7 +37,7 @@ int write_with_buffer(const char *path, const char *text, size_t size)
 
 int main(void)
 {
-    const char *path = "/tmp/clings_buffered_output.txt";
+    const char *path = "clings_buffered_output.txt";
     char buffer[32];
 
     CLINGS_CHECK_INT(write_with_buffer(path, "buffered", 128), 0);

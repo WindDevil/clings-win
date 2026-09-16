@@ -21,9 +21,12 @@ int read_number(void)
 
 int main(void)
 {
-    const char *valid_path = "/tmp/clings_scanf_valid.txt";
-    const char *invalid_path = "/tmp/clings_scanf_invalid.txt";
+    const char *valid_path = "clings_scanf_valid.txt";
+    const char *invalid_path = "clings_scanf_invalid.txt";
 
+    /* 上一轮如果崩溃，先清掉残留的临时文件。 */
+    remove(valid_path);
+    remove(invalid_path);
     FILE *file = fopen(valid_path, "w");
     CLINGS_CHECK(file != NULL);
     fputs("42", file);

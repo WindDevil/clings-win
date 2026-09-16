@@ -68,6 +68,39 @@ SUBSTITUTIONS: dict[str, list[tuple[str, str]]] = {
             "    CLINGS_CHECK_MSG(feof(file) != 0, \"feof() reports end-of-file\");\n",
         ),
     ],
+    # Upstream writes its scratch files to an absolute POSIX path.  On Windows
+    # "/tmp/x" means "D:\tmp\x", a directory that does not exist, so fopen
+    # fails.  A plain relative name lands in the working directory on both
+    # platforms, and every test removes its file again at the end.
+    "00_basics/03_scanf": [
+        ('"/tmp/clings_scanf_valid.txt"', '"clings_scanf_valid.txt"'),
+        ('"/tmp/clings_scanf_invalid.txt"', '"clings_scanf_invalid.txt"'),
+        (
+            '    FILE *file = fopen(valid_path, "w");\n',
+            "    /* 上一轮如果崩溃，先清掉残留的临时文件。 */\n"
+            "    remove(valid_path);\n"
+            "    remove(invalid_path);\n"
+            '    FILE *file = fopen(valid_path, "w");\n',
+        ),
+    ],
+    "10_aggregates/11_struct_file": [
+        (
+            '"/tmp/clings_struct_file_test.bin"',
+            '"clings_struct_file_test.bin"',
+        ),
+    ],
+    "12_standard_library/07_file_io": [
+        ('"/tmp/clings_file_io_test.txt"', '"clings_file_io_test.txt"'),
+    ],
+    "14_file_io/01_fprintf_fscanf": [
+        ('"/tmp/clings_fprintf_test.txt"', '"clings_fprintf_test.txt"'),
+    ],
+    "14_file_io/06_binary_random_access": [
+        ('"/tmp/clings_binary_records.bin"', '"clings_binary_records.bin"'),
+    ],
+    "14_file_io/07_buffered_output_memory": [
+        ('"/tmp/clings_buffered_output.txt"', '"clings_buffered_output.txt"'),
+    ],
 }
 
 _DYNAMIC_LINKING_SOLUTION = r'''

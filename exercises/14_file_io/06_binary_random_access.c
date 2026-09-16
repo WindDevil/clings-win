@@ -44,7 +44,7 @@ int read_record_at(const char *path, size_t index, struct record *out)
 
 int main(void)
 {
-    const char *path = "/tmp/clings_binary_records.bin";
+    const char *path = "clings_binary_records.bin";
     const struct record records[3] = {
         {1, "one"},
         {2, "two"},

@@ -40,7 +40,7 @@ int read_record(const char *path, struct record *record)
 
 int main(void)
 {
-    const char *path = "/tmp/clings_struct_file_test.bin";
+    const char *path = "clings_struct_file_test.bin";
     struct record written = {.id = 7, .value = 3.5};
     struct record read_back = {0};
 

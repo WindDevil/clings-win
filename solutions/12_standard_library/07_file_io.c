@@ -36,7 +36,7 @@ int read_text_file(const char *path, char *buffer, size_t size)
 
 int main(void)
 {
-    const char *path = "/tmp/clings_file_io_test.txt";
+    const char *path = "clings_file_io_test.txt";
     char buffer[32];
 
     CLINGS_CHECK_INT(write_text_file(path, "hello"), 0);

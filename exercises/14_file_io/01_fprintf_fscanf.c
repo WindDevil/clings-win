@@ -36,7 +36,7 @@ int read_person(const char *path, char *name, int *age)
 
 int main(void)
 {
-    const char *path = "/tmp/clings_fprintf_test.txt";
+    const char *path = "clings_fprintf_test.txt";
     char name[32];
     int age = 0;
 

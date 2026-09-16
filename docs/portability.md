@@ -5,7 +5,7 @@ Windows 机器的前提下如何获得闭环反馈。
 
 ## 结论
 
-185 个练习里只有 6 个需要 Windows 变体，其余原样可用。因此孪生工程采用
+185 个练习里只有 12 个需要 Windows 变体，其余原样可用。因此孪生工程采用
 「同步 + 覆盖表」结构，而不是维护两套练习。
 
 ## 实测数据
@@ -33,6 +33,14 @@ Windows 机器的前提下如何获得闭环反馈。
 | `13_character_io/02_eof_ferror` | `CLINGS_CHECK_INT(feof(f), 1)` | Microsoft CRT 的 `feof` 返回内部标志（`0x10`），不是 1 | 断言改为 `feof(f) != 0` |
 | `17_translation_units/05_dynamic_linking` | `dlopen` / `dlsym` / `dlclose` | POSIX 动态加载，Windows 没有 `dlfcn.h` | `LoadLibraryA` / `GetProcAddress` / `FreeLibrary`，库名换成 `msvcrt.dll` |
 | `19_modern_c_library/01_noreturn` | `fork` / `waitpid` | Windows 没有 `fork` | 子进程改为「用 `child` 参数重新执行自己」+ `_spawnv` / `_cwait` |
+| 6 个写临时文件的练习（`00_basics/03_scanf`、`10_aggregates/11_struct_file`、`12_standard_library/07_file_io`、`14_file_io/01`、`06`、`07`） | 绝对路径 `"/tmp/clings_*.txt"` | Windows 上 `/tmp/x` 指 `D:\tmp\x`，该目录不存在，`fopen` 直接返回 NULL | 改成相对文件名，落在工作目录里；测试末尾照旧删除 |
+
+最后一行是上线前最后一次真 Windows CI 抓到的：在 Wine 和 Linux 上全都通过，
+只有真机才暴露出来。
+
+临时文件改成相对路径后，学员的代码如果崩在中途，会在工作目录里留下
+`clings_scanf_valid.txt` 这类文件。`03_scanf` 的测试会在开头先清理上一次的
+残留，所以只要修好代码再跑一次就会消失。
 
 覆盖实现在 [`tools/windows_overrides.py`](../tools/windows_overrides.py)。替换要么
 精确命中一次，要么直接报错，所以上游一改动这里就会失败而不是悄悄生成错误代码。

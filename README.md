@@ -7,7 +7,7 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 
 它不是 fork，而是**生成物**。练习内容、参考答案、模板、测试框架、运行器全部
 从上游仓库同步而来，唯一的差异记录在
-[`tools/windows_overrides.py`](tools/windows_overrides.py)（6 个练习需要平台变体）
+[`tools/windows_overrides.py`](tools/windows_overrides.py)（12 个练习需要平台变体）
 和 [`tools/zh_glossary.py`](tools/zh_glossary.py)（中英对照表）里。因此两个工程
 不会各自漂移。
 
