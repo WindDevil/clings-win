@@ -1,8 +1,8 @@
 /*
- * clings exercise: 06_functions/03_recursion
- * title: Recursion and base cases
- * objective: Write recursive functions with correct base cases.
- * hint: factorial(n) = n * factorial(n - 1).
+ * clings 练习: 06_functions/03_recursion
+ * title: 递归与基准情形
+ * objective: 写出基准情形正确的递归函数。
+ * hint: factorial(n) = n * factorial(n - 1)。
  */
 
 #include "clings/test.h"

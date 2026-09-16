@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/06_dangling_wild
- * title: Dangling pointers and safe free
- * objective: Set a freed pointer to NULL to prevent accidental reuse.
- * hint: After free(*pointer), assign NULL through the pointer-to-pointer.
+ * clings 练习: 07_pointers/06_dangling_wild
+ * title: 野指针与安全释放
+ * objective: 释放后把指针置为 NULL，防止误用。
+ * hint: free(*pointer) 之后，通过二级指针把它置为 NULL。
  */
 
 #include "clings/test.h"

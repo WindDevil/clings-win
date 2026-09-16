@@ -5,6 +5,10 @@ rem Finds a Python interpreter (preferring the bundled one), puts the bundled
 rem mingw-w64 compiler on PATH and hands over to the clings runner.
 setlocal enableextensions
 chcp 65001 >nul 2>&1
+rem Python would otherwise encode its output with the console code page and
+rem fail on Chinese text.
+set "PYTHONUTF8=1"
+set "PYTHONIOENCODING=utf-8"
 
 set "ROOT=%~dp0"
 set "PATH=%ROOT%runtime\mingw\bin;%ROOT%runtime\python;%PATH%"

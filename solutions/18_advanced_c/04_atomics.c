@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/04_atomics
- * title: C11 atomics
- * objective: Use atomic_int for lock-free counter updates.
- * hint: atomic_fetch_add adds to the current value and returns the old value.
+ * clings 练习: 18_advanced_c/04_atomics
+ * title: C11 原子操作
+ * objective: 用 atomic_int 做无锁的计数更新。
+ * hint: atomic_fetch_add 把当前值加上去，并返回旧值。
  */
 
 #include "clings/test.h"

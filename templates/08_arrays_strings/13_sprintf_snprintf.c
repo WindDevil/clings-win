@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/13_sprintf_snprintf
- * title: sprintf and snprintf
- * objective: Format text with snprintf and understand truncation.
- * hint: snprintf returns the number of characters that would have been written.
+ * clings 练习: 08_arrays_strings/13_sprintf_snprintf
+ * title: sprintf 与 snprintf
+ * objective: 用 snprintf 格式化文本，并理解截断行为。
+ * hint: snprintf 返回的是「如果空间够，本会写出的字符数」。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int format_record(char *buffer, size_t size, const char *name, int age)
 {
-    /* TODO: format name followed by age. */
+    /* TODO: 按「名字 年龄」的顺序格式化。 */
     return snprintf(buffer, size, "%d:%s", age, name);
 }
 

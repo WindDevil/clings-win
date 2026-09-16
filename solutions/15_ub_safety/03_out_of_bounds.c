@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/03_out_of_bounds
- * title: Bounds checking
- * objective: Reject indices outside the logical array length.
- * hint: An index is invalid when it is less than zero or greater than or equal to count.
+ * clings 练习: 15_ub_safety/03_out_of_bounds
+ * title: 边界检查
+ * objective: 拒绝超出逻辑长度的下标。
+ * hint: 下标小于 0，或大于等于 count，就是无效的。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/02_printf_values
- * title: Print a value
- * objective: Use printf with %d to print an integer value.
- * hint: Use %d for an int argument and include the newline in the format string.
+ * clings 练习: 00_basics/02_printf_values
+ * title: 打印一个值
+ * objective: 用 printf 的 %d 打印一个整数。
+ * hint: int 实参用 %d，并且把换行写进格式串。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int print_value(int value)
 {
-    /* TODO: print the integer value. */
+    /* TODO: 打印这个整数值。 */
     return printf("value\n");
 }
 

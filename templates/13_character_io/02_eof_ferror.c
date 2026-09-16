@@ -1,8 +1,8 @@
 /*
- * clings exercise: 13_character_io/02_eof_ferror
- * title: EOF, feof, and ferror
- * objective: Read until EOF and distinguish end-of-file from an error.
- * hint: feof is true only after a read attempts to pass the end of the file.
+ * clings 练习: 13_character_io/02_eof_ferror
+ * title: EOF、feof 与 ferror
+ * objective: 读到 EOF，并区分文件结束与读取出错。
+ * hint: 只有读取试图越过文件末尾之后，feof 才为真。
  */
 
 #include "clings/test.h"
@@ -21,7 +21,7 @@ int read_all(FILE *file, char *buffer, size_t size)
     if (ferror(file)) {
         return -1;
     }
-    /* TODO: return the number of characters read. */
+    /* TODO: 返回读到的字符个数。 */
     return -1;
 }
 
@@ -35,8 +35,8 @@ int main(void)
     rewind(file);
     CLINGS_CHECK_INT(read_all(file, buffer, sizeof buffer), 3);
     CLINGS_CHECK_STR(buffer, "abc");
-    /* feof() only promises a non-zero result.  The Microsoft CRT
-     * returns its internal flag (0x10) instead of 1. */
+    /* feof() 只承诺返回非零值。
+     * Microsoft CRT 返回的是它内部的标志位（0x10），不是 1。 */
     CLINGS_CHECK_MSG(feof(file) != 0, "feof() reports end-of-file");
     fclose(file);
     return clings_report();

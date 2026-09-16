@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/08_null_pointer
- * title: Null pointer checks
- * objective: Never dereference a null pointer.
- * hint: Use a conditional expression to provide a fallback.
+ * clings 练习: 15_ub_safety/08_null_pointer
+ * title: 空指针检查
+ * objective: 绝不解引用空指针。
+ * hint: 用条件表达式给出兜底值。
  */
 
 #include "clings/test.h"

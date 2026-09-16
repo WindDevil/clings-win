@@ -1,15 +1,15 @@
 /*
- * clings exercise: 04_operators/08_assignment_vs_equality
- * title: Assignment versus equality
- * objective: Use == for comparison and recognize the = versus == trap.
- * hint: A single = assigns; a double == compares.
+ * clings 练习: 04_operators/08_assignment_vs_equality
+ * title: 赋值与相等
+ * objective: 比较用 ==，并认出 = 与 == 的陷阱。
+ * hint: 单个 = 是赋值；两个 == 才是比较。
  */
 
 #include "clings/test.h"
 
 int is_equal(int left, int right)
 {
-    /* TODO: compare instead of assign. */
+    /* TODO: 这里是比较，不是赋值。 */
     return left = right;
 }
 

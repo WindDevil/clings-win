@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/07_file_io
- * title: Text file I/O
- * objective: Write and read a text file with fopen, fputs, and fread.
- * hint: Use mode "w" for writing and mode "r" for reading.
+ * clings 练习: 12_standard_library/07_file_io
+ * title: 文本文件 I/O
+ * objective: 用 fopen、fputs 和 fread 写读文本文件。
+ * hint: 写入用 "w" 模式，读取用 "r" 模式。
  */
 
 #include "clings/test.h"

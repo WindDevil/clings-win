@@ -1,13 +1,13 @@
 /*
- * clings exercise: 01_preprocessor/03_conditional_compilation
- * title: Conditional compilation
- * objective: Select code at preprocessing time based on the language version.
- * hint: C11 introduced __STDC_VERSION__ value 201112L.
+ * clings 练习: 01_preprocessor/03_conditional_compilation
+ * title: 条件编译
+ * objective: 在预处理阶段按语言版本选择代码。
+ * hint: C11 对应的 __STDC_VERSION__ 是 201112L。
  */
 
 #include "clings/test.h"
 
-#if defined(__STDC_VERSION__) && /* TODO: test for C11 or newer. */
+#if defined(__STDC_VERSION__) && /* TODO: 判断是否为 C11 或更新版本。 */
 __STDC_VERSION__ >= 999999L
 #define CLINGS_HAS_C11 1
 #else

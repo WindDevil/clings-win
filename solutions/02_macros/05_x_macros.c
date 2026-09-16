@@ -1,8 +1,8 @@
 /*
- * clings exercise: 02_macros/05_x_macros
- * title: X-macros
- * objective: Generate an enum and a string table from one list.
- * hint: The string table uses #name, not a fixed string.
+ * clings 练习: 02_macros/05_x_macros
+ * title: X-macro
+ * objective: 用同一份列表生成枚举和字符串表。
+ * hint: 字符串表用 #name 生成，不是写死的字符串。
  */
 
 #include "clings/test.h"

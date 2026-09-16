@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/04_fseek_ftell
- * title: Random access with fseek and ftell
- * objective: Seek to a byte offset and report the resulting position.
- * hint: fseek with SEEK_SET positions the stream at an absolute offset.
+ * clings 练习: 14_file_io/04_fseek_ftell
+ * title: 用 fseek 和 ftell 随机访问
+ * objective: 定位到某个字节偏移，并报告结果位置。
+ * hint: fseek 配 SEEK_SET 会把流定位到绝对偏移。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int read_at(FILE *file, long offset, char *buffer, size_t size)
 {
-    /* TODO: seek relative to the beginning of the file. */
+    /* TODO: 相对文件开头定位。 */
     if (fseek(file, offset, SEEK_END) != 0) {
         return -1;
     }

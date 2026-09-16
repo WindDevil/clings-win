@@ -1,8 +1,8 @@
 /*
- * clings exercise: 13_character_io/06_include_ctypes
- * title: Include ctype.h
- * objective: Call toupper after including the header that declares it.
- * hint: The compiler needs the declaration from ctype.h; add the include.
+ * clings 练习: 13_character_io/06_include_ctypes
+ * title: 引入 ctype.h
+ * objective: 先引入声明 toupper 的头文件，再调用它。
+ * hint: 编译器需要 ctype.h 里的声明；把这个 include 加上。
  */
 
 #include "clings/test.h"

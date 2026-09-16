@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/11_goto_cleanup
- * title: goto for single-exit cleanup
- * objective: Use goto for a clear cleanup path in C.
- * hint: Set *out only after the copy has been allocated and filled.
+ * clings 练习: 09_dynamic_memory/11_goto_cleanup
+ * title: 用 goto 做单出口清理
+ * objective: 用 goto 写出清晰的清理路径。
+ * hint: 副本分配好、填好之后，再给 *out 赋值。
  */
 
 #include "clings/test.h"
@@ -31,7 +31,7 @@ int parse_and_sum(const int *values, int count, int *out)
     for (int i = 0; i < count; ++i) {
         sum += copy[i];
     }
-    /* TODO: return the computed sum to the caller. */
+    /* TODO: 把算出的和返回给调用方。 */
     *out = 0;
     result = 0;
 

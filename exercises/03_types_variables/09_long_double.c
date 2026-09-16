@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/09_long_double
+ * clings 练习: 03_types_variables/09_long_double
  * title: long double
- * objective: Use long double and compare its precision with double.
- * hint: Use the L suffix for long double constants.
+ * objective: 使用 long double，并与 double 比较精度。
+ * hint: long double 常量要加 L 后缀。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 long double long_double_average(long double left, long double right)
 {
-    /* TODO: compute the average as a long double. */
+    /* TODO: 用 long double 算平均值。 */
     return left + right;
 }
 

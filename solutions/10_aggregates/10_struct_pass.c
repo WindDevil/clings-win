@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/10_struct_pass
- * title: Passing structs by value and by pointer
- * objective: Compare struct value parameters with struct pointer parameters.
- * hint: A struct pointer can modify the caller's struct.
+ * clings 练习: 10_aggregates/10_struct_pass
+ * title: 结构体：值传递与指针传递
+ * objective: 对比结构体值参数与结构体指针参数。
+ * hint: 结构体指针可以修改调用方的结构体。
  */
 
 #include "clings/test.h"

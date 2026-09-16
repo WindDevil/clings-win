@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/12_stack_frame
- * title: Stack frames
- * objective: Observe that nested function calls use distinct activation records.
- * hint: __builtin_frame_address is a GCC/Clang extension.
+ * clings 练习: 18_advanced_c/12_stack_frame
+ * title: 栈帧
+ * objective: 观察嵌套函数调用使用各自独立的活动记录。
+ * hint: __builtin_frame_address 是 GCC/Clang 的扩展。
  */
 
 #include "clings/test.h"
@@ -17,7 +17,7 @@ static void *inner_frame(void)
 void *outer_frame_difference(void)
 {
     void *inner = inner_frame();
-    /* TODO: return a distinct inner frame. */
+    /* TODO: 返回一个不同的内层栈帧。 */
     return NULL;
 }
 

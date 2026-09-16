@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/09_thread_local
- * title: Thread-local storage
- * objective: Use _Thread_local to give each thread its own object.
- * hint: The worker thread modifies its own copy of thread_value.
+ * clings 练习: 18_advanced_c/09_thread_local
+ * title: 线程局部存储
+ * objective: 用 _Thread_local 让每个线程拥有自己的对象。
+ * hint: 工作线程修改的是它自己那份 thread_value。
  */
 
 #include "clings/test.h"

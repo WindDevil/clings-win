@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/03_realloc
- * title: Growing an allocation
- * objective: Use realloc safely and initialize only the new elements.
- * hint: Start filling at old_count so the existing elements survive.
+ * clings 练习: 09_dynamic_memory/03_realloc
+ * title: 扩大一块分配
+ * objective: 安全使用 realloc，并只初始化新增的元素。
+ * hint: 从 old_count 开始填，已有的元素才不会丢。
  */
 
 #include "clings/test.h"
@@ -15,7 +15,7 @@ int *grow_array(int *values, size_t old_count, size_t new_count, int fill)
     if (grown == NULL) {
         return NULL;
     }
-    /* TODO: preserve the existing elements. */
+    /* TODO: 保留已有的元素。 */
     for (size_t i = 0; i < new_count; ++i) {
         grown[i] = fill;
     }

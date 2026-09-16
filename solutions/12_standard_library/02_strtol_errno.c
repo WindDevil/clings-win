@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/02_strtol_errno
- * title: Robust integer parsing
- * objective: Use strtol, errno, and the end pointer to validate input.
- * hint: Reject empty input, trailing characters, ERANGE, and out-of-range values.
+ * clings 练习: 12_standard_library/02_strtol_errno
+ * title: 稳健地解析整数
+ * objective: 用 strtol、errno 和结束指针校验输入。
+ * hint: 空输入、多余字符、ERANGE、超出范围的值，都要拒绝。
  */
 
 #include "clings/test.h"

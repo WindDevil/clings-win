@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/05_string_ops
- * title: Implementing string operations
- * objective: Implement strlen, strcmp, and strcpy with pointers.
- * hint: The destination pointer must advance after each copied character.
+ * clings 练习: 08_arrays_strings/05_string_ops
+ * title: 自己实现字符串函数
+ * objective: 用指针实现 strlen、strcmp 和 strcpy。
+ * hint: 每复制一个字符，目标指针都要前进。
  */
 
 #include "clings/test.h"

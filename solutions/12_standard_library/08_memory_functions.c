@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/08_memory_functions
- * title: memcpy, memmove, memset, and memcmp
- * objective: Use the byte-oriented memory functions correctly.
- * hint: memcpy requires non-overlapping regions; memmove handles overlap.
+ * clings 练习: 12_standard_library/08_memory_functions
+ * title: memcpy、memmove、memset 与 memcmp
+ * objective: 正确使用按字节操作的内存函数。
+ * hint: memcpy 要求两块内存不重叠；memmove 能处理重叠。
  */
 
 #include "clings/test.h"

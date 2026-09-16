@@ -1,8 +1,8 @@
 /*
- * clings exercise: 06_functions/02_parameters_return
- * title: Parameters and return values
- * objective: Return values through parameters and clamp a range.
- * hint: When count is zero, leave the outputs unchanged.
+ * clings 练习: 06_functions/02_parameters_return
+ * title: 参数与返回值
+ * objective: 通过参数返回结果，并把范围夹紧。
+ * hint: count 为零时，不要改动输出。
  */
 
 #include "clings/test.h"

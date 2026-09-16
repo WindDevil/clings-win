@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/03_pointer_arithmetic
- * title: Pointer arithmetic
- * objective: Walk an array with pointers and return a pointer into it.
- * hint: Advance one element at a time; p < values + count is the end condition.
+ * clings 练习: 07_pointers/03_pointer_arithmetic
+ * title: 指针运算
+ * objective: 用指针遍历数组，并返回指向数组内部的指针。
+ * hint: 每次前进一个元素；结束条件是 p < values + count。
  */
 
 #include "clings/test.h"

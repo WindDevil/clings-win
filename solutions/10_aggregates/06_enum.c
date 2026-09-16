@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/06_enum
- * title: Enums
- * objective: Use an enum for a small closed set of values.
- * hint: Each case should return the matching color name.
+ * clings 练习: 10_aggregates/06_enum
+ * title: 枚举
+ * objective: 用枚举表示一小组封闭取值。
+ * hint: 每个分支返回对应的颜色名。
  */
 
 #include "clings/test.h"

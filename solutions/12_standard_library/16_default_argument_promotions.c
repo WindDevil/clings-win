@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/16_default_argument_promotions
- * title: Default argument promotions
- * objective: Use the promoted types expected by variadic functions.
- * hint: char and short promote to int; float promotes to double.
+ * clings 练习: 12_standard_library/16_default_argument_promotions
+ * title: 默认实参提升
+ * objective: 使用变参函数期望的提升后类型。
+ * hint: char 和 short 提升为 int；float 提升为 double。
  */
 
 #include "clings/test.h"

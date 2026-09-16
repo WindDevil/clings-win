@@ -1,12 +1,12 @@
 /*
- * clings exercise: 01_preprocessor/02_include_user
- * title: #include with a user header
- * objective: Include a local header so its macro is visible.
- * hint: Add the include for config.h in main.c.
+ * clings 练习: 01_preprocessor/02_include_user
+ * title: 用 #include 引入自己的头文件
+ * objective: 引入本地头文件，让其中的宏可见。
+ * hint: 在 main.c 里加上对 config.h 的 include。
  */
 
 #include "clings/test.h"
-/* TODO: include the local header that defines CONFIG_VALUE. */
+/* TODO: 引入定义 CONFIG_VALUE 的本地头文件。 */
 
 int main(void)
 {

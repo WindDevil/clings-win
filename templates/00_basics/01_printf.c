@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/01_printf
- * title: Print with printf
- * objective: Use printf to print a line of text.
- * hint: printf returns the number of characters printed, including the newline.
+ * clings 练习: 00_basics/01_printf
+ * title: 用 printf 打印
+ * objective: 用 printf 打印一行文本。
+ * hint: printf 返回打印出的字符数，包含换行符。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int print_greeting(void)
 {
-    /* TODO: print Hello, C! followed by a newline. */
+    /* TODO: 打印 Hello, C! 并换行。 */
     return printf("Hello, world!\n");
 }
 

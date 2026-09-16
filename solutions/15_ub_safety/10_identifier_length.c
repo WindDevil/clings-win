@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/10_identifier_length
- * title: Identifier length
- * objective: Use long internal identifiers and rely on the standard minimum.
- * hint: Modern C guarantees at least 31 significant external and 63 internal identifier characters.
+ * clings 练习: 15_ub_safety/10_identifier_length
+ * title: 标识符长度
+ * objective: 使用较长的内部标识符，并依赖标准给出的最小保证。
+ * hint: 现代 C 至少保证外部标识符前 31 个、内部标识符前 63 个字符有意义。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 01_preprocessor/04_include_guards
- * title: Include guards
- * objective: Prevent multiple inclusion with a preprocessor guard.
- * hint: Define the guard macro before the guarded declarations.
+ * clings 练习: 01_preprocessor/04_include_guards
+ * title: 头文件保护
+ * objective: 用预处理保护防止重复引入。
+ * hint: 保护宏要定义在被保护的声明之前。
  */
 
 #include "clings/test.h"

@@ -1,23 +1,23 @@
-# Structs, Unions, Enums, and Bitfields
+# 结构体、联合体、枚举与位域
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_struct_basics
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_struct_basics` | Create a struct value and access its members through a pointer. |
-| `02_nested_structs` | Access a nested member through an outer struct pointer. |
-| `03_padding_alignment` | Observe padding and member offsets with offsetof. |
-| `04_bitfields` | Store several small flags in one struct. |
-| `05_union` | Compare union size with the size of its largest member. |
-| `06_enum` | Use an enum for a small closed set of values. |
-| `07_typedef_designated` | Use a typedef and initialize members by name. |
-| `08_container_of` | Recover an outer struct from a pointer to one of its members. |
-| `09_struct_array` | Traverse an array of structs and find the best element. |
-| `10_struct_pass` | Compare struct value parameters with struct pointer parameters. |
-| `11_struct_file` | Store a struct with fwrite and read it back with fread. |
-| `12_complex_declarations` | Read and use a typedef for a function pointer and an array of function pointers. |
-| `13_declaration_grammar` | Read a typedef for an array of function pointers. |
+| `01_struct_basics` | 创建结构体值，并通过指针访问它的成员。 |
+| `02_nested_structs` | 通过外层结构体指针访问嵌套成员。 |
+| `03_padding_alignment` | 用 offsetof 观察填充和成员偏移。 |
+| `04_bitfields` | 把几个小标志位存进一个结构体。 |
+| `05_union` | 比较联合体大小与它最大成员的大小。 |
+| `06_enum` | 用枚举表示一小组封闭取值。 |
+| `07_typedef_designated` | 使用 typedef，并按名字初始化成员。 |
+| `08_container_of` | 由成员指针反推出外层结构体。 |
+| `09_struct_array` | 遍历结构体数组，找出最优元素。 |
+| `10_struct_pass` | 对比结构体值参数与结构体指针参数。 |
+| `11_struct_file` | 用 fwrite 写出结构体，再用 fread 读回来。 |
+| `12_complex_declarations` | 读懂并使用函数指针及其数组的 typedef。 |
+| `13_declaration_grammar` | 读懂函数指针数组的 typedef。 |

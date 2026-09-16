@@ -1,8 +1,8 @@
 /*
- * clings exercise: 19_modern_c_library/02_tgmath
- * title: Type-generic math with tgmath.h
- * objective: Use sqrt with both double and float arguments through tgmath.h.
- * hint: tgmath.h selects the correct real function from the argument type.
+ * clings 练习: 19_modern_c_library/02_tgmath
+ * title: 用 tgmath.h 做类型通用数学运算
+ * objective: 通过 tgmath.h 用 sqrt 处理 double 和 float 实参。
+ * hint: tgmath.h 会根据实参类型挑出正确的实数函数。
  */
 
 #include "clings/test.h"

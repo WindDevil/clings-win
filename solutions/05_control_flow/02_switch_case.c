@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/02_switch_case
- * title: switch and fallthrough
- * objective: Use intentional fallthrough and a default case.
- * hint: February has 29 days when leap is true.
+ * clings 练习: 05_control_flow/02_switch_case
+ * title: switch 与贯穿
+ * objective: 使用有意为之的贯穿和 default 分支。
+ * hint: leap 为真时，二月有 29 天。
  */
 
 #include "clings/test.h"

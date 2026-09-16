@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/01_struct_basics
- * title: Defining and using structs
- * objective: Create a struct value and access its members through a pointer.
- * hint: Use the arrow operator when you have a pointer.
+ * clings 练习: 10_aggregates/01_struct_basics
+ * title: 定义并使用结构体
+ * objective: 创建结构体值，并通过指针访问它的成员。
+ * hint: 手里是指针时，就用箭头运算符。
  */
 
 #include "clings/test.h"

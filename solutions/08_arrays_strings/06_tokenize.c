@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/06_tokenize
- * title: Tokenizing with strtok_r
- * objective: Split a string without modifying the caller's buffer.
- * hint: Pass both space and comma as delimiters.
+ * clings 练习: 08_arrays_strings/06_tokenize
+ * title: 用 strtok_r 分词
+ * objective: 切分字符串，同时不改动调用方的缓冲区。
+ * hint: 空格和逗号都要作为分隔符传进去。
  */
 
 #include "clings/test.h"

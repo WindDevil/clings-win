@@ -1,8 +1,8 @@
 /*
- * clings exercise: 11_data_representation/05_endianness
- * title: Endianness
- * objective: Detect byte order and inspect an integer's first byte.
- * hint: A uint16_t value of 1 stores 0x01 first on little-endian systems.
+ * clings 练习: 11_data_representation/05_endianness
+ * title: 字节序
+ * objective: 判断字节序，并查看整数的第一个字节。
+ * hint: 在小端系统上，值为 1 的 uint16_t 先存 0x01。
  */
 
 #include "clings/test.h"
@@ -15,7 +15,7 @@ int is_little_endian(void)
     uint16_t value = 1;
     unsigned char bytes[2];
     memcpy(bytes, &value, sizeof bytes);
-    /* TODO: compare the low byte of value 1. */
+    /* TODO: 比较 value1 的低字节。 */
     return bytes[0] == 0;
 }
 

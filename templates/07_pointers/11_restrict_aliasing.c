@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/11_restrict_aliasing
- * title: restrict and aliasing contracts
- * objective: Use restrict to promise that two pointer parameters do not alias.
- * hint: restrict tells the compiler that destination and source do not overlap.
+ * clings 练习: 07_pointers/11_restrict_aliasing
+ * title: restrict 与别名约定
+ * objective: 用 restrict 承诺两个指针参数不互相别名。
+ * hint: restrict 告诉编译器，目标和源不会重叠。
  */
 
 #include "clings/test.h"
@@ -13,7 +13,7 @@ void add_restrict(int *restrict destination, const int *restrict source,
                   size_t count)
 {
     for (size_t i = 0; i < count; ++i) {
-        /* TODO: use the matching source element. */
+        /* TODO: 用对应的源元素。 */
         destination[i] += source[0];
     }
 }

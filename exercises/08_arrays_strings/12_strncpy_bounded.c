@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/12_strncpy_bounded
- * title: Bounded copying with strncpy
- * objective: Copy a string safely and always terminate the destination.
- * hint: strncpy does not guarantee a terminating NUL when the source is too long.
+ * clings 练习: 08_arrays_strings/12_strncpy_bounded
+ * title: 用 strncpy 做有界拷贝
+ * objective: 安全复制字符串，并保证目标以 NUL 结尾。
+ * hint: 源串过长时，strncpy 不保证结尾有 NUL。
  */
 
 #include "clings/test.h"
@@ -16,7 +16,7 @@ int copy_bounded(char *destination, size_t size, const char *source)
         return -1;
     }
     strncpy(destination, source, size - 1);
-    /* TODO: terminate the copied string. */
+    /* TODO: 给复制出来的字符串补上结尾。 */
     destination[size - 1] = 'x';
     return 0;
 }

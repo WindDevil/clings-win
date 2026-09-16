@@ -1,8 +1,8 @@
 /*
- * clings exercise: 13_character_io/03_input_validation
- * title: Input validation
- * objective: Reject input with trailing characters or out-of-range values.
- * hint: Use %c after %d to detect trailing non-whitespace input.
+ * clings 练习: 13_character_io/03_input_validation
+ * title: 输入校验
+ * objective: 拒绝带有多余字符或超出范围的输入。
+ * hint: 在 %d 后面加 %c，用来发现后面还有非空白字符。
  */
 
 #include "clings/test.h"

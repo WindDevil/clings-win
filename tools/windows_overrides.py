@@ -29,10 +29,9 @@ SUBSTITUTIONS: dict[str, list[tuple[str, str]]] = {
             "    CLINGS_CHECK_INT(long_can_hold_int((long)INT_MAX + 1L), 0);\n",
             "    CLINGS_CHECK_INT(long_can_hold_int((long)INT_MAX), 1);\n"
             "    {\n"
-            "        /* Data models differ between platforms: LP64 (Linux) keeps\n"
-            "         * INT_MAX in a long, LLP64 (Windows) does not.  Compiling\n"
-            "         * \"INT_MAX + 1\" as a long is therefore only valid when long\n"
-            "         * is genuinely wider than int. */\n"
+            "        /* 平台的数据模型不一样：LP64（Linux）的 long 能装下 INT_MAX，\n"
+            "         * 而 LLP64（Windows）的 long 只有 32 位，装不下。\n"
+            "         * 只有 long 真的比 int 宽，才谈得上 long 型的 INT_MAX + 1。 */\n"
             "        long above_int_max = (long)INT_MAX;\n"
             "        if (sizeof(long) > sizeof(int)) {\n"
             "            CLINGS_CHECK_INT(long_can_hold_int(above_int_max + 1), 0);\n"
@@ -64,8 +63,8 @@ SUBSTITUTIONS: dict[str, list[tuple[str, str]]] = {
     "13_character_io/02_eof_ferror": [
         (
             "    CLINGS_CHECK_INT(feof(file), 1);\n",
-            "    /* feof() only promises a non-zero result.  The Microsoft CRT\n"
-            "     * returns its internal flag (0x10) instead of 1. */\n"
+            "    /* feof() 只承诺返回非零值。\n"
+            "     * Microsoft CRT 返回的是它内部的标志位（0x10），不是 1。 */\n"
             "    CLINGS_CHECK_MSG(feof(file) != 0, \"feof() reports end-of-file\");\n",
         ),
     ],
@@ -147,8 +146,8 @@ int run_noreturn(int argc, char **argv)
         terminate_now();
     }
 
-    /* Windows has no fork(); the child is this same executable, re-run with a
-     * marker argument so it can tell the two roles apart. */
+    /* Windows 没有 fork()。子进程就是同一个可执行文件， */
+    /* 带一个标记参数重新运行，好区分两种角色。 */
     const char *child_args[] = {argv[0], "child", NULL};
     intptr_t child = _spawnv(_P_NOWAIT, argv[0], child_args);
     if (child == -1) {

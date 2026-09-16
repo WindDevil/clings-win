@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/03_padding_alignment
- * title: Padding and alignment
- * objective: Observe padding and member offsets with offsetof.
- * hint: offsetof takes the struct type and the member name.
+ * clings 练习: 10_aggregates/03_padding_alignment
+ * title: 填充与对齐
+ * objective: 用 offsetof 观察填充和成员偏移。
+ * hint: offsetof 接收结构体类型和成员名。
  */
 
 #include "clings/test.h"
@@ -17,7 +17,7 @@ struct padded {
 
 int value_offset(void)
 {
-    /* TODO: measure the offset of the value member. */
+    /* TODO: 测出 value 成员的偏移。 */
     return (int)offsetof(struct padded, first);
 }
 

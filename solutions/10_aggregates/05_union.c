@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/05_union
- * title: Unions share storage
- * objective: Compare union size with the size of its largest member.
- * hint: Every union member starts at the same address.
+ * clings 练习: 10_aggregates/05_union
+ * title: 联合体共用存储
+ * objective: 比较联合体大小与它最大成员的大小。
+ * hint: 联合体的每个成员都从同一个地址开始。
  */
 
 #include "clings/test.h"

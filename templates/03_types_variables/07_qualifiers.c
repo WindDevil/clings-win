@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/07_qualifiers
- * title: Type qualifiers and storage-class specifiers
- * objective: Use const, volatile, extern, auto, and register.
- * hint: Qualifiers affect how an object may be accessed and optimized.
+ * clings 练习: 03_types_variables/07_qualifiers
+ * title: 类型限定符与存储类说明符
+ * objective: 使用 const、volatile、extern、auto 和 register。
+ * hint: 限定符影响对象可以被怎样访问和优化。
  */
 
 #include "clings/test.h"
@@ -18,7 +18,7 @@ int const_value(void)
 
 int volatile_value(void)
 {
-    /* TODO: initialize the volatile value. */
+    /* TODO: 初始化这个 volatile 值。 */
     volatile int value = 0;
     return value;
 }

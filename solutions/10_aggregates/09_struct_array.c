@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/09_struct_array
- * title: Arrays of structs
- * objective: Traverse an array of structs and find the best element.
- * hint: Use students[i].score for each element.
+ * clings 练习: 10_aggregates/09_struct_array
+ * title: 结构体数组
+ * objective: 遍历结构体数组，找出最优元素。
+ * hint: 每个元素都用 students[i].score 访问。
  */
 
 #include "clings/test.h"

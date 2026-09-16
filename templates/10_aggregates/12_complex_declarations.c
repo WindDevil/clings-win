@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/12_complex_declarations
- * title: Complex declarations and function-pointer tables
- * objective: Read and use a typedef for a function pointer and an array of function pointers.
- * hint: binary_operation is a typedef for int (*)(int, int).
+ * clings 练习: 10_aggregates/12_complex_declarations
+ * title: 复杂声明与函数指针表
+ * objective: 读懂并使用函数指针及其数组的 typedef。
+ * hint: binary_operation 是 int (*)(int, int) 的 typedef。
  */
 
 #include "clings/test.h"
@@ -21,7 +21,7 @@ static int subtract(int left, int right)
 
 int apply_operation(binary_operation operation, int left, int right)
 {
-    /* TODO: call the selected operation. */
+    /* TODO: 调用选中的操作。 */
     return add(left, right);
 }
 

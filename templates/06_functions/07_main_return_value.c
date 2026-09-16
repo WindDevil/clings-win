@@ -1,15 +1,15 @@
 /*
- * clings exercise: 06_functions/07_main_return_value
- * title: main return values
- * objective: Return a defined success or failure status from a program.
- * hint: Return 0 for success and 1 for failure.
+ * clings 练习: 06_functions/07_main_return_value
+ * title: main 的返回值
+ * objective: 让程序返回明确表示成功或失败的状态码。
+ * hint: 成功返回 0，失败返回 1。
  */
 
 #include "clings/test.h"
 
 int exit_code_for(int success)
 {
-    /* TODO: return 0 for success and 1 for failure. */
+    /* TODO: 成功返回 0，失败返回 1。 */
     return success ? 1 : 0;
 }
 

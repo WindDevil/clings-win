@@ -1,8 +1,8 @@
 /*
- * clings exercise: 13_character_io/01_getc_putc
- * title: getc and putc
- * objective: Copy a stream one character at a time with getc and putc.
- * hint: getc returns EOF when there are no more characters.
+ * clings 练习: 13_character_io/01_getc_putc
+ * title: getc 与 putc
+ * objective: 用 getc 和 putc 逐字符复制流。
+ * hint: 没有字符可读时，getc 返回 EOF。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@ int copy_stream(FILE *input, FILE *output)
     int character;
     int count = 0;
     while ((character = getc(input)) != EOF) {
-        /* TODO: write the current character. */
+        /* TODO: 写出当前字符。 */
         putc('x', output);
         ++count;
     }

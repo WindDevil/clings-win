@@ -1,21 +1,21 @@
-# Macros and Macro Hygiene
+# 宏与宏卫生
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_object_macro
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_object_macro` | Use a named compile-time constant. |
-| `02_function_macro` | Protect macro arguments and the whole expansion with parentheses. |
-| `03_stringize_paste` | Use # to stringize and ## to paste tokens. |
-| `04_variadic_macros` | Forward a variable argument list to a variadic function. |
-| `05_x_macros` | Generate an enum and a string table from one list. |
-| `06_macro_whitespace` | Remember that a space can turn a function-like macro into an object-like macro. |
-| `07_macro_statement` | Use do { ... } while (0) for a statement-like macro. |
-| `08_macro_not_typedef` | Use typedef instead of an object-like macro for pointer types. |
-| `09_macro_side_effects` | See that a function-like macro can evaluate its argument more than once. |
-| `10_assert_macro` | Use assert for programmer errors and return values for user errors. |
-| `11_macro_multiline` | Continue a macro definition onto the next line. |
+| `01_object_macro` | 使用一个有名字的编译期常量。 |
+| `02_function_macro` | 用括号保护宏参数和整个展开结果。 |
+| `03_stringize_paste` | 用 # 做字符串化，用 ## 拼接记号。 |
+| `04_variadic_macros` | 把可变实参列表转发给另一个变参函数。 |
+| `05_x_macros` | 用同一份列表生成枚举和字符串表。 |
+| `06_macro_whitespace` | 记住一个空格就能把函数式宏变成对象式宏。 |
+| `07_macro_statement` | 用 do { ... } while (0) 写像语句一样的宏。 |
+| `08_macro_not_typedef` | 指针类型用 typedef，不要用对象式宏。 |
+| `09_macro_side_effects` | 看清函数式宏可能多次计算它的实参。 |
+| `10_assert_macro` | 程序员错误用 assert，用户错误用返回值。 |
+| `11_macro_multiline` | 把宏定义续写到下一行。 |

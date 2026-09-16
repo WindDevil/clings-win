@@ -1,8 +1,8 @@
 /*
- * clings exercise: 16_data_structures/03_dynamic_vector
- * title: Dynamic array/vector
- * objective: Grow a dynamic array and preserve existing elements.
- * hint: Double the capacity when the array is full.
+ * clings 练习: 16_data_structures/03_dynamic_vector
+ * title: 动态数组（vector）
+ * objective: 扩容动态数组，并保留已有元素。
+ * hint: 数组满时把容量翻倍。
  */
 
 #include "clings/test.h"
@@ -27,7 +27,7 @@ int vector_push(struct vector *vector, int value)
         vector->values = grown;
         vector->capacity = new_capacity;
     }
-    /* TODO: append the value and increase size. */
+    /* TODO: 追加这个值，并把 size 加一。 */
     vector->values[vector->size] = value;
     return 0;
 }

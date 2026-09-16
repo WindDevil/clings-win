@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/11_implementation_defined
- * title: Implementation-defined behavior
- * objective: Observe implementation-defined char signedness and packing pragmas.
- * hint: CHAR_MIN tells you whether plain char is signed; #pragma pack changes padding.
+ * clings 练习: 15_ub_safety/11_implementation_defined
+ * title: 实现定义行为
+ * objective: 观察实现定义的 char 符号性和打包编译指示。
+ * hint: CHAR_MIN 能看出 char 是否带符号；#pragma pack 改变填充。
  */
 
 #include "clings/test.h"
@@ -22,7 +22,7 @@ int int_width_at_least_16(void)
 
 int packed_size(void)
 {
-/* TODO: pack the struct without padding. */
+/* TODO: 让结构体不带填充地打包。 */
 #pragma pack(push, 4)
     struct packed {
         char first;

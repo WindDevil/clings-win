@@ -2,10 +2,10 @@
 #define CLINGS_TEST_H
 
 /*
- * Thin assertion interface for clings exercises.
+ * clings 练习用的轻量断言接口。
  *
- * The implementation lives in test.c, so including this header does not
- * transitively provide stdio.h, stdlib.h, or string.h to exercise code.
+ * 实现放在 test.c 里，所以包含这个头文件并不会
+ * 顺带把 stdio.h、stdlib.h、string.h 带进练习代码。
  */
 
 void clings_record(int passed, const char *expr, const char *file, int line);

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/18_escaped_strings
- * title: Escaped strings and line continuation
- * objective: Use escape sequences inside a string literal and continue lines explicitly.
- * hint: Escape sequences keep their meaning inside string literals.
+ * clings 练习: 08_arrays_strings/18_escaped_strings
+ * title: 转义字符串与续行
+ * objective: 在字符串字面量里使用转义序列，并显式续行。
+ * hint: 转义序列在字符串字面量里依然生效。
  */
 
 #include "clings/test.h"

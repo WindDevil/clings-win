@@ -2,16 +2,25 @@
 
 `clings-win` 是 [clings](../cling) 的 Windows 孪生工程：同一套 185 个 C 练习，
 Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Windows 的初学者。
+练习的标题、学习目标、提示、注释和命令行输出都是中文，代码本身（标识符、
+函数名、格式说明符）保持英文，和标准教材、报错信息对得上。
 
 它不是 fork，而是**生成物**。练习内容、参考答案、模板、测试框架、运行器全部
 从上游仓库同步而来，唯一的差异记录在
-[`tools/windows_overrides.py`](tools/windows_overrides.py) 里（6 个练习需要平台变体）。
-因此两个工程不会各自漂移。
+[`tools/windows_overrides.py`](tools/windows_overrides.py)（6 个练习需要平台变体）
+和 [`tools/zh_glossary.py`](tools/zh_glossary.py)（中英对照表）里。因此两个工程
+不会各自漂移。
 
 ## 学习者怎么用
 
-下载分发包（`dist/clings-win-<commit>.zip`），解压到一个**路径不含空格和中文**
-的目录（例如 `D:\clings`），双击 `clings.cmd`：
+发布页提供两个包，按自己的情况挑一个：
+
+| 包 | 大小 | 适合谁 |
+| --- | ---: | --- |
+| `clings-win-<commit>-full.zip` | 约 190 MB | 机器上什么都没有的人。自带编译器（w64devkit）和 Python，解压就能用 |
+| `clings-win-<commit>-slim.zip` | 约 0.4 MB | 已经装了 Python 3 和 MinGW-w64 GCC 的人 |
+
+解压到一个**路径不含空格和中文**的目录（例如 `D:\clings`），双击 `clings.cmd`：
 
 ```bat
 clings.cmd list                 :: 列出全部练习
@@ -25,8 +34,8 @@ clings.cmd doctor               :: 打印工具链信息
 ```
 
 分发包自带编译器（w64devkit）和 Python，不需要安装、不需要管理员权限、
-不需要改 PATH。如果拿到的是不含 `runtime\` 的精简包，则需要自己装
-Python 3 和 MinGW-w64 GCC。
+不需要改 PATH。`-slim.zip` 不含 `runtime\`，需要自己准备 Python 3 和
+MinGW-w64 GCC。
 
 ## 维护者怎么用
 
@@ -36,7 +45,7 @@ make check           # 检查孪生工程是否与上游一致（CI 用）
 make winbox          # 在 .winbox/ 里准备 mingw-w64 + Wine（不需要 root）
 make windows-check   # 交叉编译 + Wine 运行全部练习（Linux 上的 Windows 回路）
 make winbox-native   # 额外拉取 w64devkit 和 Windows Python，用于打包
-make package         # 产出 dist/clings-win-<commit>.zip
+make package         # 产出 dist/ 下的 slim 和 full 两个 zip
 ```
 
 没有 Windows 机器时，`make windows-check` 就是日常回路：它用 mingw-w64 把每个
@@ -76,7 +85,9 @@ clings-win/
 - 练习内容的唯一事实来源是上游 `tools/specs_*.py` 和生成物。
 - 本仓库**不直接编辑** `exercises/`、`solutions/`、`templates/`、`include/`，
   这几个目录每次 `make sync` 都会被覆盖。
-- 要新增或修改练习：先改上游，再回到本仓库 `make sync`。
+- 要新增或修改练习：先改上游，再回到本仓库 `make sync`。如果新练习带来新的
+  英文标题、提示或注释，`make sync` 会直接报错并列出缺哪几条，把
+  [`tools/zh_glossary.py`](tools/zh_glossary.py) 补齐即可。
 - `make check` 会在 CI 中验证本仓库等于「上游 commit + Windows 覆盖」。
 
 ## 许可

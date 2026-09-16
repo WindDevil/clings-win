@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/17_state_machine
- * title: A small state machine
- * objective: Track state while scanning a string.
- * hint: A word starts when the previous character was whitespace.
+ * clings 练习: 08_arrays_strings/17_state_machine
+ * title: 一个小状态机
+ * objective: 在扫描字符串的过程中跟踪状态。
+ * hint: 前一个字符是空白时，一个新词开始。
  */
 
 #include "clings/test.h"

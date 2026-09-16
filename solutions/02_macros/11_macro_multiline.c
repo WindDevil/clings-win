@@ -1,8 +1,8 @@
 /*
- * clings exercise: 02_macros/11_macro_multiline
- * title: Multiline macros
- * objective: Continue a macro definition onto the next line.
- * hint: A trailing backslash continues the macro definition.
+ * clings 练习: 02_macros/11_macro_multiline
+ * title: 多行宏
+ * objective: 把宏定义续写到下一行。
+ * hint: 行尾的反斜杠用来续写宏定义。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/11_environment
- * title: Environment variables
- * objective: Read and write environment variables with getenv and _putenv_s.
- * hint: _putenv_s must succeed before getenv can find the new value.
+ * clings 练习: 12_standard_library/11_environment
+ * title: 环境变量
+ * objective: 用 getenv 和 _putenv_s 读写环境变量。
+ * hint: _putenv_s 成功之后，getenv 才能找到新值。
  */
 
 #include "clings/test.h"
@@ -15,7 +15,7 @@ int set_and_get(const char *name, const char *value, char *out, size_t size)
     if (_putenv_s(name, value) != 0) {
         return -1;
     }
-    /* TODO: read the environment variable back. */
+    /* TODO: 把环境变量读回来。 */
     const char *found = NULL;
     if (found == NULL) {
         return -1;

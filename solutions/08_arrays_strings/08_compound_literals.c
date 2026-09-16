@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/08_compound_literals
- * title: Compound literals
- * objective: Create a temporary struct value with a compound literal.
- * hint: The syntax is (struct point){.x = 3, .y = 4}.
+ * clings 练习: 08_arrays_strings/08_compound_literals
+ * title: 复合字面量
+ * objective: 用复合字面量创建临时结构体值。
+ * hint: 写法是 (struct point){.x = 3, .y = 4}。
  */
 
 #include "clings/test.h"

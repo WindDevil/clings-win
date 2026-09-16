@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/03_overflow
- * title: Unsigned wrap and checked signed addition
- * objective: Understand modulo wrap and avoid signed integer overflow.
- * hint: Check INT_MAX - b before adding b to a.
+ * clings 练习: 03_types_variables/03_overflow
+ * title: 无符号回绕与带检查的有符号加法
+ * objective: 理解取模回绕，并避开有符号整数溢出。
+ * hint: 在 a 上加 b 之前，先检查 INT_MAX - b。
  */
 
 #include "clings/test.h"

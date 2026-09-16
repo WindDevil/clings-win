@@ -1,8 +1,8 @@
 /*
- * clings exercise: 01_preprocessor/01_include_standard
- * title: #include with a standard header
- * objective: Include the standard header that declares fixed-width integer types.
- * hint: Add the standard header that declares int32_t and INT32_MAX.
+ * clings 练习: 01_preprocessor/01_include_standard
+ * title: 用 #include 引入标准头文件
+ * objective: 引入声明定宽整数类型的标准头文件。
+ * hint: 加上声明 int32_t 和 INT32_MAX 的标准头文件。
  */
 
 #include "clings/test.h"

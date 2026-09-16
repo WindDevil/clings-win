@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/02_setjmp_longjmp
- * title: setjmp and longjmp
- * objective: Use non-local jumps for a simple error path.
- * hint: longjmp returns control to the matching setjmp call.
+ * clings 练习: 18_advanced_c/02_setjmp_longjmp
+ * title: setjmp 与 longjmp
+ * objective: 用非局部跳转实现一条简单的错误路径。
+ * hint: longjmp 会把控制权交回与它配对的 setjmp 调用处。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@ static jmp_buf jump_buffer;
 static int checked_positive(int value)
 {
     if (value < 0) {
-        /* TODO: jump back to the setjmp call. */
+        /* TODO: 跳回 setjmp 的调用处。 */
         return -1;
     }
     return value;

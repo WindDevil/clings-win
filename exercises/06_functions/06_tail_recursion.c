@@ -1,8 +1,8 @@
 /*
- * clings exercise: 06_functions/06_tail_recursion
- * title: Tail recursion
- * objective: Rewrite a recursive sum using an accumulator.
- * hint: The recursive call should be the last operation.
+ * clings 练习: 06_functions/06_tail_recursion
+ * title: 尾递归
+ * objective: 用累加器改写递归求和。
+ * hint: 递归调用应当是这个函数里最后一步操作。
  */
 
 #include "clings/test.h"

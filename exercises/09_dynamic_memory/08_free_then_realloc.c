@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/08_free_then_realloc
- * title: Free then realloc
- * objective: Use realloc directly instead of freeing before growing an allocation.
- * hint: free(values) followed by realloc(values, ...) uses a dangling pointer.
+ * clings 练习: 09_dynamic_memory/08_free_then_realloc
+ * title: 先 free 再 realloc
+ * objective: 扩容时直接调 realloc，不要先 free。
+ * hint: 先 free(values) 再 realloc(values, ...)，用的是已经失效的指针。
  */
 
 #include "clings/test.h"
@@ -12,7 +12,7 @@
 
 int *grow_array(int *values, size_t old_count, size_t new_count, int fill)
 {
-    /* TODO: grow without freeing the original block first. */
+    /* TODO: 不要先释放原来的块，直接扩容。 */
     free(values);
     int *grown = malloc(new_count * sizeof *grown);
     if (grown != NULL) {

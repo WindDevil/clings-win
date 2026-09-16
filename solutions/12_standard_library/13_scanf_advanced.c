@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/13_scanf_advanced
- * title: Advanced scanf input
- * objective: Use field width and a scanset in sscanf.
- * hint: %3d reads at most three digits; %[abc] reads only a, b, and c.
+ * clings 练习: 12_standard_library/13_scanf_advanced
+ * title: scanf 输入进阶
+ * objective: 在 sscanf 里使用字段宽度和扫描集。
+ * hint: %3d 最多读三位数字；%[abc] 只读 a、b、c。
  */
 
 #include "clings/test.h"

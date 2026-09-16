@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/03_scanf
- * title: Read with scanf
- * objective: Read an integer from stdin with scanf.
- * hint: scanf needs the address of the variable: &value.
+ * clings 练习: 00_basics/03_scanf
+ * title: 用 scanf 读输入
+ * objective: 用 scanf 从标准输入读一个整数。
+ * hint: scanf 需要变量的地址：&value。
  */
 
 #include "clings/test.h"
@@ -12,7 +12,7 @@
 int read_number(void)
 {
     int value = 0;
-    /* TODO: scanf needs the address of value. */
+    /* TODO: scanf 需要的是 value 的地址。 */
     if (scanf("%d", value) != 1) {
         return -1;
     }

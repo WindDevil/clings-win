@@ -1,3 +1,3 @@
 #include "config.h"
 
-/* TODO: define config_value. */
+/* TODO: 定义 config_value。 */

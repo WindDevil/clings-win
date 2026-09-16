@@ -1,8 +1,8 @@
 /*
- * clings exercise: 04_operators/04_bitwise
- * title: Bitwise set, clear, toggle, and test
- * objective: Use masks and bitwise operators safely.
- * hint: Clearing a bit uses value & ~(1u << bit).
+ * clings 练习: 04_operators/04_bitwise
+ * title: 位操作：置位、清位、取反与测试
+ * objective: 安全地使用掩码和位运算符。
+ * hint: 清位用 value & ~(1u << bit)。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@ unsigned set_bit(unsigned value, unsigned bit)
 
 unsigned clear_bit(unsigned value, unsigned bit)
 {
-    /* TODO: clear the selected bit. */
+    /* TODO: 清掉选中的那一位置位。 */
     return value & (1u << bit);
 }
 

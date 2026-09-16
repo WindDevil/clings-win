@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/11_strcat_strncat
- * title: strcat and strncat
- * objective: Append a string while respecting the destination size.
- * hint: strncat appends at most n characters and always terminates.
+ * clings 练习: 08_arrays_strings/11_strcat_strncat
+ * title: strcat 与 strncat
+ * objective: 在目标缓冲区大小的限制下追加字符串。
+ * hint: strncat 最多追加 n 个字符，并且总会补上 NUL。
  */
 
 #include "clings/test.h"

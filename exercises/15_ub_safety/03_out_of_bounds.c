@@ -1,15 +1,15 @@
 /*
- * clings exercise: 15_ub_safety/03_out_of_bounds
- * title: Bounds checking
- * objective: Reject indices outside the logical array length.
- * hint: An index is invalid when it is less than zero or greater than or equal to count.
+ * clings 练习: 15_ub_safety/03_out_of_bounds
+ * title: 边界检查
+ * objective: 拒绝超出逻辑长度的下标。
+ * hint: 下标小于 0，或大于等于 count，就是无效的。
  */
 
 #include "clings/test.h"
 
 int get_or_default(const int *values, int count, int index, int fallback)
 {
-    /* TODO: reject indices that are out of range. */
+    /* TODO: 拒绝越界的下标。 */
     if (index < 0 || index > count) {
         return fallback;
     }

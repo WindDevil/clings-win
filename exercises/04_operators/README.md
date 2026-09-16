@@ -1,19 +1,19 @@
-# Operators and Expressions
+# 运算符与表达式
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_arithmetic
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_arithmetic` | Practice integer division, modulo, and truncation. |
-| `02_precedence` | Use parentheses to express intent clearly. |
-| `03_short_circuit` | Observe that && and || may not evaluate their right operand. |
-| `04_bitwise` | Use masks and bitwise operators safely. |
-| `05_shifts` | Build masks and avoid shifting by the width of the type. |
-| `06_sizeof_incdec` | Distinguish sizeof expressions from increment side effects. |
-| `07_compound_assignment` | Use +=, -=, *=, /=, %= and the comma operator. |
-| `08_assignment_vs_equality` | Use == for comparison and recognize the = versus == trap. |
-| `09_maximal_munch` | Understand how the lexer greedily forms the longest token. |
+| `01_arithmetic` | 练习整数除法、取模和截断。 |
+| `02_precedence` | 用括号把意图写清楚。 |
+| `03_short_circuit` | 观察 && 和 || 可能不计算右操作数。 |
+| `04_bitwise` | 安全地使用掩码和位运算符。 |
+| `05_shifts` | 构造掩码，并避免按类型宽度移位。 |
+| `06_sizeof_incdec` | 分清 sizeof 表达式与自增副作用。 |
+| `07_compound_assignment` | 使用 +=、-=、*=、/=、%= 和逗号运算符。 |
+| `08_assignment_vs_equality` | 比较用 ==，并认出 = 与 == 的陷阱。 |
+| `09_maximal_munch` | 理解词法分析如何贪心地构成最长的记号。 |

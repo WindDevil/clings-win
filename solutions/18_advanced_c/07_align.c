@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/07_align
- * title: alignof and alignas
- * objective: Query and request alignment.
- * hint: Double usually requires more alignment than int.
+ * clings 练习: 18_advanced_c/07_align
+ * title: alignof 与 alignas
+ * objective: 查询对齐，并指定对齐。
+ * hint: double 通常比 int 要求更严格的对齐。
  */
 
 #include "clings/test.h"

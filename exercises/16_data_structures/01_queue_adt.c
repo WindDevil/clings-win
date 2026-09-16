@@ -1,8 +1,8 @@
 /*
- * clings exercise: 16_data_structures/01_queue_adt
- * title: Queue ADT
- * objective: Implement a fixed-capacity circular queue.
- * hint: The tail index wraps with modulo capacity.
+ * clings 练习: 16_data_structures/01_queue_adt
+ * title: 队列抽象数据类型
+ * objective: 实现一个定容量的环形队列。
+ * hint: 尾部下标用模 capacity 回绕。
  */
 
 #include "clings/test.h"
@@ -30,7 +30,7 @@ int queue_push(struct queue *queue, int value)
     if (queue->count == QUEUE_CAPACITY) {
         return -1;
     }
-    /* TODO: store the new value. */
+    /* TODO: 存下这个新值。 */
     queue->values[queue->tail] = 0;
     queue->tail = (queue->tail + 1) % QUEUE_CAPACITY;
     ++queue->count;

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/06_sscanf
- * title: Safe parsing with sscanf
- * objective: Parse values from a string with sscanf.
- * hint: The literal comma in the format must match the input string.
+ * clings 练习: 00_basics/06_sscanf
+ * title: 用 sscanf 安全解析
+ * objective: 用 sscanf 从字符串里解析出各个值。
+ * hint: 格式串里的那个逗号必须和输入串里的对齐。
  */
 
 #include "clings/test.h"

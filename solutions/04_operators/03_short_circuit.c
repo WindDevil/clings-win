@@ -1,8 +1,8 @@
 /*
- * clings exercise: 04_operators/03_short_circuit
- * title: Short-circuit evaluation
- * objective: Observe that && and || may not evaluate their right operand.
- * hint: The right side of && is only evaluated when the left side is true.
+ * clings 练习: 04_operators/03_short_circuit
+ * title: 短路求值
+ * objective: 观察 && 和 || 可能不计算右操作数。
+ * hint: 只有左侧为真时，才会计算 && 的右侧。
  */
 
 #include "clings/test.h"

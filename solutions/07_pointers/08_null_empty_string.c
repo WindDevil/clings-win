@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/08_null_empty_string
- * title: NULL, empty string, and NUL
- * objective: Distinguish a null pointer, an empty string, and the NUL character.
- * hint: NULL is a null pointer; "" is a valid empty string; '\0' is NUL.
+ * clings 练习: 07_pointers/08_null_empty_string
+ * title: NULL、空串与 NUL
+ * objective: 区分空指针、空串和 NUL 字符。
+ * hint: NULL 是空指针；"" 是合法的空串；'\0' 是 NUL 字符。
  */
 
 #include "clings/test.h"

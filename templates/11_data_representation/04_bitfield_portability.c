@@ -1,8 +1,8 @@
 /*
- * clings exercise: 11_data_representation/04_bitfield_portability
- * title: Bitfields and explicit masks
- * objective: Pack fields with bitfields and compare them with an explicit mask.
- * hint: Bitfield layout is implementation-defined; masks make the encoding explicit.
+ * clings 练习: 11_data_representation/04_bitfield_portability
+ * title: 位域与显式掩码
+ * objective: 用位域打包字段，并与显式掩码做对比。
+ * hint: 位域的布局由实现定义；用掩码能把编码写明确。
  */
 
 #include "clings/test.h"
@@ -18,7 +18,7 @@ int pack_flags(int first, int second, int value)
     struct flags flags = {0};
     flags.first = first ? 1u : 0u;
     flags.second = second ? 1u : 0u;
-    /* TODO: mask the four-bit value field. */
+    /* TODO: 把 4 位的 value 字段掩出来。 */
     flags.value = 0;
     return (int)flags.first | ((int)flags.second << 1) | ((int)flags.value << 2);
 }

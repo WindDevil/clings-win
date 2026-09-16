@@ -1,16 +1,16 @@
-# Preprocessor Directives
+# 预处理指令
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_include_standard
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_include_standard` | Include the standard header that declares fixed-width integer types. |
-| `02_include_user` | Include a local header so its macro is visible. |
-| `03_conditional_compilation` | Select code at preprocessing time based on the language version. |
-| `04_include_guards` | Prevent multiple inclusion with a preprocessor guard. |
-| `05_pragma_error_line` | Use diagnostics, line control, and packing pragmas. |
-| `06_undef_defined` | Undefine a macro and test it with defined(). |
+| `01_include_standard` | 引入声明定宽整数类型的标准头文件。 |
+| `02_include_user` | 引入本地头文件，让其中的宏可见。 |
+| `03_conditional_compilation` | 在预处理阶段按语言版本选择代码。 |
+| `04_include_guards` | 用预处理保护防止重复引入。 |
+| `05_pragma_error_line` | 使用诊断、行控制和打包编译指示。 |
+| `06_undef_defined` | 取消宏定义，并用 defined() 测试它。 |

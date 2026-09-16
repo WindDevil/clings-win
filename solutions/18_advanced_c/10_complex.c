@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/10_complex
- * title: Complex numbers
- * objective: Use double complex, I, conj, creal, and cimag.
- * hint: conj changes the sign of the imaginary part.
+ * clings 练习: 18_advanced_c/10_complex
+ * title: 复数
+ * objective: 使用 double complex、I、conj、creal 和 cimag。
+ * hint: conj 把虚部的符号取反。
  */
 
 #include "clings/test.h"

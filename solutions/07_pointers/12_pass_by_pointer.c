@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/12_pass_by_pointer
- * title: Pass by value and pass by pointer
- * objective: Modify caller-owned data through pointers.
- * hint: Save *a before overwriting it.
+ * clings 练习: 07_pointers/12_pass_by_pointer
+ * title: 值传递与指针传递
+ * objective: 通过指针修改调用方的数据。
+ * hint: 在覆盖 *a 之前先把它存下来。
  */
 
 #include "clings/test.h"

@@ -1,13 +1,13 @@
 /*
- * clings exercise: 02_macros/02_function_macro
- * title: Function-like macros
- * objective: Protect macro arguments and the whole expansion with parentheses.
- * hint: Parenthesize both the parameters and the entire replacement expression.
+ * clings 练习: 02_macros/02_function_macro
+ * title: 函数式宏
+ * objective: 用括号保护宏参数和整个展开结果。
+ * hint: 参数和整个替换表达式都要加括号。
  */
 
 #include "clings/test.h"
 
-/* TODO: parenthesize the whole macro expansion. */
+/* TODO: 给整个宏展开加括号。 */
 #define MIN(a, b) (a) < (b) ? (a) : (b)
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 

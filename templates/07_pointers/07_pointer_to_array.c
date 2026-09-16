@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/07_pointer_to_array
- * title: Pointers to arrays and &array
- * objective: Distinguish a pointer to an array from a pointer to its first element.
- * hint: &a + 1 advances by the whole array, not by one element.
+ * clings 练习: 07_pointers/07_pointer_to_array
+ * title: 数组指针与 &array
+ * objective: 区分数组指针和指向首元素的指针。
+ * hint: &a + 1 跨越整个数组，而不是一个元素。
  */
 
 #include "clings/test.h"
@@ -21,7 +21,7 @@ int sum_row(const int (*row)[4])
 int pointer_to_array_difference(void)
 {
     int values[4] = {0};
-    /* TODO: advance by the whole array, not one element. */
+    /* TODO: 一次跨越整个数组，不是一个元素。 */
     return (int)((char *)(values + 1) - (char *)values);
 }
 

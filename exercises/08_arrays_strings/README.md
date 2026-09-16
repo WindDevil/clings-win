@@ -1,28 +1,28 @@
-# Arrays and Strings
+# 数组与字符串
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_array_basics
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_array_basics` | Iterate over an array and compute a sum and maximum. |
-| `02_array_decay` | See how an array parameter becomes a pointer. |
-| `03_multidimensional` | Transpose a 3x3 matrix with nested loops. |
-| `04_string_literals` | Scan a const string and modify a mutable char array. |
-| `05_string_ops` | Implement strlen, strcmp, and strcpy with pointers. |
-| `06_tokenize` | Split a string without modifying the caller's buffer. |
-| `07_vla` | Create an array whose length is a runtime value. |
-| `08_compound_literals` | Create a temporary struct value with a compound literal. |
-| `09_pointer_compatibility` | Pass a non-const array through a pointer-to-const. |
-| `10_asymmetric_bounds` | Use the half-open interval [low, high). |
-| `11_strcat_strncat` | Append a string while respecting the destination size. |
-| `12_strncpy_bounded` | Copy a string safely and always terminate the destination. |
-| `13_sprintf_snprintf` | Format text with snprintf and understand truncation. |
-| `14_fgets_fputs_sort` | Read a line with fgets and sort an array of strings. |
-| `15_strtod` | Parse a double with strtod and reject trailing input. |
-| `16_main_args` | Work with the arguments passed to main. |
-| `17_state_machine` | Track state while scanning a string. |
-| `18_escaped_strings` | Use escape sequences inside a string literal and continue lines explicitly. |
+| `01_array_basics` | 遍历数组，求出总和与最大值。 |
+| `02_array_decay` | 看清数组参数如何变成指针。 |
+| `03_multidimensional` | 用嵌套循环转置一个 3x3 矩阵。 |
+| `04_string_literals` | 扫描 const 字符串，修改可变的 char 数组。 |
+| `05_string_ops` | 用指针实现 strlen、strcmp 和 strcpy。 |
+| `06_tokenize` | 切分字符串，同时不改动调用方的缓冲区。 |
+| `07_vla` | 创建长度由运行时决定的数据。 |
+| `08_compound_literals` | 用复合字面量创建临时结构体值。 |
+| `09_pointer_compatibility` | 通过指向 const 的指针传递非 const 数组。 |
+| `10_asymmetric_bounds` | 使用半开区间 [low, high)。 |
+| `11_strcat_strncat` | 在目标缓冲区大小的限制下追加字符串。 |
+| `12_strncpy_bounded` | 安全复制字符串，并保证目标以 NUL 结尾。 |
+| `13_sprintf_snprintf` | 用 snprintf 格式化文本，并理解截断行为。 |
+| `14_fgets_fputs_sort` | 用 fgets 读一行，并对字符串数组排序。 |
+| `15_strtod` | 用 strtod 解析 double，并拒绝多余的尾部输入。 |
+| `16_main_args` | 处理传给 main 的参数。 |
+| `17_state_machine` | 在扫描字符串的过程中跟踪状态。 |
+| `18_escaped_strings` | 在字符串字面量里使用转义序列，并显式续行。 |

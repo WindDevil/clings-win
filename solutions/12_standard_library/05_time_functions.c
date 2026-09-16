@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/05_time_functions
- * title: Time arithmetic
- * objective: Use time_t and difftime.
- * hint: difftime(end, start) returns end - start seconds.
+ * clings 练习: 12_standard_library/05_time_functions
+ * title: 时间运算
+ * objective: 使用 time_t 和 difftime。
+ * hint: difftime(end, start) 返回 end - start 秒。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/05_void_pointer
- * title: Generic byte-level swap
- * objective: Use void pointers and unsigned char for type-agnostic code.
- * hint: Copy the byte from a before overwriting it.
+ * clings 练习: 07_pointers/05_void_pointer
+ * title: 通用字节交换
+ * objective: 用 void 指针和 unsigned char 写与类型无关的代码。
+ * hint: 先把 a 里的字节存下来，再覆盖它。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/01_variadic
- * title: Variadic functions
- * objective: Read a variable number of int arguments with va_list.
- * hint: The loop must consume exactly count arguments.
+ * clings 练习: 18_advanced_c/01_variadic
+ * title: 变参函数
+ * objective: 用 va_list 读取数量不定的 int 实参。
+ * hint: 循环必须正好取出 count 个实参。
  */
 
 #include "clings/test.h"
@@ -15,7 +15,7 @@ long sum_variadic(int count, ...)
     va_start(arguments, count);
 
     long sum = 0;
-    /* TODO: consume every variadic argument. */
+    /* TODO: 取出每一个可变实参。 */
     for (int i = 0; i < count - 1; ++i) {
         sum += va_arg(arguments, int);
     }

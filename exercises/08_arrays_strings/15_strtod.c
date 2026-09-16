@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/15_strtod
- * title: Converting strings to double
- * objective: Parse a double with strtod and reject trailing input.
- * hint: Check errno, endptr, and the character after the number.
+ * clings 练习: 08_arrays_strings/15_strtod
+ * title: 把字符串转成 double
+ * objective: 用 strtod 解析 double，并拒绝多余的尾部输入。
+ * hint: 要检查 errno、endptr，以及数字后面的那个字符。
  */
 
 #include "clings/test.h"
@@ -15,7 +15,7 @@ int parse_double(const char *text, double *out)
     char *end = NULL;
     errno = 0;
     double value = strtod(text, &end);
-    /* TODO: reject trailing characters. */
+    /* TODO: 拒绝多余的尾部字符。 */
     if (errno == ERANGE || end == text) {
         return -1;
     }

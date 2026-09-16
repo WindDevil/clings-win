@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/14_fgets_fputs_sort
- * title: fgets, fputs, and sorting strings
- * objective: Read a line with fgets and sort an array of strings.
- * hint: qsort receives an array of pointers, so cast to const char *const *.
+ * clings 练习: 08_arrays_strings/14_fgets_fputs_sort
+ * title: fgets、fputs 与字符串排序
+ * objective: 用 fgets 读一行，并对字符串数组排序。
+ * hint: qsort 收到的是指针数组，所以要转成 const char *const *。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 19_modern_c_library/01_noreturn
- * title: _Noreturn functions
- * objective: Declare a function that never returns and observe its exit status.
- * hint: The child re-runs this program with the "child" argument, then exits with status 7.
+ * clings 练习: 19_modern_c_library/01_noreturn
+ * title: _Noreturn 函数
+ * objective: 声明一个不会返回的函数，并观察它的退出状态。
+ * hint: 子进程带着 "child" 参数重新运行本程序，然后以状态 7 退出。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@
 
 _Noreturn void terminate_now(void)
 {
-    /* TODO: terminate with status 7. */
+    /* TODO: 以状态 7 结束进程。 */
     _Exit(0);
 }
 
@@ -24,8 +24,8 @@ int run_noreturn(int argc, char **argv)
         terminate_now();
     }
 
-    /* Windows has no fork(); the child is this same executable, re-run with a
-     * marker argument so it can tell the two roles apart. */
+    /* Windows 没有 fork()。子进程就是同一个可执行文件， */
+    /* 带一个标记参数重新运行，好区分两种角色。 */
     const char *child_args[] = {argv[0], "child", NULL};
     intptr_t child = _spawnv(_P_NOWAIT, argv[0], child_args);
     if (child == -1) {

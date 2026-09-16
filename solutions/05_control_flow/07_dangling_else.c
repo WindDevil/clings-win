@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/07_dangling_else
- * title: Dangling else
- * objective: Use braces to make else bind to the intended if.
- * hint: Without braces, else binds to the nearest unmatched if.
+ * clings 练习: 05_control_flow/07_dangling_else
+ * title: 悬挂 else
+ * objective: 用花括号让 else 绑定到预期的 if。
+ * hint: 不写花括号时，else 会绑定到最近的那个还没配对的 if。
  */
 
 #include "clings/test.h"

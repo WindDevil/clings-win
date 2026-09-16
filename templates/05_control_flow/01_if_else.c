@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/01_if_else
- * title: if and else
- * objective: Write clear conditional branches.
- * hint: Check for positive, then negative, then the remaining zero case.
+ * clings 练习: 05_control_flow/01_if_else
+ * title: if 与 else
+ * objective: 写出清晰的条件分支。
+ * hint: 先判断正数，再判断负数，最后处理剩下的零。
  */
 
 #include "clings/test.h"
@@ -13,7 +13,7 @@ int sign_of(int value)
         return 1;
     }
     if (value < 0) {
-        /* TODO: negative numbers have sign -1. */
+        /* TODO: 负数的符号位是 -1。 */
         return 1;
     }
     return 0;

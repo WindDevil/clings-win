@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/10_octal_constants
- * title: Octal integer constants
- * objective: Recognize that a leading zero means base 8.
- * hint: 010 is 8, not 10; 0195 is not a valid C integer constant.
+ * clings 练习: 03_types_variables/10_octal_constants
+ * title: 八进制整型常量
+ * objective: 认识到前导 0 表示八进制。
+ * hint: 010 是 8，不是 10；0195 不是合法的 C 整数常量。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int octal_constant(void)
 {
-    /* TODO: return the octal constant 010. */
+    /* TODO: 返回八进制常量 010。 */
     return 10;
 }
 

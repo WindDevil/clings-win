@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/13_function_pointers
- * title: Function pointers and dispatch
- * objective: Store functions in variables and choose one at runtime.
- * hint: Return the function that matches the operator character.
+ * clings 练习: 07_pointers/13_function_pointers
+ * title: 函数指针与分派
+ * objective: 把函数存进变量，在运行时选一个调用。
+ * hint: 返回与运算符字符对应的那个函数。
  */
 
 #include "clings/test.h"
@@ -26,7 +26,7 @@ int apply_operation(operation_fn op, int a, int b)
 
 operation_fn choose_operation(char op)
 {
-    /* TODO: choose multiply for any non-plus operator. */
+    /* TODO: 只要运算符不是加号，就选乘法。 */
     return add;
 }
 

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 02_macros/04_variadic_macros
- * title: Variadic macros
- * objective: Forward a variable argument list to a variadic function.
- * hint: SUM(...) should pass every argument, including the count.
+ * clings 练习: 02_macros/04_variadic_macros
+ * title: 变参宏
+ * objective: 把可变实参列表转发给另一个变参函数。
+ * hint: SUM(...) 要把每个实参都传下去，包括那个计数。
  */
 
 #include "clings/test.h"

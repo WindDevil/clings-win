@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/15_rand_max
- * title: RAND_MAX portability
- * objective: Do not assume rand() returns a value below a fixed small bound.
- * hint: The C standard only guarantees RAND_MAX >= 32767.
+ * clings 练习: 12_standard_library/15_rand_max
+ * title: RAND_MAX 的可移植性
+ * objective: 不要假定 rand() 的返回值小于某个固定的小上界。
+ * hint: C 标准只保证 RAND_MAX >= 32767。
  */
 
 #include "clings/test.h"

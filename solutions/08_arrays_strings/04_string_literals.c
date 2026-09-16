@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/04_string_literals
- * title: String literals and mutable strings
- * objective: Scan a const string and modify a mutable char array.
- * hint: A string literal must not be modified; a char array may be modified.
+ * clings 练习: 08_arrays_strings/04_string_literals
+ * title: 字符串字面量与可变字符串
+ * objective: 扫描 const 字符串，修改可变的 char 数组。
+ * hint: 字符串字面量不能改；char 数组可以改。
  */
 
 #include "clings/test.h"

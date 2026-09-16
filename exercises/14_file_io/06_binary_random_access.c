@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/06_binary_random_access
- * title: Binary random access
- * objective: Read a specific struct record from a binary file.
- * hint: Seek by index * sizeof(record).
+ * clings 练习: 14_file_io/06_binary_random_access
+ * title: 二进制随机访问
+ * objective: 从二进制文件里读出指定的结构体记录。
+ * hint: 用 index * sizeof(record) 计算定位偏移。
  */
 
 #include "clings/test.h"
@@ -32,7 +32,7 @@ int read_record_at(const char *path, size_t index, struct record *out)
     if (file == NULL) {
         return -1;
     }
-    /* TODO: seek to the selected record. */
+    /* TODO: 定位到选中的那条记录。 */
     if (fseek(file, (long)index, SEEK_SET) != 0) {
         fclose(file);
         return -1;

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/05_fflush_setvbuf
- * title: Stream buffering
- * objective: Configure full buffering and flush a stream.
- * hint: setvbuf must be called before other I/O on the stream.
+ * clings 练习: 14_file_io/05_fflush_setvbuf
+ * title: 流缓冲
+ * objective: 配置全缓冲并刷新流。
+ * hint: 必须在流上做其它 I/O 之前调用 setvbuf。
  */
 
 #include "clings/test.h"

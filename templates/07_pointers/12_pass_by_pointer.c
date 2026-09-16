@@ -1,15 +1,15 @@
 /*
- * clings exercise: 07_pointers/12_pass_by_pointer
- * title: Pass by value and pass by pointer
- * objective: Modify caller-owned data through pointers.
- * hint: Save *a before overwriting it.
+ * clings 练习: 07_pointers/12_pass_by_pointer
+ * title: 值传递与指针传递
+ * objective: 通过指针修改调用方的数据。
+ * hint: 在覆盖 *a 之前先把它存下来。
  */
 
 #include "clings/test.h"
 
 void swap_int(int *a, int *b)
 {
-    /* TODO: swap the two integers without losing either value. */
+    /* TODO: 交换两个整数，并且不丢掉任何一个值。 */
     *a = *b;
     *b = *a;
 }

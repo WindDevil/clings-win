@@ -1,8 +1,8 @@
 /*
- * clings exercise: 13_character_io/05_getchar_putchar
- * title: getchar and putchar
- * objective: Use the standard input/output character macros directly.
- * hint: ungetc can push a character back onto stdin for a test.
+ * clings 练习: 13_character_io/05_getchar_putchar
+ * title: getchar 与 putchar
+ * objective: 直接使用标准的输入输出字符宏。
+ * hint: 测试时可以用 ungetc 把一个字符退回 stdin。
  */
 
 #include "clings/test.h"

@@ -1,33 +1,33 @@
 /*
- * clings exercise: 00_basics/08_lexical_elements
- * title: Comments and escape sequences
- * objective: Use comments and escape sequences correctly.
- * hint: Escape sequences start with a backslash; comments need both delimiters.
+ * clings 练习: 00_basics/08_lexical_elements
+ * title: 注释与转义序列
+ * objective: 正确使用注释和转义序列。
+ * hint: 转义序列以反斜杠开头；注释需要成对的定界符。
  */
 
 #include "clings/test.h"
 
 char newline_character(void)
 {
-    /* TODO: return the newline character. */
+    /* TODO: 返回换行符。 */
     return 'n';
 }
 
 char tab_character(void)
 {
-    /* TODO: return the tab character. */
+    /* TODO: 返回制表符。 */
     return 't';
 }
 
 char backslash_character(void)
 {
-    /* TODO: return the backslash character. */
+    /* TODO: 返回反斜杠字符。 */
     return '/';
 }
 
 int comment_is_ignored(void)
 {
-    /* TODO: close the comment. */
+    /* TODO: 把注释闭合。 */
     return 1 /* comment + 2;
 }
 

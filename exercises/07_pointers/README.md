@@ -1,23 +1,23 @@
-# Pointers
+# 指针
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_pointer_basics
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_pointer_basics` | Read and write through pointers. |
-| `02_null_and_const` | Check for NULL and respect pointer-to-const. |
-| `03_pointer_arithmetic` | Walk an array with pointers and return a pointer into it. |
-| `04_pointer_to_pointer` | Let a function allocate and update a caller-owned pointer. |
-| `05_void_pointer` | Use void pointers and unsigned char for type-agnostic code. |
-| `06_dangling_wild` | Set a freed pointer to NULL to prevent accidental reuse. |
-| `07_pointer_to_array` | Distinguish a pointer to an array from a pointer to its first element. |
-| `08_null_empty_string` | Distinguish a null pointer, an empty string, and the NUL character. |
-| `09_memory_location_zero` | Treat address zero as a null pointer, not as a valid object address. |
-| `10_one_past_pointer` | Do not treat a pointer to a single object as an array. |
-| `11_restrict_aliasing` | Use restrict to promise that two pointer parameters do not alias. |
-| `12_pass_by_pointer` | Modify caller-owned data through pointers. |
-| `13_function_pointers` | Store functions in variables and choose one at runtime. |
+| `01_pointer_basics` | 通过指针读写数据。 |
+| `02_null_and_const` | 检查 NULL，并尊重指向 const 的指针。 |
+| `03_pointer_arithmetic` | 用指针遍历数组，并返回指向数组内部的指针。 |
+| `04_pointer_to_pointer` | 让函数分配内存并更新调用方持有的指针。 |
+| `05_void_pointer` | 用 void 指针和 unsigned char 写与类型无关的代码。 |
+| `06_dangling_wild` | 释放后把指针置为 NULL，防止误用。 |
+| `07_pointer_to_array` | 区分数组指针和指向首元素的指针。 |
+| `08_null_empty_string` | 区分空指针、空串和 NUL 字符。 |
+| `09_memory_location_zero` | 把地址 0 当作空指针，而不是有效对象地址。 |
+| `10_one_past_pointer` | 不要把单个对象的指针当成数组用。 |
+| `11_restrict_aliasing` | 用 restrict 承诺两个指针参数不互相别名。 |
+| `12_pass_by_pointer` | 通过指针修改调用方的数据。 |
+| `13_function_pointers` | 把函数存进变量，在运行时选一个调用。 |

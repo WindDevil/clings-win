@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/07_buffered_output_memory
- * title: Buffered output and memory allocation
- * objective: Combine malloc, setvbuf, output, fclose, and free.
- * hint: The buffer passed to setvbuf must remain valid until the stream is closed.
+ * clings 练习: 14_file_io/07_buffered_output_memory
+ * title: 缓冲输出与内存分配
+ * objective: 把 malloc、setvbuf、输出、fclose 和 free 串起来用。
+ * hint: 传给 setvbuf 的缓冲区必须一直有效，直到流被关闭。
  */
 
 #include "clings/test.h"
@@ -26,7 +26,7 @@ int write_with_buffer(const char *path, const char *text, size_t size)
         fclose(file);
         return -1;
     }
-    /* TODO: write the supplied text. */
+    /* TODO: 写入传进来的文本。 */
     int ok = fputs("wrong", file) >= 0;
     if (fclose(file) != 0) {
         ok = 0;

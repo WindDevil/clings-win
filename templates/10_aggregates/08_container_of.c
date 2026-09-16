@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/08_container_of
- * title: offsetof and container_of
- * objective: Recover an outer struct from a pointer to one of its members.
- * hint: Subtract the byte offset of the inner member.
+ * clings 练习: 10_aggregates/08_container_of
+ * title: offsetof 与 container_of
+ * objective: 由成员指针反推出外层结构体。
+ * hint: 减去内层成员的字节偏移。
  */
 
 #include "clings/test.h"
@@ -20,7 +20,7 @@ struct outer {
 
 struct outer *outer_from_inner(struct inner *inner)
 {
-    /* TODO: subtract the offset of the inner member. */
+    /* TODO: 减去内层成员的偏移。 */
     return (struct outer *)((char *)inner);
 }
 

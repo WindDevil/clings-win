@@ -1,8 +1,8 @@
 /*
- * clings exercise: 19_modern_c_library/04_atomic_flag
- * title: atomic_flag spin lock
- * objective: Use atomic_flag as a simple test-and-set lock.
- * hint: atomic_flag_test_and_set returns the previous state.
+ * clings 练习: 19_modern_c_library/04_atomic_flag
+ * title: atomic_flag 自旋锁
+ * objective: 用 atomic_flag 实现一个简单的测试并设置锁。
+ * hint: atomic_flag_test_and_set 返回之前的状态。
  */
 
 #include "clings/test.h"
@@ -18,7 +18,7 @@ int try_lock_flag(void)
 
 void unlock_flag(void)
 {
-    /* TODO: release the lock. */
+    /* TODO: 释放锁。 */
 }
 
 int main(void)

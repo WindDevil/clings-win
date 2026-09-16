@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/09_standard_changes
- * title: C standard changes
- * objective: Detect the C standard version at compile time.
- * hint: __STDC_VERSION__ is 201112L for C11 and 201710L for C17.
+ * clings 练习: 15_ub_safety/09_standard_changes
+ * title: C 标准的变化
+ * objective: 在编译期判断 C 标准版本。
+ * hint: C11 的 __STDC_VERSION__ 是 201112L，C17 是 201710L。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@ int c_standard_year(void)
 
 int has_c11(void)
 {
-#if defined(__STDC_VERSION__) && /* TODO: test for C11 or newer. */
+#if defined(__STDC_VERSION__) && /* TODO: 判断是否为 C11 或更新版本。 */
 __STDC_VERSION__ >= 999999L
     return 1;
 #else

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/02_fgets_fputs
- * title: fgets and fputs
- * objective: Copy a text file line by line.
- * hint: fgets includes the newline when the buffer is large enough.
+ * clings 练习: 14_file_io/02_fgets_fputs
+ * title: fgets 与 fputs
+ * objective: 逐行复制文本文件。
+ * hint: 缓冲区足够大时，fgets 会把换行也读进来。
  */
 
 #include "clings/test.h"

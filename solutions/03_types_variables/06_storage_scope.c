@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/06_storage_scope
- * title: Storage classes and scope
- * objective: Observe the lifetime of a static variable and block scope.
- * hint: ++counter increments first; counter++ returns the old value.
+ * clings 练习: 03_types_variables/06_storage_scope
+ * title: 存储类与作用域
+ * objective: 观察静态变量的生存期与块作用域。
+ * hint: ++counter 先自增；counter++ 返回旧值。
  */
 
 #include "clings/test.h"

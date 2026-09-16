@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/05_snprintf
- * title: Safe formatting with snprintf
- * objective: Write formatted text into a fixed-size buffer.
- * hint: snprintf takes the buffer size and returns the number of characters it would write.
+ * clings 练习: 00_basics/05_snprintf
+ * title: 用 snprintf 安全格式化
+ * objective: 把格式化文本写进固定大小的缓冲区。
+ * hint: snprintf 接收缓冲区大小，返回它本会写出的字符数。
  */
 
 #include "clings/test.h"

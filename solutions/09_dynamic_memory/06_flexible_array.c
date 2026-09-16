@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/06_flexible_array
- * title: Flexible array members
- * objective: Allocate a struct plus trailing data in one block.
- * hint: The allocation size is sizeof *packet + length bytes.
+ * clings 练习: 09_dynamic_memory/06_flexible_array
+ * title: 柔性数组成员
+ * objective: 用一次分配同时容纳结构体和尾部数据。
+ * hint: 分配大小是 sizeof *packet 加上 length 个字节。
  */
 
 #include "clings/test.h"

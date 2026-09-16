@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/02_uninitialized
- * title: Initialize before use
- * objective: Give every local variable a defined initial value.
- * hint: Start result at -1 so the fallback path is well-defined.
+ * clings 练习: 15_ub_safety/02_uninitialized
+ * title: 先初始化再使用
+ * objective: 让每个局部变量都有确定的初值。
+ * hint: 把 result 初值设为 -1，兜底路径才有确定行为。
  */
 
 #include "clings/test.h"

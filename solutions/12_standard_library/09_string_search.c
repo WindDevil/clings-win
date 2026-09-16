@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/09_string_search
- * title: Searching strings
- * objective: Use strchr, strrchr, and strstr.
- * hint: strstr finds a substring, not just a single character.
+ * clings 练习: 12_standard_library/09_string_search
+ * title: 在字符串里查找
+ * objective: 使用 strchr、strrchr 和 strstr。
+ * hint: strstr 找的是子串，不只是单个字符。
  */
 
 #include "clings/test.h"

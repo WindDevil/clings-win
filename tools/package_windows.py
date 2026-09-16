@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Build the beginner distribution zip.
+"""Build the beginner distribution zips.
 
-The zip is what a Windows-only learner downloads: the exercises plus, when
-``tools/winbox.sh fetch-native`` has been run, a bundled w64devkit compiler and
-an embedded Python, so that nothing has to be installed.
+Two flavours are produced, because the trade-off is real:
+
+* ``-full.zip``  exercises + bundled w64devkit compiler + embedded Python.
+  Nothing to install, no PATH changes, no admin rights - but a big download.
+* ``-slim.zip``  exercises only.  Small, and the right choice for someone who
+  already has a compiler and Python.
 """
 
 from __future__ import annotations
@@ -49,9 +52,10 @@ def upstream_commit() -> str:
     return "dev"
 
 
-def build(with_runtime: bool, out_dir: Path) -> Path:
+def build(with_runtime: bool, out_dir: Path, allow_missing_runtime: bool) -> Path:
     version = upstream_commit()
-    package = f"clings-win-{version}"
+    flavor = "full" if with_runtime else "slim"
+    package = f"clings-win-{version}-{flavor}"
     out_dir.mkdir(parents=True, exist_ok=True)
     archive = out_dir / f"{package}.zip"
 
@@ -73,10 +77,12 @@ def build(with_runtime: bool, out_dir: Path) -> Path:
 
         bundled: list[str] = []
         for origin, destination in RUNTIME_ITEMS:
+            if not with_runtime:
+                continue
             if origin.is_dir():
                 shutil.copytree(origin, stage / destination)
                 bundled.append(destination)
-            elif with_runtime:
+            elif not allow_missing_runtime:
                 raise SystemExit(
                     f"{origin} is missing; run 'tools/winbox.sh fetch-native'"
                 )
@@ -94,11 +100,11 @@ def build(with_runtime: bool, out_dir: Path) -> Path:
                     bundle.write(path, path.relative_to(stage.parent))
 
     print(f"built {archive}")
-    print(f"  version: {version}")
+    print(f"  version: {version} ({flavor})")
     if bundled:
         print(f"  bundled runtime: {', '.join(bundled)}")
     else:
-        print("  no bundled toolchain: the user needs Python 3 and gcc on PATH")
+        print("  no bundled toolchain: the learner needs Python 3 and gcc on PATH")
     return archive
 
 
@@ -108,12 +114,22 @@ def main(argv: list[str] | None = None) -> int:
         "--out-dir", default=str(ROOT / "dist"), help="where to write the zip"
     )
     parser.add_argument(
-        "--with-runtime",
+        "--flavor",
+        choices=("slim", "full", "both"),
+        default="both",
+        help="slim (no toolchain), full (bundled toolchain) or both",
+    )
+    parser.add_argument(
+        "--allow-missing-runtime",
         action="store_true",
-        help="fail instead of warning when the bundled runtime is missing",
+        help="still build the full flavour when the bundled runtime is absent",
     )
     args = parser.parse_args(argv)
-    build(args.with_runtime, Path(args.out_dir))
+    out_dir = Path(args.out_dir)
+    if args.flavor in ("slim", "both"):
+        build(False, out_dir, args.allow_missing_runtime)
+    if args.flavor in ("full", "both"):
+        build(True, out_dir, args.allow_missing_runtime)
     return 0
 
 

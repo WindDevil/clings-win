@@ -1,15 +1,15 @@
 /*
- * clings exercise: 04_operators/05_shifts
- * title: Shift operators and masks
- * objective: Build masks and avoid shifting by the width of the type.
- * hint: A mask of width w has w low bits set: (1u << w) - 1u.
+ * clings 练习: 04_operators/05_shifts
+ * title: 移位运算与掩码
+ * objective: 构造掩码，并避免按类型宽度移位。
+ * hint: 宽度 w 的掩码是低 w 位全为 1：(1u << w) - 1u。
  */
 
 #include "clings/test.h"
 
 unsigned low_bits_mask(unsigned width)
 {
-    /* TODO: subtract one to build the mask. */
+    /* TODO: 减一，构造出掩码。 */
     return (width == 0u) ? 0u : (1u << width);
 }
 

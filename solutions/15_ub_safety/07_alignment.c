@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/07_alignment
- * title: Alignment requirements
- * objective: Query alignment with alignof and keep members aligned.
- * hint: alignof reports the strictest alignment the type requires.
+ * clings 练习: 15_ub_safety/07_alignment
+ * title: 对齐要求
+ * objective: 用 alignof 查询对齐，并让成员保持对齐。
+ * hint: alignof 给出该类型要求的最严格对齐。
  */
 
 #include "clings/test.h"

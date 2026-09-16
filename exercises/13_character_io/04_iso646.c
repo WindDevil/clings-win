@@ -1,8 +1,8 @@
 /*
- * clings exercise: 13_character_io/04_iso646
- * title: iso646.h alternative spellings
- * objective: Use and/or/not from iso646.h.
- * hint: iso646.h defines and as && and or as ||.
+ * clings 练习: 13_character_io/04_iso646
+ * title: iso646.h 的替代写法
+ * objective: 使用 iso646.h 里的 and/or/not。
+ * hint: iso646.h 把 and 定义为 &&，把 or 定义为 ||。
  */
 
 #include "clings/test.h"

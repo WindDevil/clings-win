@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/06_strict_aliasing
- * title: Type punning without strict-aliasing violations
- * objective: Reinterpret object representation with memcpy.
- * hint: memcpy preserves the bit pattern; a cast to float converts the numeric value.
+ * clings 练习: 15_ub_safety/06_strict_aliasing
+ * title: 不做违反严格别名规则的类型双关
+ * objective: 用 memcpy 重新解释对象的表示。
+ * hint: memcpy 保留位模式；强制转换成 float 则是转换数值。
  */
 
 #include "clings/test.h"
@@ -12,7 +12,7 @@
 float bits_to_float(unsigned int bits)
 {
     float value;
-    /* TODO: reinterpret the bit pattern instead of converting the number. */
+    /* TODO: 重新解释位模式，而不是转换数值。 */
     value = (float)bits;
     return value;
 }

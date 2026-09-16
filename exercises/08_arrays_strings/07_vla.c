@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/07_vla
- * title: Variable-length arrays
- * objective: Create an array whose length is a runtime value.
- * hint: A VLA is declared with a runtime expression: int values[n].
+ * clings 练习: 08_arrays_strings/07_vla
+ * title: 变长数组
+ * objective: 创建长度由运行时决定的数据。
+ * hint: 变长数组用运行时表达式声明：int values[n]。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@ int sum_vla(int count)
 {
     int values[count];
     for (int i = 0; i < count; ++i) {
-        /* TODO: initialize the VLA element. */
+        /* TODO: 初始化变长数组的元素。 */
         values[i] = 1;
     }
     int sum = 0;

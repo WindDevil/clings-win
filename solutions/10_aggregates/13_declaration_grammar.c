@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/13_declaration_grammar
- * title: Declaration grammar and function-pointer tables
- * objective: Read a typedef for an array of function pointers.
- * hint: operation_table is typedef int (*[3])(int, int).
+ * clings 练习: 10_aggregates/13_declaration_grammar
+ * title: 声明文法与函数指针表
+ * objective: 读懂函数指针数组的 typedef。
+ * hint: operation_table 是 typedef int (*[3])(int, int)。
  */
 
 #include "clings/test.h"

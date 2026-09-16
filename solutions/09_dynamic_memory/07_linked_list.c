@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/07_linked_list
- * title: A singly linked list
- * objective: Build, traverse, and free a linked list.
- * hint: The new node must point at the previous head.
+ * clings 练习: 09_dynamic_memory/07_linked_list
+ * title: 单向链表
+ * objective: 构建、遍历并释放一个链表。
+ * hint: 新节点要指向原来的表头。
  */
 
 #include "clings/test.h"

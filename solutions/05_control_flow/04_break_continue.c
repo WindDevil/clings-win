@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/04_break_continue
- * title: break and continue
- * objective: Use break to stop early and continue to skip one iteration.
- * hint: continue skips the rest of the current iteration; break exits the loop.
+ * clings 练习: 05_control_flow/04_break_continue
+ * title: break 与 continue
+ * objective: 用 break 提前结束，用 continue 跳过一轮。
+ * hint: continue 跳过本轮剩下的语句；break 直接退出循环。
  */
 
 #include "clings/test.h"

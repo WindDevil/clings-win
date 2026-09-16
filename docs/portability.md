@@ -37,6 +37,38 @@ Windows 机器的前提下如何获得闭环反馈。
 覆盖实现在 [`tools/windows_overrides.py`](../tools/windows_overrides.py)。替换要么
 精确命中一次，要么直接报错，所以上游一改动这里就会失败而不是悄悄生成错误代码。
 
+## 中文注释
+
+练习的标题、目标、提示、注释和命令行输出由
+[`tools/zh_glossary.py`](../tools/zh_glossary.py) 翻译，`make sync` 的最后一步
+把译文刷进生成树。术语表按「英文原文 → 中文」组织，命中不到就报错，所以上游
+加了一个练习而没补词条时，同步会失败并列出缺的那几句，不会留下半句英文。
+
+标识符、函数名、格式说明符、`TODO:` 前缀和命令保持英文：新手要在报错信息、
+教材和 Stack Overflow 之间对照，翻译这些只会增加噪音。
+
+翻译过程中发现的两个 Windows 细节：
+
+- `chcp 65001` 只切换控制台，Python 仍然按控制台代码页编码 stdout，在
+  非中文 Windows 上打印中文会直接抛 `UnicodeEncodeError`。运行器里加了
+  `configure_output()` 把 stdout/stderr 重设为 UTF-8（并把错误降级成 `?`），
+  `clings.cmd` 同时设置 `PYTHONUTF8` 和 `PYTHONIOENCODING`。
+- 这个崩溃只有在「解压后的完整包 + 自带 Python」下才会出现，Linux 上的
+  `clings verify` 永远碰不到。它属于 T1 回路该抓的问题。
+
+## 发布包
+
+`make package` 产出两个 zip，对应两种真实情况：
+
+| 包 | 内容 | 大小 | 面向 |
+| --- | --- | ---: | --- |
+| `-full.zip` | 练习 + w64devkit + 嵌入式 Python | 约 190 MB | 机器上没有任何开发工具的人 |
+| `-slim.zip` | 只有练习 | 约 0.4 MB | 已经有 Python 3 和 MinGW-w64 GCC 的人 |
+
+打 tag（`v*`）会触发 [`.github/workflows/release.yml`](../.github/workflows/release.yml)：
+在真 Windows runner 上先 `verify` + `selftest`，再拉取 w64devkit 和 Python 打进
+full 包，最后把两个 zip 挂到 GitHub Release。
+
 ## 保持可移植的写法
 
 新增练习时，下列写法在 MinGW-w64 下可直接使用：

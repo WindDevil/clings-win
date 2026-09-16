@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/03_qsort_bsearch
- * title: qsort and bsearch
- * objective: Use comparison callbacks for sorting and searching.
- * hint: The comparator returns negative, zero, or positive.
+ * clings 练习: 12_standard_library/03_qsort_bsearch
+ * title: qsort 与 bsearch
+ * objective: 用比较回调配合排序和查找。
+ * hint: 比较函数返回负数、零或正数。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/11_char_signedness
- * title: char signedness
- * objective: Use signed char and unsigned char explicitly when the sign matters.
- * hint: Plain char may be signed or unsigned; signed char and unsigned char are explicit.
+ * clings 练习: 03_types_variables/11_char_signedness
+ * title: char 的符号性
+ * objective: 符号性重要时，明确使用 signed char 和 unsigned char。
+ * hint: char 是否带符号由实现决定；signed char 和 unsigned char 则是明确的。
  */
 
 #include "clings/test.h"

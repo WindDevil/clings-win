@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/09_pointer_compatibility
- * title: Pointer compatibility and const
- * objective: Pass a non-const array through a pointer-to-const.
- * hint: A pointer to const may point at non-const data.
+ * clings 练习: 08_arrays_strings/09_pointer_compatibility
+ * title: 指针兼容性与 const
+ * objective: 通过指向 const 的指针传递非 const 数组。
+ * hint: 指向 const 的指针可以指向非 const 数据。
  */
 
 #include "clings/test.h"

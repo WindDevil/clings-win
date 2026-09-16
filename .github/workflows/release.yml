@@ -1,0 +1,89 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  UPSTREAM_REPOSITORY: WindDevil/clings
+  W64DEVKIT_VERSION: "2.10.0"
+  PYTHON_EMBED_VERSION: "3.12.10"
+
+jobs:
+  package:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out upstream clings
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM_REPOSITORY }}
+          path: upstream
+
+      - name: Sync the twin from upstream
+        run: python tools/sync_from_source.py --source upstream
+
+      - name: Use the runner's MinGW-w64 toolchain
+        run: |
+          echo "CC=gcc" >> $env:GITHUB_ENV
+          echo "C:\msys64\mingw64\bin" >> $env:GITHUB_PATH
+
+      - name: Verify every solution
+        run: python clings verify
+
+      - name: Exercises still start unsolved
+        run: python clings selftest
+
+      # The full package bundles the toolchain a learner would otherwise have to
+      # install: w64devkit (mingw-w64 + make + gdb) and the embeddable Python.
+      - name: Fetch the bundled runtime
+        run: |
+          $native = ".winbox\native"
+          New-Item -ItemType Directory -Force -Path $native | Out-Null
+
+          $sfx = "$native\w64devkit.7z.exe"
+          curl.exe -fSL -o $sfx "https://github.com/skeeto/w64devkit/releases/download/v$env:W64DEVKIT_VERSION/w64devkit-x64-$env:W64DEVKIT_VERSION.7z.exe"
+          7z x -y "-o$native" $sfx | Out-Null
+
+          $python = "$native\python.zip"
+          curl.exe -fSL -o $python "https://www.python.org/ftp/python/$env:PYTHON_EMBED_VERSION/python-$env:PYTHON_EMBED_VERSION-embed-amd64.zip"
+          Expand-Archive -Path $python -DestinationPath "$native\python" -Force
+
+          Get-ChildItem $native | Select-Object Name
+
+      - name: Build both packages
+        run: python tools/package_windows.py
+
+      - name: Inspect the packages
+        run: Get-ChildItem dist | Select-Object Name, @{n = "MiB"; e = { [math]::Round($_.Length / 1MB, 1) } }
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: clings-win-packages
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+          body: |
+            下载 `-full.zip`：自带编译器（w64devkit）和 Python，解压后双击 `clings.cmd` 即可，
+            不用安装任何开发工具。首次使用请把压缩包解压到一个路径不含空格和中文的目录。
+
+            下载 `-slim.zip`：只有练习本身。需要自己准备 Python 3 和 MinGW-w64 GCC。
+
+            练习内容和上游 [clings](https://github.com/${{ env.UPSTREAM_REPOSITORY }}) 保持一致，
+            注释、标题和提示已译成中文，其中 6 个练习针对 Windows 做了平台适配。

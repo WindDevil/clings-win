@@ -1,21 +1,21 @@
-# Dynamic Memory
+# 动态内存
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_malloc_free
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_malloc_free` | Use malloc and free for a dynamically sized array. |
-| `02_calloc` | Use calloc when every byte must start as zero. |
-| `03_realloc` | Use realloc safely and initialize only the new elements. |
-| `04_memory_leak` | Pair every allocation with a matching free. |
-| `05_buffer_bounds` | Copy at most dest_size - 1 bytes and always terminate. |
-| `06_flexible_array` | Allocate a struct plus trailing data in one block. |
-| `07_linked_list` | Build, traverse, and free a linked list. |
-| `08_free_then_realloc` | Use realloc directly instead of freeing before growing an allocation. |
-| `09_arena_allocator` | Implement a simple bump allocator with aligned allocations. |
-| `10_allocation_stats` | Track outstanding allocations with wrapped malloc and free. |
-| `11_goto_cleanup` | Use goto for a clear cleanup path in C. |
+| `01_malloc_free` | 用 malloc 和 free 管理动态长度的数组。 |
+| `02_calloc` | 需要每个字节初值都是零时用 calloc。 |
+| `03_realloc` | 安全使用 realloc，并只初始化新增的元素。 |
+| `04_memory_leak` | 让每次分配都有对应的 free。 |
+| `05_buffer_bounds` | 最多复制 dest_size - 1 个字节，并保证结尾有 NUL。 |
+| `06_flexible_array` | 用一次分配同时容纳结构体和尾部数据。 |
+| `07_linked_list` | 构建、遍历并释放一个链表。 |
+| `08_free_then_realloc` | 扩容时直接调 realloc，不要先 free。 |
+| `09_arena_allocator` | 实现一个简单的、按对齐分配的区域分配器。 |
+| `10_allocation_stats` | 包装 malloc 和 free，跟踪尚未释放的分配。 |
+| `11_goto_cleanup` | 用 goto 写出清晰的清理路径。 |

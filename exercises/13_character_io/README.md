@@ -1,16 +1,16 @@
-# Character I/O
+# 字符 I/O
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_getc_putc
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_getc_putc` | Copy a stream one character at a time with getc and putc. |
-| `02_eof_ferror` | Read until EOF and distinguish end-of-file from an error. |
-| `03_input_validation` | Reject input with trailing characters or out-of-range values. |
-| `04_iso646` | Use and/or/not from iso646.h. |
-| `05_getchar_putchar` | Use the standard input/output character macros directly. |
-| `06_include_ctypes` | Call toupper after including the header that declares it. |
+| `01_getc_putc` | 用 getc 和 putc 逐字符复制流。 |
+| `02_eof_ferror` | 读到 EOF，并区分文件结束与读取出错。 |
+| `03_input_validation` | 拒绝带有多余字符或超出范围的输入。 |
+| `04_iso646` | 使用 iso646.h 里的 and/or/not。 |
+| `05_getchar_putchar` | 直接使用标准的输入输出字符宏。 |
+| `06_include_ctypes` | 先引入声明 toupper 的头文件，再调用它。 |

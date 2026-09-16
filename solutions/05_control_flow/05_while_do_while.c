@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/05_while_do_while
- * title: while and do-while
- * objective: Distinguish entry-condition and exit-condition loops.
- * hint: A do-while body always executes at least once.
+ * clings 练习: 05_control_flow/05_while_do_while
+ * title: while 与 do-while
+ * objective: 区分入口条件循环和出口条件循环。
+ * hint: do-while 的循环体至少执行一次。
  */
 
 #include "clings/test.h"

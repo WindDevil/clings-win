@@ -1,13 +1,13 @@
 /*
- * clings exercise: 02_macros/07_macro_statement
- * title: Macros are not statements
- * objective: Use do { ... } while (0) for a statement-like macro.
- * hint: A bare block macro breaks if/else syntax.
+ * clings 练习: 02_macros/07_macro_statement
+ * title: 宏不是语句
+ * objective: 用 do { ... } while (0) 写像语句一样的宏。
+ * hint: 光秃秃的块状宏会破坏 if/else 的语法。
  */
 
 #include "clings/test.h"
 
-/* TODO: make the macro behave like a single statement. */
+/* TODO: 让这个宏表现得像一条语句。 */
 #define SET_ZERO(pointer) { *(pointer) = 0; }
 
 void set_if_positive(int *pointer, int condition)

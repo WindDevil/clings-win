@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/02_nested_structs
- * title: Nested structs
- * objective: Access a nested member through an outer struct pointer.
- * hint: The address lives inside the person struct.
+ * clings 练习: 10_aggregates/02_nested_structs
+ * title: 嵌套结构体
+ * objective: 通过外层结构体指针访问嵌套成员。
+ * hint: 这个地址位于 person 结构体内部。
  */
 
 #include "clings/test.h"

@@ -25,6 +25,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 
 import windows_overrides as overrides  # noqa: E402
+import zh_glossary  # noqa: E402
+import zh_translate  # noqa: E402
 
 # Directories and files copied verbatim from upstream, plus the generated
 # provenance note.  ``clings`` is copied too and then patched below.
@@ -88,6 +90,31 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
         "        [*exec_prefix(), str(path)],\n"
         "        cwd=ROOT,\n",
     ),
+    (
+        "def main(argv: list[str] | None = None) -> int:\n"
+        "    parser = build_parser()\n",
+        "def configure_output() -> None:\n"
+        '    """Keep Chinese output from crashing a Windows console.\n'
+        "\n"
+        "    Python takes the console code page (cp936, cp1252, ...) for stdout\n"
+        "    and raises UnicodeEncodeError on text it cannot represent.\n"
+        "    clings.cmd switches the console to UTF-8; this makes the streams\n"
+        "    agree with it, and degrades to '?' instead of a traceback when the\n"
+        "    CLI is started some other way.\n"
+        '    """\n'
+        '    if os.name != "nt":\n'
+        "        return\n"
+        "    for stream in (sys.stdout, sys.stderr):\n"
+        "        try:\n"
+        '            stream.reconfigure(encoding="utf-8", errors="replace")\n'
+        "        except (AttributeError, ValueError):\n"
+        "            pass\n"
+        "\n"
+        "\n"
+        "def main(argv: list[str] | None = None) -> int:\n"
+        "    configure_output()\n"
+        "    parser = build_parser()\n",
+    ),
 ]
 
 
@@ -104,6 +131,14 @@ def patch_runner(text: str) -> str:
                 "runner patch mismatch: expected 1 occurrence of\n"
                 f"---\n{old}---\nfound {occurrences}.\n"
                 "Upstream clings changed; update tools/sync_from_source.py."
+            )
+        text = text.replace(old, new)
+
+    for old, new in zh_glossary.RUNNER:
+        if old not in text:
+            raise SystemExit(
+                "runner translation mismatch, upstream text changed:\n"
+                f"---\n{old}---"
             )
         text = text.replace(old, new)
     return text
@@ -176,6 +211,18 @@ def render(source: Path, destination: Path) -> None:
     (docs / "provenance.md").write_text(
         provenance(source, destination), encoding="utf-8"
     )
+
+    report = zh_translate.Report()
+    zh_translate.translate_tree(destination, report)
+    if report.missing:
+        unique = sorted({text for items in report.missing.values() for text in items})
+        raise SystemExit(
+            "English text without a Chinese entry in tools/zh_glossary.py "
+            f"({len(unique)} unique):\n"
+            + "".join(f"  {text}\n" for text in unique[:20])
+            + ("  ...\n" if len(unique) > 20 else "")
+            + "add the missing entries, then run sync again"
+        )
 
 
 def compare(generated: Path, current: Path) -> list[str]:

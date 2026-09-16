@@ -1,26 +1,26 @@
-# Standard Library
+# 标准库
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_printf_formats
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_printf_formats` | Match each conversion specifier to its argument type. |
-| `02_strtol_errno` | Use strtol, errno, and the end pointer to validate input. |
-| `03_qsort_bsearch` | Use comparison callbacks for sorting and searching. |
-| `04_math_functions` | Use hypot and other functions from math.h. |
-| `05_time_functions` | Use time_t and difftime. |
-| `06_random` | Seed the generator and bound its output. |
-| `07_file_io` | Write and read a text file with fopen, fputs, and fread. |
-| `08_memory_functions` | Use the byte-oriented memory functions correctly. |
-| `09_string_search` | Use strchr, strrchr, and strstr. |
-| `10_stdint_inttypes` | Use uint64_t and PRIu64 from stdint.h and inttypes.h. |
-| `11_environment` | Read and write environment variables with getenv and setenv. |
-| `12_printf_advanced` | Use width, zero padding, precision, and the * width argument. |
-| `13_scanf_advanced` | Use field width and a scanset in sscanf. |
-| `14_ctype_full` | Use isalnum and toupper with unsigned char casts. |
-| `15_rand_max` | Do not assume rand() returns a value below a fixed small bound. |
-| `16_default_argument_promotions` | Use the promoted types expected by variadic functions. |
+| `01_printf_formats` | 让每个转换说明符与实参类型匹配。 |
+| `02_strtol_errno` | 用 strtol、errno 和结束指针校验输入。 |
+| `03_qsort_bsearch` | 用比较回调配合排序和查找。 |
+| `04_math_functions` | 使用 math.h 里的 hypot 等函数。 |
+| `05_time_functions` | 使用 time_t 和 difftime。 |
+| `06_random` | 给随机数发生器设种子，并限制输出范围。 |
+| `07_file_io` | 用 fopen、fputs 和 fread 写读文本文件。 |
+| `08_memory_functions` | 正确使用按字节操作的内存函数。 |
+| `09_string_search` | 使用 strchr、strrchr 和 strstr。 |
+| `10_stdint_inttypes` | 使用 stdint.h 和 inttypes.h 里的 uint64_t 与 PRIu64。 |
+| `11_environment` | 用 getenv 和 _putenv_s 读写环境变量。 |
+| `12_printf_advanced` | 使用宽度、补零、精度和 * 宽度参数。 |
+| `13_scanf_advanced` | 在 sscanf 里使用字段宽度和扫描集。 |
+| `14_ctype_full` | 把参数转成 unsigned char 后再传给 isalnum 和 toupper。 |
+| `15_rand_max` | 不要假定 rand() 的返回值小于某个固定的小上界。 |
+| `16_default_argument_promotions` | 使用变参函数期望的提升后类型。 |

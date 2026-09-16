@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/02_calloc
- * title: Zero-initialized allocation
- * objective: Use calloc when every byte must start as zero.
- * hint: calloc(count, size) returns zeroed memory.
+ * clings 练习: 09_dynamic_memory/02_calloc
+ * title: 零初始化的分配
+ * objective: 需要每个字节初值都是零时用 calloc。
+ * hint: calloc(count, size) 返回已经清零的内存。
  */
 
 #include "clings/test.h"

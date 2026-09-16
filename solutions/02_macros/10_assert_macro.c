@@ -1,8 +1,8 @@
 /*
- * clings exercise: 02_macros/10_assert_macro
- * title: Assertions and defensive programming
- * objective: Use assert for programmer errors and return values for user errors.
- * hint: A zero denominator is a normal error, so return -1 instead of dividing.
+ * clings 练习: 02_macros/10_assert_macro
+ * title: 断言与防御式编程
+ * objective: 程序员错误用 assert，用户错误用返回值。
+ * hint: 分母为零属于正常的错误，返回 -1，不要真的去除。
  */
 
 #include "clings/test.h"

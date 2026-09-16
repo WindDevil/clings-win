@@ -1,8 +1,8 @@
 /*
- * clings exercise: 04_operators/06_sizeof_incdec
- * title: sizeof and increment operators
- * objective: Distinguish sizeof expressions from increment side effects.
- * hint: Post-increment returns the old value; pre-increment returns the new value.
+ * clings 练习: 04_operators/06_sizeof_incdec
+ * title: sizeof 与自增运算符
+ * objective: 分清 sizeof 表达式与自增副作用。
+ * hint: 后置自增返回旧值；前置自增返回新值。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@ int size_of_char(void)
 
 int post_increment(int *value)
 {
-    /* TODO: use post-increment here. */
+    /* TODO: 这里用后置自增。 */
     return ++(*value);
 }
 

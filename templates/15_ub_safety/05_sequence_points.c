@@ -1,15 +1,15 @@
 /*
- * clings exercise: 15_ub_safety/05_sequence_points
- * title: Sequence points
- * objective: Avoid unsequenced reads and writes of the same object.
- * hint: Read the old value, update the object, then return the old value.
+ * clings 练习: 15_ub_safety/05_sequence_points
+ * title: 序列点
+ * objective: 避免对同一对象做无序列点保护的读写。
+ * hint: 先读出旧值，再更新对象，最后返回旧值。
  */
 
 #include "clings/test.h"
 
 int next_value(int *value)
 {
-    /* TODO: do not read and modify the same object without a sequence point. */
+    /* TODO: 不要在没有序列点的情况下同时读写同一个对象。 */
     return (*value)++ + *value;
 }
 

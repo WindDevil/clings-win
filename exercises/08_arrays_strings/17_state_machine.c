@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/17_state_machine
- * title: A small state machine
- * objective: Track state while scanning a string.
- * hint: A word starts when the previous character was whitespace.
+ * clings 练习: 08_arrays_strings/17_state_machine
+ * title: 一个小状态机
+ * objective: 在扫描字符串的过程中跟踪状态。
+ * hint: 前一个字符是空白时，一个新词开始。
  */
 
 #include "clings/test.h"
@@ -16,7 +16,7 @@ int count_words(const char *text)
         if (*p == ' ' || *p == '\t' || *p == '\n') {
             in_word = 0;
         } else if (in_word) {
-            /* TODO: a word starts when we were not in one. */
+            /* TODO: 上一刻不在词里，这一刻就是新词的开始。 */
             in_word = 1;
             ++words;
         }

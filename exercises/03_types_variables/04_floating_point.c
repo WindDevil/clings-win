@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/04_floating_point
- * title: Floating-point comparison
- * objective: Compare floating-point values with an epsilon.
- * hint: Exact equality is usually the wrong comparison for computed doubles.
+ * clings 练习: 03_types_variables/04_floating_point
+ * title: 浮点数比较
+ * objective: 用 epsilon 比较浮点数。
+ * hint: 对算出来的 double 做精确相等比较，通常都是错的。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int nearly_equal(double a, double b, double epsilon)
 {
-    /* TODO: use an epsilon comparison. */
+    /* TODO: 用 epsilon 比较。 */
     return a == b;
 }
 

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/07_typedef_designated
- * title: typedef and designated initializers
- * objective: Use a typedef and initialize members by name.
- * hint: Designated initializers make the field mapping explicit.
+ * clings 练习: 10_aggregates/07_typedef_designated
+ * title: typedef 与指定初始化器
+ * objective: 使用 typedef，并按名字初始化成员。
+ * hint: 指定初始化器能把字段对应关系写明确。
  */
 
 #include "clings/test.h"

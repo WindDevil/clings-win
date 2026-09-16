@@ -1,8 +1,8 @@
 /*
- * clings exercise: 19_modern_c_library/03_atexit
- * title: Registering atexit handlers
- * objective: Register a cleanup function with atexit.
- * hint: atexit returns 0 on success and nonzero on failure.
+ * clings 练习: 19_modern_c_library/03_atexit
+ * title: 注册 atexit 处理函数
+ * objective: 用 atexit 注册清理函数。
+ * hint: atexit 成功返回 0，失败返回非零值。
  */
 
 #include "clings/test.h"
@@ -15,7 +15,7 @@ static void cleanup(void)
 
 int register_cleanup(void)
 {
-    /* TODO: register the cleanup function. */
+    /* TODO: 注册清理函数。 */
     return -1;
 }
 

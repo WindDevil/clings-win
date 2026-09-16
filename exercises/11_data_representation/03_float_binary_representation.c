@@ -1,8 +1,8 @@
 /*
- * clings exercise: 11_data_representation/03_float_binary_representation
- * title: Floating-point bit patterns
- * objective: Inspect and reconstruct an IEEE-754 float with memcpy.
- * hint: Use memcpy instead of pointer casts to avoid strict-aliasing violations.
+ * clings 练习: 11_data_representation/03_float_binary_representation
+ * title: 浮点数的位模式
+ * objective: 用 memcpy 查看并还原 IEEE-754 浮点数。
+ * hint: 用 memcpy 代替指针强制转换，避开严格别名违规。
  */
 
 #include "clings/test.h"
@@ -13,7 +13,7 @@
 uint32_t float_bits(float value)
 {
     uint32_t bits = 0;
-    /* TODO: copy the object representation. */
+    /* TODO: 复制对象的表示。 */
     bits = (uint32_t)value;
     return bits;
 }

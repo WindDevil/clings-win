@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/03_getc_putc_ungetc
- * title: getc, putc, and ungetc
- * objective: Peek at a character and put it back into the stream.
- * hint: ungetc pushes one character back onto the input stream.
+ * clings 练习: 14_file_io/03_getc_putc_ungetc
+ * title: getc、putc 与 ungetc
+ * objective: 先看一眼字符，再把它放回流里。
+ * hint: ungetc 把一个字符退回输入流。
  */
 
 #include "clings/test.h"

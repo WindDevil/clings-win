@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/10_stdint_inttypes
- * title: Fixed-width integers and format macros
- * objective: Use uint64_t and PRIu64 from stdint.h and inttypes.h.
- * hint: PRIu64 is the portable printf specifier for uint64_t.
+ * clings 练习: 12_standard_library/10_stdint_inttypes
+ * title: 定宽整数与格式宏
+ * objective: 使用 stdint.h 和 inttypes.h 里的 uint64_t 与 PRIu64。
+ * hint: PRIu64 是 uint64_t 的可移植 printf 说明符。
  */
 
 #include "clings/test.h"
@@ -13,7 +13,7 @@
 
 int format_u64(char *buffer, size_t size, uint64_t value)
 {
-    /* TODO: use the format macro for uint64_t. */
+    /* TODO: 用 uint64_t 对应的格式宏。 */
     return snprintf(buffer, size, "%" PRIu32, value);
 }
 

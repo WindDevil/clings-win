@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/06_static_assert
- * title: Compile-time assertions
- * objective: Use _Static_assert to enforce assumptions at compile time.
- * hint: A failed static assertion must make the build fail.
+ * clings 练习: 18_advanced_c/06_static_assert
+ * title: 编译期断言
+ * objective: 用 _Static_assert 在编译期强制检查假设。
+ * hint: 静态断言失败必须让编译失败。
  */
 
 #include "clings/test.h"

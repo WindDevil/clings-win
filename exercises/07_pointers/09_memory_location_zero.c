@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/09_memory_location_zero
- * title: Memory location zero
- * objective: Treat address zero as a null pointer, not as a valid object address.
- * hint: NULL is the portable null pointer constant.
+ * clings 练习: 07_pointers/09_memory_location_zero
+ * title: 地址 0
+ * objective: 把地址 0 当作空指针，而不是有效对象地址。
+ * hint: NULL 是可移植的空指针常量。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int pointer_is_null(const void *pointer)
 {
-    /* TODO: compare against the null pointer. */
+    /* TODO: 与空指针比较。 */
     return pointer == (void *)0x1;
 }
 

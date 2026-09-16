@@ -1,8 +1,8 @@
 /*
- * clings exercise: 02_macros/08_macro_not_typedef
- * title: Macros are not type definitions
- * objective: Use typedef instead of an object-like macro for pointer types.
- * hint: INT_POINTER a, b declares b as int, not int *.
+ * clings 练习: 02_macros/08_macro_not_typedef
+ * title: 宏不是类型定义
+ * objective: 指针类型用 typedef，不要用对象式宏。
+ * hint: INT_POINTER a, b 会把 b 声明成 int，而不是 int *。
  */
 
 #include "clings/test.h"

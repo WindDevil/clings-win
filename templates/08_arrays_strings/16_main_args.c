@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/16_main_args
- * title: argc, argv, and the program environment
- * objective: Work with the arguments passed to main.
- * hint: argv[0] is the program name; user arguments start at argv[1].
+ * clings 练习: 08_arrays_strings/16_main_args
+ * title: argc、argv 与程序运行环境
+ * objective: 处理传给 main 的参数。
+ * hint: argv[0] 是程序名；用户参数从 argv[1] 开始。
  */
 
 #include "clings/test.h"
@@ -17,7 +17,7 @@ int count_user_args(int argc, char **argv)
 
 int find_arg(int argc, char **argv, const char *needle)
 {
-    /* TODO: search all user arguments. */
+    /* TODO: 在所有用户参数里查找。 */
     for (int i = 1; i < argc - 1; ++i) {
         if (strcmp(argv[i], needle) == 0) {
             return i;

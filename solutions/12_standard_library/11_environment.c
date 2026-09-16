@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/11_environment
- * title: Environment variables
- * objective: Read and write environment variables with getenv and _putenv_s.
- * hint: _putenv_s must succeed before getenv can find the new value.
+ * clings 练习: 12_standard_library/11_environment
+ * title: 环境变量
+ * objective: 用 getenv 和 _putenv_s 读写环境变量。
+ * hint: _putenv_s 成功之后，getenv 才能找到新值。
  */
 
 #include "clings/test.h"

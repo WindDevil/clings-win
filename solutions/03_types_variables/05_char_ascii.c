@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/05_char_ascii
- * title: Characters and ASCII
- * objective: Work with char values and the ctype classification functions.
- * hint: Lowercase letters live in a contiguous range only for the execution character set.
+ * clings 练习: 03_types_variables/05_char_ascii
+ * title: 字符与 ASCII
+ * objective: 处理 char 值，并使用 ctype 的字符分类函数。
+ * hint: 小写字母连续，这个性质只对执行字符集成立。
  */
 
 #include "clings/test.h"

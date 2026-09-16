@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/11_signal
- * title: Signals and sig_atomic_t
- * objective: Install a signal handler and use a sig_atomic_t flag.
- * hint: raise(SIGINT) invokes the installed handler synchronously.
+ * clings 练习: 18_advanced_c/11_signal
+ * title: 信号与 sig_atomic_t
+ * objective: 安装信号处理函数，并使用 sig_atomic_t 标志。
+ * hint: raise(SIGINT) 会同步调用已经安装的处理函数。
  */
 
 #include "clings/test.h"

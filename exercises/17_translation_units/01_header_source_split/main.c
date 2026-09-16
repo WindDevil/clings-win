@@ -1,8 +1,8 @@
 /*
- * clings exercise: 17_translation_units/01_header_source_split
- * title: Header and source split
- * objective: Compile a program from a main file, a header, and an implementation file.
- * hint: Declare add in the header and define it in math_utils.c.
+ * clings 练习: 17_translation_units/01_header_source_split
+ * title: 头文件与源文件分离
+ * objective: 用 main 文件、头文件和实现文件编译一个程序。
+ * hint: 在头文件里声明 add，在 math_utils.c 里定义它。
  */
 
 #include "clings/test.h"

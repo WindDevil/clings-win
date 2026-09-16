@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/08_lexical_elements
- * title: Comments and escape sequences
- * objective: Use comments and escape sequences correctly.
- * hint: Escape sequences start with a backslash; comments need both delimiters.
+ * clings 练习: 00_basics/08_lexical_elements
+ * title: 注释与转义序列
+ * objective: 正确使用注释和转义序列。
+ * hint: 转义序列以反斜杠开头；注释需要成对的定界符。
  */
 
 #include "clings/test.h"

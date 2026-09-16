@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/02_null_and_const
- * title: NULL and const correctness
- * objective: Check for NULL and respect pointer-to-const.
- * hint: A pointer-to-const can read but not write the pointed-to object.
+ * clings 练习: 07_pointers/02_null_and_const
+ * title: NULL 与 const 正确性
+ * objective: 检查 NULL，并尊重指向 const 的指针。
+ * hint: 指向 const 的指针能读，但不能写它指向的对象。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int is_null(const void *pointer)
 {
-    /* TODO: return true only for a null pointer. */
+    /* TODO: 只在指针为空时返回真。 */
     return pointer != NULL;
 }
 

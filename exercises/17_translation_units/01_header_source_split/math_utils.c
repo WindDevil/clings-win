@@ -2,6 +2,6 @@
 
 int add(int left, int right)
 {
-    /* TODO: add the two values. */
+    /* TODO: 把两个值相加。 */
     return left - right;
 }

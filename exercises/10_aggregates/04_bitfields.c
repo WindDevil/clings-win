@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/04_bitfields
- * title: Bitfields
- * objective: Store several small flags in one struct.
- * hint: The write flag must reflect the enabled argument.
+ * clings 练习: 10_aggregates/04_bitfields
+ * title: 位域
+ * objective: 把几个小标志位存进一个结构体。
+ * hint: 写标志要反映 enabled 参数的值。
  */
 
 #include "clings/test.h"
@@ -35,7 +35,7 @@ void set_flag(struct permissions *permissions, int which, int enabled)
         permissions->read = enabled ? 1u : 0u;
         break;
     case 1:
-        /* TODO: honor the enabled argument. */
+        /* TODO: 按 enabled 参数决定是否启用。 */
         permissions->write = 1u;
         break;
     case 2:

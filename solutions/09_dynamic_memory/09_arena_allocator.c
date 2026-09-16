@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/09_arena_allocator
- * title: Arena allocator
- * objective: Implement a simple bump allocator with aligned allocations.
- * hint: Align each request to 8 bytes before bumping the used offset.
+ * clings 练习: 09_dynamic_memory/09_arena_allocator
+ * title: 区域分配器
+ * objective: 实现一个简单的、按对齐分配的区域分配器。
+ * hint: 每次分配前先把大小按 8 字节对齐，再移动已用偏移。
  */
 
 #include "clings/test.h"

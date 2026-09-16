@@ -1,8 +1,8 @@
 /*
- * clings exercise: 04_operators/02_precedence
- * title: Precedence and parentheses
- * objective: Use parentheses to express intent clearly.
- * hint: Multiplication binds more tightly than addition.
+ * clings 练习: 04_operators/02_precedence
+ * title: 优先级与括号
+ * objective: 用括号把意图写清楚。
+ * hint: 乘法的结合比加法更紧。
  */
 
 #include "clings/test.h"
@@ -14,7 +14,7 @@ int precedence_demo(int a, int b, int c)
 
 int parenthesized(int a, int b, int c)
 {
-    /* TODO: add parentheses so the sum is multiplied by c. */
+    /* TODO: 加括号，让和乘以 c。 */
     return a + b * c;
 }
 

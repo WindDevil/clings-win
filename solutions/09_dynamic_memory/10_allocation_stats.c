@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/10_allocation_stats
- * title: Allocation statistics
- * objective: Track outstanding allocations with wrapped malloc and free.
- * hint: Increment the free counter when a non-NULL pointer is freed.
+ * clings 练习: 09_dynamic_memory/10_allocation_stats
+ * title: 分配统计
+ * objective: 包装 malloc 和 free，跟踪尚未释放的分配。
+ * hint: 释放非 NULL 指针时，把释放计数加一。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/02_signed_unsigned
- * title: Signed and unsigned conversions
- * objective: Avoid the usual arithmetic conversion trap when comparing.
- * hint: A negative int converted to unsigned becomes a very large value.
+ * clings 练习: 03_types_variables/02_signed_unsigned
+ * title: 有符号与无符号转换
+ * objective: 比较时避开寻常算术转换的陷阱。
+ * hint: 负的 int 转成无符号后会变成很大的值。
  */
 
 #include "clings/test.h"

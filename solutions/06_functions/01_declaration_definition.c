@@ -1,8 +1,8 @@
 /*
- * clings exercise: 06_functions/01_declaration_definition
- * title: Declarations and definitions
- * objective: Use a forward declaration and an internal helper.
- * hint: The declaration promises the signature; the definition supplies the body.
+ * clings 练习: 06_functions/01_declaration_definition
+ * title: 声明与定义
+ * objective: 使用前置声明和内部辅助函数。
+ * hint: 声明承诺了函数签名，定义提供函数体。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/03_loops
- * title: for and while loops
- * objective: Get loop bounds and accumulators right.
- * hint: sum_to(n) includes n; factorial multiplies 2 through n.
+ * clings 练习: 05_control_flow/03_loops
+ * title: for 与 while 循环
+ * objective: 把循环边界和累加器写对。
+ * hint: sum_to(n) 把 n 也算进去；factorial 相乘的范围是 2 到 n。
  */
 
 #include "clings/test.h"

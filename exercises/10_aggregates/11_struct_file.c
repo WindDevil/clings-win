@@ -1,8 +1,8 @@
 /*
- * clings exercise: 10_aggregates/11_struct_file
- * title: Writing and reading structs
- * objective: Store a struct with fwrite and read it back with fread.
- * hint: Use binary mode and compare the number of complete items written.
+ * clings 练习: 10_aggregates/11_struct_file
+ * title: 写入与读出结构体
+ * objective: 用 fwrite 写出结构体，再用 fread 读回来。
+ * hint: 用二进制模式，并比较完整写出的元素个数。
  */
 
 #include "clings/test.h"
@@ -20,7 +20,7 @@ int write_record(const char *path, const struct record *record)
     if (file == NULL) {
         return -1;
     }
-    /* TODO: write one complete record. */
+    /* TODO: 写出完整的一条记录。 */
     size_t written = fwrite(record, 1, sizeof *record, file);
     if (fclose(file) != 0) {
         return -1;

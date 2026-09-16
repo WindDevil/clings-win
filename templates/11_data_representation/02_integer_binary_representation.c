@@ -1,8 +1,8 @@
 /*
- * clings exercise: 11_data_representation/02_integer_binary_representation
- * title: Integer bit patterns
- * objective: Count set bits and convert sign-magnitude to two's complement.
- * hint: value &= value - 1 clears the lowest set bit.
+ * clings 练习: 11_data_representation/02_integer_binary_representation
+ * title: 整数的位模式
+ * objective: 统计置位个数，并把原码转换成补码。
+ * hint: value &= value - 1 会清掉最低的那个置位。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@ int count_set_bits(unsigned int value)
 {
     int count = 0;
     while (value != 0) {
-        /* TODO: clear the lowest set bit. */
+        /* TODO: 清掉最低的置位。 */
         value >>= 1;
         ++count;
     }

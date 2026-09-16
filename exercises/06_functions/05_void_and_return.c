@@ -1,8 +1,8 @@
 /*
- * clings exercise: 06_functions/05_void_and_return
- * title: void functions and return statements
- * objective: Return early from a void function and return values from int functions.
- * hint: A void function uses a bare return; an int function must return a value.
+ * clings 练习: 06_functions/05_void_and_return
+ * title: void 函数与 return 语句
+ * objective: 在 void 函数里提前 return，在 int 函数里返回值。
+ * hint: void 函数写 return; 就行；int 函数必须返回一个值。
  */
 
 #include "clings/test.h"
@@ -24,7 +24,7 @@ int early_return(int value)
     if (value < 0) {
         return -1;
     }
-    /* TODO: double the non-negative value. */
+    /* TODO: 把非负的值翻倍。 */
     return value;
 }
 

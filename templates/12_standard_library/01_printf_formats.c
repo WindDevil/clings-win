@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/01_printf_formats
- * title: printf format specifiers
- * objective: Match each conversion specifier to its argument type.
- * hint: long values use %ld; doubles use %f or %.2f.
+ * clings 练习: 12_standard_library/01_printf_formats
+ * title: printf 格式说明符
+ * objective: 让每个转换说明符与实参类型匹配。
+ * hint: long 用 %ld；double 用 %f 或 %.2f。
  */
 
 #include "clings/test.h"
@@ -12,7 +12,7 @@
 int format_all(char *buffer, size_t size, long value, double real,
                const char *text)
 {
-    /* TODO: use the correct specifier for a long value. */
+    /* TODO: 用 long 对应的说明符。 */
     return snprintf(buffer, size, "%d %.2f %s", value, real, text);
 }
 

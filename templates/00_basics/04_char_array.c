@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/04_char_array
- * title: Character arrays
- * objective: Store text in a char array and access its characters.
- * hint: Array indexes start at 0; sizeof("hello") includes the terminating NUL.
+ * clings 练习: 00_basics/04_char_array
+ * title: 字符数组
+ * objective: 把文本存进 char 数组，并访问其中字符。
+ * hint: 数组下标从 0 开始；sizeof("hello") 包含结尾的 NUL。
  */
 
 #include "clings/test.h"
@@ -16,7 +16,7 @@ char first_character(void)
 
 char last_character(void)
 {
-    /* TODO: return the last visible character, not the NUL terminator. */
+    /* TODO: 返回最后一个可见字符，不是结尾的 NUL。 */
     return text[5];
 }
 

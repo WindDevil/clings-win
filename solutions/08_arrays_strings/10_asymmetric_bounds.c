@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/10_asymmetric_bounds
- * title: Asymmetric bounds
- * objective: Use the half-open interval [low, high).
- * hint: The upper bound is exclusive: value < high.
+ * clings 练习: 08_arrays_strings/10_asymmetric_bounds
+ * title: 不对称边界
+ * objective: 使用半开区间 [low, high)。
+ * hint: 上界不包含在内：value < high。
  */
 
 #include "clings/test.h"

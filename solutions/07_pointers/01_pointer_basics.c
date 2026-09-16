@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/01_pointer_basics
- * title: Dereference and address-of
- * objective: Read and write through pointers.
- * hint: Assigning the parameter itself does not modify the caller's variable.
+ * clings 练习: 07_pointers/01_pointer_basics
+ * title: 解引用与取地址
+ * objective: 通过指针读写数据。
+ * hint: 只给参数本身赋值，不会改变调用方的变量。
  */
 
 #include "clings/test.h"

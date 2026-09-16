@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/04_memory_leak
- * title: Detecting a memory leak
- * objective: Pair every allocation with a matching free.
- * hint: The cleanup path must release the tracked allocation.
+ * clings 练习: 09_dynamic_memory/04_memory_leak
+ * title: 发现内存泄漏
+ * objective: 让每次分配都有对应的 free。
+ * hint: 清理路径必须释放被跟踪的那块分配。
  */
 
 #include "clings/test.h"
@@ -47,7 +47,7 @@ int sum_and_free(const int *values, int count, int *out)
     }
     *out = sum;
 
-    /* TODO: release the tracked allocation. */
+    /* TODO: 释放被跟踪的这块分配。 */
     return 0;
 }
 

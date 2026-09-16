@@ -1,8 +1,8 @@
 /*
- * clings exercise: 01_preprocessor/05_pragma_error_line
- * title: #error, #line, and #pragma pack
- * objective: Use diagnostics, line control, and packing pragmas.
- * hint: #pragma pack(push, 1) removes padding between the two members.
+ * clings 练习: 01_preprocessor/05_pragma_error_line
+ * title: #error、#line 与 #pragma pack
+ * objective: 使用诊断、行控制和打包编译指示。
+ * hint: #pragma pack(push, 1) 会去掉两个成员之间的填充。
  */
 
 #include "clings/test.h"
@@ -13,7 +13,7 @@
 #error "this branch is disabled"
 #endif
 
-/* TODO: pack the struct without padding. */
+/* TODO: 让结构体不带填充地打包。 */
 #pragma pack(push, 4)
 struct packed {
     char first;

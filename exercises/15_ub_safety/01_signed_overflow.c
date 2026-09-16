@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/01_signed_overflow
- * title: Avoid signed integer overflow
- * objective: Detect overflow before performing signed addition.
- * hint: Unsigned arithmetic wraps; signed overflow is undefined behavior.
+ * clings 练习: 15_ub_safety/01_signed_overflow
+ * title: 避免有符号整数溢出
+ * objective: 在做有符号加法之前检测溢出。
+ * hint: 无符号运算会回绕；有符号溢出是未定义行为。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int checked_add(int a, int b, int *out)
 {
-    /* TODO: detect overflow before adding. */
+    /* TODO: 相加之前先检测溢出。 */
     if (0) {
         return -1;
     }

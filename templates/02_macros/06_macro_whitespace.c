@@ -1,13 +1,13 @@
 /*
- * clings exercise: 02_macros/06_macro_whitespace
- * title: Whitespace in macro definitions
- * objective: Remember that a space can turn a function-like macro into an object-like macro.
- * hint: The ( must immediately follow the macro name.
+ * clings 练习: 02_macros/06_macro_whitespace
+ * title: 宏定义里的空白
+ * objective: 记住一个空格就能把函数式宏变成对象式宏。
+ * hint: 左括号必须紧跟宏名。
  */
 
 #include "clings/test.h"
 
-/* TODO: keep the ( immediately after SQUARE. */
+/* TODO: 左括号要紧跟在 SQUARE 后面。 */
 #define SQUARE (value) ((value) * (value))
 
 int square_value(int value)

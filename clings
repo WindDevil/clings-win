@@ -173,7 +173,7 @@ def discover() -> list[Exercise]:
                 title=meta.get("title", path.stem.replace("_", " ")),
                 objective=meta.get("objective", ""),
                 reference=meta.get("reference", ""),
-                hint=meta.get("hint", "No hint available."),
+                hint=meta.get("hint", "暂无提示。"),
             )
         )
     for path in sorted(EXERCISES_DIR.glob("*/*/main.c")):
@@ -186,7 +186,7 @@ def discover() -> list[Exercise]:
                 title=meta.get("title", path.parent.name.replace("_", " ")),
                 objective=meta.get("objective", ""),
                 reference=meta.get("reference", ""),
-                hint=meta.get("hint", "No hint available."),
+                hint=meta.get("hint", "暂无提示。"),
                 is_project=True,
             )
         )
@@ -311,11 +311,11 @@ def resolve_exercise(needle: str | None) -> Exercise | None:
     if len(matches) == 1:
         return matches[0]
     if len(matches) > 1:
-        print(red(f"ambiguous exercise: {needle}"))
+        print(red(f"练习名有歧义: {needle}"))
         for exercise in matches:
             print(f"  {exercise.ident}")
     else:
-        print(red(f"unknown exercise: {needle}"))
+        print(red(f"找不到这个练习: {needle}"))
     return None
 
 
@@ -324,12 +324,12 @@ def run_exercise(exercise: Exercise, verbose: bool = False) -> tuple[bool, str]:
     include_dirs = (exercise.path.parent,) if exercise.is_project else ()
     build = compile_sources(exercise.sources, output, include_dirs)
     if build.returncode != 0:
-        return False, "compilation failed\n" + build.stdout
+        return False, "编译失败\n" + build.stdout
 
     try:
         result = run_binary(output)
     except subprocess.TimeoutExpired:
-        return False, "exercise timed out after 10 seconds"
+        return False, "练习运行超过 10 秒，已中止"
 
     if verbose or result.returncode != 0:
         return result.returncode == 0, result.stdout
@@ -340,23 +340,23 @@ def run_solution(exercise: Exercise) -> tuple[bool, str]:
     if not exercise.solution_sources or not all(
         source.exists() for source in exercise.solution_sources
     ):
-        return False, f"missing solution: {exercise.solution_root}"
+        return False, f"找不到参考答案: {exercise.solution_root}"
     output = binary_path(exercise, solution=True)
     include_dirs = (
         (exercise.solution_root,) if exercise.is_project else ()
     )
     build = compile_sources(exercise.solution_sources, output, include_dirs)
     if build.returncode != 0:
-        return False, "solution compilation failed\n" + build.stdout
+        return False, "参考答案编译失败\n" + build.stdout
     try:
         result = run_binary(output)
     except subprocess.TimeoutExpired:
-        return False, "solution timed out after 10 seconds"
+        return False, "参考答案运行超过 10 秒，已中止"
     return result.returncode == 0, result.stdout
 
 
 def print_exercise(exercise: Exercise, completed: set[str]) -> None:
-    status = green("done") if exercise.ident in completed else yellow("todo")
+    status = green("已完成") if exercise.ident in completed else yellow("待完成")
     print(f"[{status}] {cyan(exercise.ident)}  {exercise.title}")
     if exercise.objective:
         print(f"       {exercise.objective}")
@@ -368,7 +368,7 @@ def command_list(args: argparse.Namespace) -> int:
     exercises = discover()
     completed = load_progress()
     if not exercises:
-        print(red("no exercises found"))
+        print(red("没有找到任何练习"))
         return 1
 
     current_topic = None
@@ -380,14 +380,14 @@ def command_list(args: argparse.Namespace) -> int:
             print(f"\n{cyan(current_topic)}")
         print_exercise(exercise, completed)
     completed_count = sum(1 for exercise in exercises if exercise.ident in completed)
-    print(f"\n{completed_count}/{len(exercises)} completed")
+    print(f"\n已完成 {completed_count}/{len(exercises)}")
     return 0
 
 
 def command_next(args: argparse.Namespace) -> int:
     exercise = resolve_exercise(args.exercise)
     if exercise is None:
-        print(green("All exercises are complete. Try `./clings verify`."))
+        print(green("所有练习都完成了。可以运行 `./clings verify` 做一次全量校验。"))
         return 0
     print_exercise(exercise, load_progress())
     return 0
@@ -396,7 +396,7 @@ def command_next(args: argparse.Namespace) -> int:
 def command_run(args: argparse.Namespace) -> int:
     exercises = discover()
     if not exercises:
-        print(red("no exercises found"))
+        print(red("没有找到任何练习"))
         return 1
 
     if args.all:
@@ -404,34 +404,34 @@ def command_run(args: argparse.Namespace) -> int:
     else:
         exercise = resolve_exercise(args.exercise)
         if exercise is None:
-            print(green("All exercises are complete. Try `./clings verify`."))
+            print(green("所有练习都完成了。可以运行 `./clings verify` 做一次全量校验。"))
             return 0
         targets = [exercise]
 
     completed = load_progress()
     failures = 0
     for exercise in targets:
-        print(f"\n{cyan('running')} {exercise.ident} - {exercise.title}")
+        print(f"\n{cyan('运行')} {exercise.ident} - {exercise.title}")
         passed, output = run_exercise(exercise, verbose=args.verbose)
         if passed:
             completed.add(exercise.ident)
             save_progress(completed)
-            print(green("  passed"))
+            print(green("  通过"))
             if args.verbose and output:
                 print(output, end="" if output.endswith("\n") else "\n")
             continue
 
         failures += 1
-        print(red("  failed"))
+        print(red("  未通过"))
         if output:
             print(output, end="" if output.endswith("\n") else "\n")
         if not args.continue_on_error:
             break
 
     if failures:
-        print(red(f"\n{failures} exercise(s) failed"))
+        print(red(f"\n{failures} 个练习未通过"))
         return 1
-    print(green("\nall selected exercises passed"))
+    print(green("\n选中的练习全部通过"))
     return 0
 
 
@@ -440,10 +440,10 @@ def command_hint(args: argparse.Namespace) -> int:
     if exercise is None:
         return 1
     print(f"{cyan(exercise.ident)} - {exercise.title}")
-    print(f"objective: {exercise.objective}")
+    print(f"学习目标: {exercise.objective}")
     if exercise.reference:
-        print(f"reference: {exercise.reference}")
-    print(f"hint: {exercise.hint}")
+        print(f"参考资料: {exercise.reference}")
+    print(f"提示: {exercise.hint}")
     return 0
 
 
@@ -452,16 +452,16 @@ def command_solution(args: argparse.Namespace) -> int:
     if exercise is None:
         return 1
     if not exercise.solution_root.exists():
-        print(red(f"missing solution: {exercise.solution_root}"))
+        print(red(f"找不到参考答案: {exercise.solution_root}"))
         return 1
     if args.apply:
         if exercise.is_project:
             shutil.rmtree(exercise.path.parent, ignore_errors=True)
             shutil.copytree(exercise.solution_root, exercise.path.parent)
-            print(green(f"applied solution to {exercise.path.parent}"))
+            print(green(f"已把参考答案写到 {exercise.path.parent}"))
         else:
             shutil.copyfile(exercise.solution, exercise.path)
-            print(green(f"applied solution to {exercise.path}"))
+            print(green(f"已把参考答案写到 {exercise.path}"))
         return 0
     if exercise.is_project:
         for source in exercise.solution_sources:
@@ -477,7 +477,7 @@ def command_reset(args: argparse.Namespace) -> int:
     if exercise is None:
         return 1
     if not exercise.template_root.exists():
-        print(red(f"missing template: {exercise.template_root}"))
+        print(red(f"找不到初始模板: {exercise.template_root}"))
         return 1
     if exercise.is_project:
         shutil.rmtree(exercise.path.parent, ignore_errors=True)
@@ -487,14 +487,14 @@ def command_reset(args: argparse.Namespace) -> int:
     completed = load_progress()
     completed.discard(exercise.ident)
     save_progress(completed)
-    print(green(f"reset {exercise.ident}"))
+    print(green(f"已重置 {exercise.ident}"))
     return 0
 
 
 def command_verify(args: argparse.Namespace) -> int:
     exercises = discover()
     if not exercises:
-        print(red("no exercises found"))
+        print(red("没有找到任何练习"))
         return 1
 
     failures = 0
@@ -509,9 +509,9 @@ def command_verify(args: argparse.Namespace) -> int:
             print(output, end="" if output.endswith("\n") else "\n")
 
     if failures:
-        print(red(f"\n{failures} solution(s) failed"))
+        print(red(f"\n{failures} 个参考答案未通过"))
         return 1
-    print(green(f"\nall {len(exercises)} solutions passed"))
+    print(green(f"\n{len(exercises)} 个参考答案全部通过"))
     return 0
 
 
@@ -523,7 +523,7 @@ def command_selftest(args: argparse.Namespace) -> int:
         solved, solution_output = run_solution(exercise)
         if not solved:
             failures += 1
-            print(f"{red('FAIL')} solution {exercise.ident}")
+            print(f"{red('FAIL')} 参考答案 {exercise.ident}")
             print(solution_output, end="" if solution_output.endswith("\n") else "\n")
             continue
 
@@ -532,24 +532,24 @@ def command_selftest(args: argparse.Namespace) -> int:
         passed, _ = run_exercise(exercise)
         if passed:
             failures += 1
-            print(f"{red('FAIL')} exercise {exercise.ident} already passes")
+            print(f"{red('FAIL')} 练习 {exercise.ident} 初始状态就通过了")
             continue
 
         print(f"{green('ok')}   {exercise.ident}")
 
     if failures:
-        print(red(f"\n{failures} selftest failure(s)"))
+        print(red(f"\n{failures} 项自检未通过"))
         return 1
-    print(green(f"\nall {len(exercises)} exercises behave correctly"))
+    print(green(f"\n{len(exercises)} 个练习的初始状态都符合预期"))
     return 0
 
 
 def command_doctor(args: argparse.Namespace) -> int:
-    print(f"python:   {platform.python_version()}")
-    print(f"platform: {platform.platform()}")
-    print(f"root:     {ROOT}")
-    print(f"compiler: {compiler()}")
-    print(f"flags:    {' '.join(cflags())}")
+    print(f"Python:   {platform.python_version()}")
+    print(f"系统:     {platform.platform()}")
+    print(f"项目目录: {ROOT}")
+    print(f"编译器:   {compiler()}")
+    print(f"编译参数: {' '.join(cflags())}")
     result = subprocess.run(
         [compiler(), "--version"],
         text=True,
@@ -557,7 +557,7 @@ def command_doctor(args: argparse.Namespace) -> int:
         stderr=subprocess.STDOUT,
         check=False,
     )
-    print(result.stdout.splitlines()[0] if result.stdout else "compiler not found")
+    print(result.stdout.splitlines()[0] if result.stdout else "没有找到编译器")
     return 0
 
 
@@ -565,7 +565,7 @@ def command_watch(args: argparse.Namespace) -> int:
     exercise = resolve_exercise(args.exercise)
     if exercise is None:
         return 1
-    print(f"watching {exercise.ident}; press Ctrl-C to stop")
+    print(f"正在监视 {exercise.ident}；按 Ctrl-C 退出")
     last_mtime = None
     while True:
         mtime = exercise.mtime_ns()
@@ -582,79 +582,98 @@ def command_watch(args: argparse.Namespace) -> int:
 def command_clean(args: argparse.Namespace) -> int:
     if BUILD_DIR.exists():
         shutil.rmtree(BUILD_DIR)
-        print(green(f"removed {BUILD_DIR}"))
+        print(green(f"已删除 {BUILD_DIR}"))
     else:
-        print("nothing to clean")
+        print("没有需要清理的编译产物")
     return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="clings",
-        description="Run and verify the clings C exercises.",
+        description="编译并运行 clings 的 C 语言练习。",
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    list_parser = subparsers.add_parser("list", help="list all exercises")
+    list_parser = subparsers.add_parser("list", help="列出全部练习")
     list_parser.add_argument("--topic", help="only show one topic")
     list_parser.set_defaults(func=command_list)
 
-    next_parser = subparsers.add_parser("next", help="show the next exercise")
+    next_parser = subparsers.add_parser("next", help="显示下一个练习")
     next_parser.add_argument("exercise", nargs="?")
     next_parser.set_defaults(func=command_next)
 
-    run_parser = subparsers.add_parser("run", help="compile and run an exercise")
+    run_parser = subparsers.add_parser("run", help="编译并运行一个练习")
     run_parser.add_argument("exercise", nargs="?")
-    run_parser.add_argument("--all", action="store_true", help="run every exercise")
+    run_parser.add_argument("--all", action="store_true", help="运行全部练习")
     run_parser.add_argument(
         "--continue",
         dest="continue_on_error",
         action="store_true",
-        help="keep going after a failure",
+        help="失败后继续往下跑",
     )
     run_parser.add_argument("--verbose", action="store_true")
     run_parser.set_defaults(func=command_run)
 
-    hint_parser = subparsers.add_parser("hint", help="show a hint")
+    hint_parser = subparsers.add_parser("hint", help="查看提示")
     hint_parser.add_argument("exercise")
     hint_parser.set_defaults(func=command_hint)
 
-    solution_parser = subparsers.add_parser("solution", help="show or apply a solution")
+    solution_parser = subparsers.add_parser("solution", help="查看或应用参考答案")
     solution_parser.add_argument("exercise")
     solution_parser.add_argument(
         "--apply",
         action="store_true",
-        help="copy the solution over the exercise",
+        help="把参考答案写到练习文件上",
     )
     solution_parser.set_defaults(func=command_solution)
 
-    reset_parser = subparsers.add_parser("reset", help="restore the original exercise")
+    reset_parser = subparsers.add_parser("reset", help="恢复初始练习")
     reset_parser.add_argument("exercise")
     reset_parser.set_defaults(func=command_reset)
 
-    verify_parser = subparsers.add_parser("verify", help="verify every solution")
+    verify_parser = subparsers.add_parser("verify", help="校验全部参考答案")
     verify_parser.add_argument("--verbose", action="store_true")
     verify_parser.set_defaults(func=command_verify)
 
     selftest_parser = subparsers.add_parser(
-        "selftest", help="check exercises start broken and solutions pass"
+        "selftest", help="检查练习初始失败、参考答案通过"
     )
     selftest_parser.set_defaults(func=command_selftest)
 
-    doctor_parser = subparsers.add_parser("doctor", help="show toolchain information")
+    doctor_parser = subparsers.add_parser("doctor", help="显示工具链信息")
     doctor_parser.set_defaults(func=command_doctor)
 
-    watch_parser = subparsers.add_parser("watch", help="re-run an exercise on change")
+    watch_parser = subparsers.add_parser("watch", help="文件变化后自动重跑")
     watch_parser.add_argument("exercise", nargs="?")
     watch_parser.set_defaults(func=command_watch)
 
-    clean_parser = subparsers.add_parser("clean", help="remove compiled artifacts")
+    clean_parser = subparsers.add_parser("clean", help="删除编译产物")
     clean_parser.set_defaults(func=command_clean)
 
     return parser
 
 
+def configure_output() -> None:
+    """Keep Chinese output from crashing a Windows console.
+
+    Python takes the console code page (cp936, cp1252, ...) for stdout
+    and raises UnicodeEncodeError on text it cannot represent.
+    clings.cmd switches the console to UTF-8; this makes the streams
+    agree with it, and degrades to '?' instead of a traceback when the
+    CLI is started some other way.
+    """
+    if os.name != "nt":
+        return
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    configure_output()
     parser = build_parser()
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):
@@ -662,7 +681,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return int(args.func(args))
     except KeyboardInterrupt:
-        print("\ninterrupted")
+        print("\n已中断")
         return 130
 
 

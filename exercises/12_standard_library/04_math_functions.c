@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/04_math_functions
- * title: The math library
- * objective: Use hypot and other functions from math.h.
- * hint: hypot(x, y) computes sqrt(x*x + y*y) without avoidable overflow.
+ * clings 练习: 12_standard_library/04_math_functions
+ * title: 数学库
+ * objective: 使用 math.h 里的 hypot 等函数。
+ * hint: hypot(x, y) 计算 sqrt(x*x + y*y)，并避免本可避免的溢出。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 double distance(double x1, double y1, double x2, double y2)
 {
-    /* TODO: compute the Euclidean distance. */
+    /* TODO: 计算欧几里得距离。 */
     return fabs(x2 - x1) + fabs(y2 - y1);
 }
 

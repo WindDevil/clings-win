@@ -1,8 +1,8 @@
 /*
- * clings exercise: 00_basics/09_compiler_diagnostics
- * title: Read compiler diagnostics
- * objective: Fix a format-string warning that the compiler reports.
- * hint: Use %d to print an int; %s expects a string.
+ * clings 练习: 00_basics/09_compiler_diagnostics
+ * title: 读懂编译器诊断
+ * objective: 修掉编译器报出的格式串警告。
+ * hint: 打印 int 用 %d；%s 要的是字符串。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int print_number(int value)
 {
-    /* TODO: use the conversion specifier for an int. */
+    /* TODO: 用 int 对应的转换说明符。 */
     return printf("%s\n", value);
 }
 

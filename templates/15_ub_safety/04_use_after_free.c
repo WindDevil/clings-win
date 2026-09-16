@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/04_use_after_free
- * title: Use-after-free
- * objective: Clear a pointer after freeing its target.
- * hint: Write NULL through the pointer-to-pointer after free.
+ * clings 练习: 15_ub_safety/04_use_after_free
+ * title: 释放后使用
+ * objective: 释放目标之后把指针清空。
+ * hint: free 之后通过二级指针写入 NULL。
  */
 
 #include "clings/test.h"
@@ -12,7 +12,7 @@
 void free_and_clear(int **pointer)
 {
     free(*pointer);
-    /* TODO: clear the caller's pointer. */
+    /* TODO: 清空调用方的指针。 */
 }
 
 int is_null(const void *pointer)

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/03_pthreads
- * title: POSIX threads and a mutex
- * objective: Create threads and protect shared state with a mutex.
- * hint: Each worker increments the shared counter 1000 times.
+ * clings 练习: 18_advanced_c/03_pthreads
+ * title: POSIX 线程与互斥量
+ * objective: 创建线程，并用互斥量保护共享状态。
+ * hint: 每个工作线程把共享计数器加 1000 次。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/12_printf_advanced
- * title: Advanced printf formatting
- * objective: Use width, zero padding, precision, and the * width argument.
- * hint: %08d zero-pads to width 8; %.3f uses three fractional digits.
+ * clings 练习: 12_standard_library/12_printf_advanced
+ * title: printf 格式化进阶
+ * objective: 使用宽度、补零、精度和 * 宽度参数。
+ * hint: %08d 补零到宽度 8；%.3f 保留三位小数。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int format_width(char *buffer, size_t size, int value)
 {
-    /* TODO: zero-pad the value to width 8. */
+    /* TODO: 把值补零到宽度 8。 */
     return snprintf(buffer, size, "%d", value);
 }
 

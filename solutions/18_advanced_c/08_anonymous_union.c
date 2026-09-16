@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/08_anonymous_union
- * title: Anonymous structs and unions
- * objective: Access anonymous union members directly through the outer struct.
- * hint: An anonymous union member is promoted into the enclosing struct scope.
+ * clings 练习: 18_advanced_c/08_anonymous_union
+ * title: 匿名结构体与联合体
+ * objective: 通过外层结构体直接访问匿名联合体的成员。
+ * hint: 匿名联合体的成员会提升到外层结构体的作用域里。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 04_operators/07_compound_assignment
- * title: Compound assignment and comma
- * objective: Use +=, -=, *=, /=, %= and the comma operator.
- * hint: The comma operator evaluates left to right and yields the right operand.
+ * clings 练习: 04_operators/07_compound_assignment
+ * title: 复合赋值与逗号运算符
+ * objective: 使用 +=、-=、*=、/=、%= 和逗号运算符。
+ * hint: 逗号运算符从左到右求值，结果是右操作数。
  */
 
 #include "clings/test.h"

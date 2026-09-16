@@ -1,8 +1,8 @@
 /*
- * clings exercise: 04_operators/01_arithmetic
- * title: Integer arithmetic
- * objective: Practice integer division, modulo, and truncation.
- * hint: Integer division truncates toward zero.
+ * clings 练习: 04_operators/01_arithmetic
+ * title: 整数运算
+ * objective: 练习整数除法、取模和截断。
+ * hint: 整数除法向零截断。
  */
 
 #include "clings/test.h"

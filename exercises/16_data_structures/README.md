@@ -1,13 +1,13 @@
-# Data Structures
+# 数据结构
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_queue_adt
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_queue_adt` | Implement a fixed-capacity circular queue. |
-| `02_binary_search_tree` | Insert into and search a binary search tree. |
-| `03_dynamic_vector` | Grow a dynamic array and preserve existing elements. |
+| `01_queue_adt` | 实现一个定容量的环形队列。 |
+| `02_binary_search_tree` | 向二叉查找树插入节点并查找。 |
+| `03_dynamic_vector` | 扩容动态数组，并保留已有元素。 |

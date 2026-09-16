@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/01_array_basics
- * title: Array traversal
- * objective: Iterate over an array and compute a sum and maximum.
- * hint: Use values[i] inside the loop, not values[0].
+ * clings 练习: 08_arrays_strings/01_array_basics
+ * title: 遍历数组
+ * objective: 遍历数组，求出总和与最大值。
+ * hint: 循环里要用 values[i]，不是 values[0]。
  */
 
 #include "clings/test.h"

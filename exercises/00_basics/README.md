@@ -1,19 +1,19 @@
-# Basics
+# 基础
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_printf
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_printf` | Use printf to print a line of text. |
-| `02_printf_values` | Use printf with %d to print an integer value. |
-| `03_scanf` | Read an integer from stdin with scanf. |
-| `04_char_array` | Store text in a char array and access its characters. |
-| `05_snprintf` | Write formatted text into a fixed-size buffer. |
-| `06_sscanf` | Parse values from a string with sscanf. |
-| `07_include_header` | Include the standard header that declares printf. |
-| `08_lexical_elements` | Use comments and escape sequences correctly. |
-| `09_compiler_diagnostics` | Fix a format-string warning that the compiler reports. |
+| `01_printf` | 用 printf 打印一行文本。 |
+| `02_printf_values` | 用 printf 的 %d 打印一个整数。 |
+| `03_scanf` | 用 scanf 从标准输入读一个整数。 |
+| `04_char_array` | 把文本存进 char 数组，并访问其中字符。 |
+| `05_snprintf` | 把格式化文本写进固定大小的缓冲区。 |
+| `06_sscanf` | 用 sscanf 从字符串里解析出各个值。 |
+| `07_include_header` | 引入声明 printf 的标准头文件。 |
+| `08_lexical_elements` | 正确使用注释和转义序列。 |
+| `09_compiler_diagnostics` | 修掉编译器报出的格式串警告。 |

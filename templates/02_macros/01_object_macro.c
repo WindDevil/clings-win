@@ -1,13 +1,13 @@
 /*
- * clings exercise: 02_macros/01_object_macro
- * title: Object-like macros
- * objective: Use a named compile-time constant.
- * hint: Object-like macros are simple text substitutions.
+ * clings 练习: 02_macros/01_object_macro
+ * title: 对象式宏
+ * objective: 使用一个有名字的编译期常量。
+ * hint: 对象式宏就是简单的文本替换。
  */
 
 #include "clings/test.h"
 
-/* TODO: define a 16-byte buffer size. */
+/* TODO: 定义一个 16 字节的缓冲区长度。 */
 #define CLINGS_BUFFER_SIZE 8
 #define CLINGS_VERSION 2
 

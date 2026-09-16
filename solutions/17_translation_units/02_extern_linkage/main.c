@@ -1,8 +1,8 @@
 /*
- * clings exercise: 17_translation_units/02_extern_linkage
- * title: External linkage across files
- * objective: Declare a global variable in a header and define it in another file.
- * hint: The extern declaration promises a definition in config.c.
+ * clings 练习: 17_translation_units/02_extern_linkage
+ * title: 跨文件的外部链接
+ * objective: 在头文件里声明全局变量，在另一个文件里定义它。
+ * hint: extern 声明承诺了在 config.c 里有对应的定义。
  */
 
 #include "clings/test.h"

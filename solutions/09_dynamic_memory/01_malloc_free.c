@@ -1,8 +1,8 @@
 /*
- * clings exercise: 09_dynamic_memory/01_malloc_free
- * title: Allocate, initialize, and free
- * objective: Use malloc and free for a dynamically sized array.
- * hint: Write fill into every element, not just the first.
+ * clings 练习: 09_dynamic_memory/01_malloc_free
+ * title: 分配、初始化与释放
+ * objective: 用 malloc 和 free 管理动态长度的数组。
+ * hint: 每个元素都要写入 fill，不能只写第一个。
  */
 
 #include "clings/test.h"

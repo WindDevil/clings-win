@@ -1,21 +1,21 @@
-# Undefined Behavior, Safety, and Portability
+# 未定义行为、安全与可移植性
 
-Run an exercise with:
+运行练习：
 
 ```sh
 ./clings run 01_signed_overflow
 ```
 
-| Exercise | Objective |
+| 练习 | 目标 |
 | --- | --- |
-| `01_signed_overflow` | Detect overflow before performing signed addition. |
-| `02_uninitialized` | Give every local variable a defined initial value. |
-| `03_out_of_bounds` | Reject indices outside the logical array length. |
-| `04_use_after_free` | Clear a pointer after freeing its target. |
-| `05_sequence_points` | Avoid unsequenced reads and writes of the same object. |
-| `06_strict_aliasing` | Reinterpret object representation with memcpy. |
-| `07_alignment` | Query alignment with alignof and keep members aligned. |
-| `08_null_pointer` | Never dereference a null pointer. |
-| `09_standard_changes` | Detect the C standard version at compile time. |
-| `10_identifier_length` | Use long internal identifiers and rely on the standard minimum. |
-| `11_implementation_defined` | Observe implementation-defined char signedness and packing pragmas. |
+| `01_signed_overflow` | 在做有符号加法之前检测溢出。 |
+| `02_uninitialized` | 让每个局部变量都有确定的初值。 |
+| `03_out_of_bounds` | 拒绝超出逻辑长度的下标。 |
+| `04_use_after_free` | 释放目标之后把指针清空。 |
+| `05_sequence_points` | 避免对同一对象做无序列点保护的读写。 |
+| `06_strict_aliasing` | 用 memcpy 重新解释对象的表示。 |
+| `07_alignment` | 用 alignof 查询对齐，并让成员保持对齐。 |
+| `08_null_pointer` | 绝不解引用空指针。 |
+| `09_standard_changes` | 在编译期判断 C 标准版本。 |
+| `10_identifier_length` | 使用较长的内部标识符，并依赖标准给出的最小保证。 |
+| `11_implementation_defined` | 观察实现定义的 char 符号性和打包编译指示。 |

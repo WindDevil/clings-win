@@ -1,8 +1,8 @@
 /*
- * clings exercise: 06_functions/04_static_inline
- * title: Internal linkage and inline helpers
- * objective: Use static functions and file-scope state.
- * hint: Update call_count before returning the incremented value.
+ * clings 练习: 06_functions/04_static_inline
+ * title: 内部链接与内联辅助函数
+ * objective: 使用 static 函数和文件作用域状态。
+ * hint: 返回自增后的值之前，先更新 call_count。
  */
 
 #include "clings/test.h"

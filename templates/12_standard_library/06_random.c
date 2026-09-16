@@ -1,8 +1,8 @@
 /*
- * clings exercise: 12_standard_library/06_random
- * title: Pseudo-random numbers
- * objective: Seed the generator and bound its output.
- * hint: rand() % upper produces values from 0 to upper - 1.
+ * clings 练习: 12_standard_library/06_random
+ * title: 伪随机数
+ * objective: 给随机数发生器设种子，并限制输出范围。
+ * hint: rand() % upper 得到 0 到 upper - 1 之间的值。
  */
 
 #include "clings/test.h"
@@ -16,7 +16,7 @@ void seed_random(unsigned int seed)
 
 int random_bounded(int upper)
 {
-    /* TODO: keep the result below upper. */
+    /* TODO: 让结果落在 upper 以下。 */
     return upper > 0 ? upper : 0;
 }
 

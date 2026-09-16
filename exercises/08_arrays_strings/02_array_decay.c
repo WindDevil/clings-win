@@ -1,8 +1,8 @@
 /*
- * clings exercise: 08_arrays_strings/02_array_decay
- * title: Array-to-pointer decay
- * objective: See how an array parameter becomes a pointer.
- * hint: Inside a function, an array parameter has pointer type.
+ * clings 练习: 08_arrays_strings/02_array_decay
+ * title: 数组退化为指针
+ * objective: 看清数组参数如何变成指针。
+ * hint: 在函数内部，数组参数的类型是指针。
  */
 
 #include "clings/test.h"
@@ -10,7 +10,7 @@
 int local_array_length(void)
 {
     int values[10];
-    /* TODO: use the local array, not a pointer, to compute the length. */
+    /* TODO: 用本地数组求长度，不要用指针。 */
     return (int)(sizeof(values) / sizeof(int *));
 }
 

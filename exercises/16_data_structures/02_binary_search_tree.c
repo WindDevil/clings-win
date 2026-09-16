@@ -1,8 +1,8 @@
 /*
- * clings exercise: 16_data_structures/02_binary_search_tree
- * title: Binary search tree
- * objective: Insert into and search a binary search tree.
- * hint: Smaller values go left; larger values go right.
+ * clings 练习: 16_data_structures/02_binary_search_tree
+ * title: 二叉查找树
+ * objective: 向二叉查找树插入节点并查找。
+ * hint: 较小的值放左边，较大的值放右边。
  */
 
 #include "clings/test.h"
@@ -31,7 +31,7 @@ struct node *insert(struct node *root, int value)
     if (value < root->value) {
         root->left = insert(root->left, value);
     } else if (value > root->value) {
-        /* TODO: larger values go to the right subtree. */
+        /* TODO: 较大的值放到右子树。 */
         root->left = insert(root->left, value);
     }
     return root;

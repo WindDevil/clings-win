@@ -1,8 +1,8 @@
 /*
- * clings exercise: 18_advanced_c/05_generic
- * title: _Generic selection
- * objective: Choose an expression based on the type of a value.
- * hint: The controlling expression is not evaluated; only its type is used.
+ * clings 练习: 18_advanced_c/05_generic
+ * title: _Generic 选择
+ * objective: 根据值的类型选择对应的表达式。
+ * hint: 控制表达式不会被求值，只用到它的类型。
  */
 
 #include "clings/test.h"

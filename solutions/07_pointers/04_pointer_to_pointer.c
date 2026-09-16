@@ -1,8 +1,8 @@
 /*
- * clings exercise: 07_pointers/04_pointer_to_pointer
- * title: Pointers to pointers
- * objective: Let a function allocate and update a caller-owned pointer.
- * hint: Assign through *slot, not to the local slot parameter.
+ * clings 练习: 07_pointers/04_pointer_to_pointer
+ * title: 指向指针的指针
+ * objective: 让函数分配内存并更新调用方持有的指针。
+ * hint: 要通过 *slot 赋值，而不是给本地的 slot 参数赋值。
  */
 
 #include "clings/test.h"

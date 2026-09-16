@@ -1,8 +1,8 @@
 /*
- * clings exercise: 03_types_variables/08_stdbool_stddef
- * title: stdbool.h and stddef.h
- * objective: Use bool and size_t from the standard headers.
- * hint: bool is defined in <stdbool.h>; size_t is defined in <stddef.h>.
+ * clings 练习: 03_types_variables/08_stdbool_stddef
+ * title: stdbool.h 与 stddef.h
+ * objective: 使用标准头文件里的 bool 和 size_t。
+ * hint: bool 定义在 <stdbool.h>；size_t 定义在 <stddef.h>。
  */
 
 #include "clings/test.h"

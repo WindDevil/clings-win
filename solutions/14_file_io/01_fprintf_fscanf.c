@@ -1,8 +1,8 @@
 /*
- * clings exercise: 14_file_io/01_fprintf_fscanf
- * title: fprintf and fscanf
- * objective: Write formatted data to a file and read it back.
- * hint: The format strings used for writing and reading must agree.
+ * clings 练习: 14_file_io/01_fprintf_fscanf
+ * title: fprintf 与 fscanf
+ * objective: 把格式化数据写入文件，再读回来。
+ * hint: 写入和读取用的格式串必须一致。
  */
 
 #include "clings/test.h"

@@ -1,8 +1,8 @@
 /*
- * clings exercise: 15_ub_safety/08_null_pointer
- * title: Null pointer checks
- * objective: Never dereference a null pointer.
- * hint: Use a conditional expression to provide a fallback.
+ * clings 练习: 15_ub_safety/08_null_pointer
+ * title: 空指针检查
+ * objective: 绝不解引用空指针。
+ * hint: 用条件表达式给出兜底值。
  */
 
 #include "clings/test.h"
@@ -11,7 +11,7 @@
 
 int dereference_or_default(const int *pointer, int fallback)
 {
-    /* TODO: return the pointed-to value only when the pointer is not null. */
+    /* TODO: 只在指针不为空时返回它指向的值。 */
     return fallback;
 }
 

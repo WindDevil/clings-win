@@ -1,8 +1,8 @@
 /*
- * clings exercise: 05_control_flow/06_semicolon_pitfalls
- * title: Semicolon and empty-statement traps
- * objective: Avoid accidentally ending an if or loop with a semicolon.
- * hint: A semicolon after if creates an empty body.
+ * clings 练习: 05_control_flow/06_semicolon_pitfalls
+ * title: 分号与空语句陷阱
+ * objective: 避免误用分号提前结束 if 或循环。
+ * hint: if 后面直接写分号会产生一个空语句体。
  */
 
 #include "clings/test.h"
