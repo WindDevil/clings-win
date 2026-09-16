@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_malloc_free
+```bat
+clings.cmd run 01_malloc_free
 ```
 
 | 练习 | 目标 |

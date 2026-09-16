@@ -18,15 +18,22 @@
 3. [ ] 运行 `clings.cmd doctor`：编译器显示为随包自带的 gcc，路径正确。
 4. [ ] 运行 `clings.cmd run 00_basics/01_printf`：故意失败，并显示**编译或测试
        诊断**（这是教学内容，不能是崩溃或乱码）。
-5. [ ] 用 VS Code 或记事本编辑该练习文件并保存，再跑一次 `run`：诊断随之变化。
-6. [ ] 运行 `clings.cmd solution 00_basics/01_printf --apply` 后再 `run`：通过。
-7. [ ] 运行 `clings.cmd reset 00_basics/01_printf`：文件回到初始状态，进度清除。
-8. [ ] 运行 `clings.cmd run 18_advanced_c/03_pthreads`（先应用答案）：线程类练习
+5. [ ] 运行 `clings.cmd doctor`：`颜色:` 一行是 `开启`，并且 `clings.cmd list`
+       的输出**真的是彩色**。Windows 10/11 的控制台都支持 ANSI，所以这一条
+       不是"彩色或纯文本都可以"：退化成纯文本说明 VT 位没打开，按阻塞问题处理。
+6. [ ] 上面两步的输出里**看不到** `[36m`、`[0m` 这类转义码——彩色文字里不该
+       出现转义码，纯文本里也不该（见 [portability.md](portability.md)）。
+7. [ ] 换终端再跑一次步骤 4 和 5：Windows Terminal（含 PowerShell 7）和传统
+       conhost（cmd、Windows PowerShell 5.1）都必须是彩色，且都不出现转义码。
+8. [ ] 用 VS Code 或记事本编辑该练习文件并保存，再跑一次 `run`：诊断随之变化。
+9. [ ] 运行 `clings.cmd solution 00_basics/01_printf --apply` 后再 `run`：通过。
+10. [ ] 运行 `clings.cmd reset 00_basics/01_printf`：文件回到初始状态，进度清除。
+11. [ ] 运行 `clings.cmd run 18_advanced_c/03_pthreads`（先应用答案）：线程类练习
        能正常编译运行（验证 `libwinpthread-1.dll` 的部署）。
-9. [ ] 运行 `clings.cmd watch 00_basics/01_printf`，保存文件后自动重跑，
+12. [ ] 运行 `clings.cmd watch 00_basics/01_printf`，保存文件后自动重跑，
        `Ctrl-C` 能正常退出。
-10. [ ] 控制台中文不乱码；`Ctrl-C`、方向键、复制粘贴不产生异常输出。
-11. [ ] 断网重试步骤 2 和 4：不应该因为缺少网络而失败。
+13. [ ] 控制台中文不乱码；`Ctrl-C`、方向键、复制粘贴不产生异常输出。
+14. [ ] 断网重试步骤 2 和 4：不应该因为缺少网络而失败。
 
 ## 记录
 

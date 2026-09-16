@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_queue_adt
+```bat
+clings.cmd run 01_queue_adt
 ```
 
 | 练习 | 目标 |

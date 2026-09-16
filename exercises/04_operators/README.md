@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_arithmetic
+```bat
+clings.cmd run 01_arithmetic
 ```
 
 | 练习 | 目标 |

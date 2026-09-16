@@ -6,10 +6,12 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 函数名、格式说明符）保持英文，和标准教材、报错信息对得上。
 
 它不是 fork，而是**生成物**。练习内容、参考答案、模板、测试框架、运行器全部
-从上游仓库同步而来，唯一的差异记录在
-[`tools/windows_overrides.py`](tools/windows_overrides.py)（12 个练习需要平台变体）
-和 [`tools/zh_glossary.py`](tools/zh_glossary.py)（中英对照表）里。因此两个工程
-不会各自漂移。
+从上游仓库同步而来，差异只记录在三处：
+[`tools/windows_overrides.py`](tools/windows_overrides.py)（12 个练习需要平台变体）、
+[`tools/sync_from_source.py`](tools/sync_from_source.py) 里的 `RUNNER_PATCHES`
+（运行器的 Windows 适配）和 [`tools/zh_glossary.py`](tools/zh_glossary.py)
+加 [`tools/zh_translate.py`](tools/zh_translate.py)（中英对照表，另有
+`./clings` 这类 POSIX 命令行的 Windows 改写）。因此两个工程不会各自漂移。
 
 ## 学习者怎么用
 
@@ -19,6 +21,9 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 | --- | ---: | --- |
 | `clings-win-<commit>-full.zip` | 约 190 MB | 机器上什么都没有的人。自带编译器（w64devkit）和 Python，解压就能用 |
 | `clings-win-<commit>-slim.zip` | 约 0.4 MB | 已经装了 Python 3 和 MinGW-w64 GCC 的人 |
+
+`<commit>` 是本仓库的 commit（上游 commit 见 `docs/provenance.md`），所以每次重建
+文件名都不同，不会和上一版混淆。
 
 解压到一个**路径不含空格和中文**的目录（例如 `D:\clings`），双击 `clings.cmd`：
 
@@ -36,6 +41,13 @@ clings.cmd doctor               :: 打印工具链信息
 分发包自带编译器（w64devkit）和 Python，不需要安装、不需要管理员权限、
 不需要改 PATH。`-slim.zip` 不含 `runtime\`，需要自己准备 Python 3 和
 MinGW-w64 GCC。
+
+命令行颜色会自动适应当前的终端：Windows Terminal 和现代控制台上是彩色的，
+在不认识 ANSI 的老式控制台上自动退回纯文本，不会打出 `[36m` 这类转义码。
+想手动控制，就在同一个窗口里先设环境变量再运行——cmd 里用
+`set CLINGS_COLOR=always`，PowerShell 里用 `$env:CLINGS_COLOR="always"`；
+`never` 关掉颜色，通用的 `NO_COLOR` 也认。`clings.cmd doctor` 会打印它当前
+的判断和原因。
 
 ## 维护者怎么用
 
@@ -61,7 +73,7 @@ make package         # 产出 dist/ 下的 slim 和 full 两个 zip
 
 ```text
 clings-win/
-├── clings              # 运行器：上游版本 + 3 处 Windows 适配（生成物）
+├── clings              # 运行器：上游版本 + Windows 适配（生成物）
 ├── clings.cmd          # Windows 双击入口：找 Python、加 PATH、转交 CLI
 ├── exercises/          # 生成物：初始练习
 ├── solutions/          # 生成物：参考答案
@@ -73,7 +85,7 @@ clings-win/
 │   └── windows-smoke-test.md  # 真机人工验收清单
 ├── tools/
 │   ├── sync_from_source.py  # 从上游生成孪生工程
-│   ├── windows_overrides.py # 唯一手写的平台差异
+│   ├── windows_overrides.py # 手写的平台差异：12 个练习的 Windows 变体
 │   ├── winbox.sh            # 免 root 的 mingw-w64 + Wine 工具箱
 │   ├── windows-check.sh     # 交叉编译 + Wine 全量回归
 │   └── package_windows.py   # 打学习者分发包

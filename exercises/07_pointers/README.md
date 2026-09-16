@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_pointer_basics
+```bat
+clings.cmd run 01_pointer_basics
 ```
 
 | 练习 | 目标 |

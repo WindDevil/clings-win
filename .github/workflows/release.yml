@@ -32,6 +32,11 @@ jobs:
       - name: Sync the twin from upstream
         run: python tools/sync_from_source.py --source upstream
 
+      # A release is the worst place to discover that the twin drifted from
+      # upstream, and the LF-writing rule in tools/ only misbehaves on Windows.
+      - name: Twin matches upstream
+        run: python tools/sync_from_source.py --source upstream --check
+
       - name: Use the runner's MinGW-w64 toolchain
         run: |
           echo "CC=gcc" >> $env:GITHUB_ENV

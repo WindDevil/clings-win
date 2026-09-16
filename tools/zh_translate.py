@@ -3,7 +3,9 @@
 
 Runs as the last step of ``make sync``, after the Windows overrides, so the
 exercise files that learners open are Chinese while identifiers, API names and
-format specifiers stay English.
+format specifiers stay English.  It also rewrites the one POSIX-ism the topic
+READMEs hand to a Windows learner: the ``./clings`` command line (see
+``windows_command``).
 
 Any English text without an entry is reported.  ``--strict`` (what sync and CI
 use) turns that report into a failure, so an upstream text change shows up as a
@@ -27,6 +29,13 @@ SOURCE_SUFFIXES = (".c", ".h")
 MARKDOWN_DIR = "exercises"
 
 CJK = re.compile(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]")
+# `./clings run 01_printf` is how the topic READMEs tell a learner to start an
+# exercise, but this twin is Windows-only: cmd.exe reads a leading "./" as the
+# name of a command called ".", so the command as written cannot run there.
+POSIX_INVOCATION = re.compile(r"^(\s*)\./clings\b", re.MULTILINE)
+# Upstream tags that block ```sh; once the command inside it is a cmd command
+# the tag is wrong too, and this is the only fence the topic pages have.
+WINDOWS_FENCE = re.compile(r"```sh\n(clings\.cmd [^\n]*\n)```")
 FIELD_LINE = re.compile(r"^(title|objective|hint): (.*)$")
 EXERCISE_LINE = re.compile(r"^clings exercise: (.*)$")
 README_TABLE_ROW = re.compile(r"^\| `([^`]+)` \| (.*) \|$")
@@ -141,6 +150,18 @@ def translate_source(path: Path, report: Report) -> str:
     return "".join(output)
 
 
+def windows_command(line: str) -> str:
+    """Turn `./clings run x` into `clings.cmd run x`.
+
+    The topic READMEs are upstream's, and upstream's readers are on POSIX.
+    Here the reader is on Windows, where `./clings` is not a command: cmd.exe
+    looks for a program named "." and fails before anything runs.  The twin's
+    own README documents `clings.cmd`, so the topic pages have to say the same
+    thing or the first command a beginner copies out of them is a dead end.
+    """
+    return POSIX_INVOCATION.sub(r"\1clings.cmd", line)
+
+
 def translate_readme(path: Path, report: Report) -> str:
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
     output: list[str] = []
@@ -153,13 +174,13 @@ def translate_readme(path: Path, report: Report) -> str:
         stripped = body.strip()
 
         # Commands and sample output inside fenced blocks are not prose: leave
-        # them exactly as they are.
+        # them alone, apart from the one POSIX invocation Windows cannot run.
         if stripped.startswith("```"):
             in_fence = not in_fence
             output.append(body + newline)
             continue
         if in_fence:
-            output.append(body + newline)
+            output.append(windows_command(body) + newline)
             continue
 
         if stripped in LINES:
@@ -189,7 +210,7 @@ def translate_readme(path: Path, report: Report) -> str:
 
         report.add(f"{path}: markdown line", stripped)
         output.append(body + newline)
-    return "".join(output)
+    return WINDOWS_FENCE.sub(r"```bat\n\1```", "".join(output))
 
 
 def translate_tree(root: Path, report: Report) -> None:
@@ -200,10 +221,14 @@ def translate_tree(root: Path, report: Report) -> None:
         for path in sorted(base.rglob("*")):
             if not path.is_file():
                 continue
+            # write_bytes: text mode writes CRLF on Windows, which makes every
+            # generated file differ from its upstream counterpart byte for byte
+            # and so makes sync_from_source.py --check fail on a Windows
+            # checkout.  (write_text grew newline= only in 3.10.)
             if path.suffix in SOURCE_SUFFIXES:
-                path.write_text(translate_source(path, report), encoding="utf-8")
+                path.write_bytes(translate_source(path, report).encode("utf-8"))
             elif path.name == "README.md" and directory == MARKDOWN_DIR:
-                path.write_text(translate_readme(path, report), encoding="utf-8")
+                path.write_bytes(translate_readme(path, report).encode("utf-8"))
 
 
 def rewrite(path: Path, report: Report, strict: bool) -> None:

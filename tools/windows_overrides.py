@@ -1,8 +1,10 @@
 """Windows variants for the few clings exercises that are not portable as written.
 
-This module is the only hand-written difference between the upstream clings
-tree and the Windows twin.  Everything else is copied verbatim by
-tools/sync_from_source.py, so the two projects cannot drift apart.
+This module holds the exercise-level hand-written differences between the
+upstream clings tree and the Windows twin; the runner's own adaptations live in
+``RUNNER_PATCHES`` in tools/sync_from_source.py, and the translations in
+tools/zh_glossary.py.  Those three places aside, everything is copied verbatim
+by tools/sync_from_source.py, so the two projects cannot drift apart.
 
 Two kinds of overrides exist:
 
@@ -246,7 +248,9 @@ def _replace_once(path: Path, old: str, new: str) -> None:
             f"windows override mismatch in {path}: expected 1 occurrence of\n"
             f"---\n{old}---\nfound {occurrences}"
         )
-    path.write_text(text.replace(old, new), encoding="utf-8")
+    # write_bytes: text mode would translate "\n" to os.linesep on Windows and
+    # break the byte-for-byte contract with the upstream tree.
+    path.write_bytes(text.replace(old, new).encode("utf-8"))
 
 
 def apply(root: Path) -> None:
@@ -282,4 +286,4 @@ def apply(root: Path) -> None:
         for target, text in pairs:
             if not target.is_file():
                 raise SystemExit(f"windows override target missing: {target}")
-            target.write_text(text, encoding="utf-8")
+            target.write_bytes(text.encode("utf-8"))

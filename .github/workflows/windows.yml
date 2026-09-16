@@ -61,6 +61,21 @@ jobs:
             python3 clings verify --verbose
             python3 clings selftest
           '
+      # Upstream's users run on POSIX terminals, so the runner has to keep
+      # colouring them.  A pipe cannot show that (the runner switches colour
+      # off for anything that is not a terminal, by design) - only a pty can,
+      # and `script` is the cheap way to get one.
+      - name: Colour on a POSIX terminal
+        run: |
+          script -qec "python3 clings list" /dev/null > colour.txt
+          if grep -q $'\033' colour.txt; then
+            echo "colour on a pty: ok"
+          else
+            echo "runner did not colour a POSIX terminal"; exit 1
+          fi
+          if NO_COLOR=1 script -qec "python3 clings list" /dev/null | grep -q $'\033'; then
+            echo "NO_COLOR ignored on a pty"; exit 1
+          fi
 
   # Ground truth: a real Windows runner with a real MinGW toolchain.
   real-windows:
@@ -77,6 +92,11 @@ jobs:
           path: upstream
       - name: Sync twin
         run: python tools/sync_from_source.py --source upstream
+      # ...and then prove the tree it just wrote is byte-identical to upstream
+      # plus patches.  The ubuntu job cannot catch a regression here: text mode
+      # writes LF there for free, and CRLF only ever appears on Windows.
+      - name: Twin matches upstream
+        run: python tools/sync_from_source.py --source upstream --check
       - name: Use the runner's MinGW-w64 toolchain
         run: |
           echo "CC=gcc" >> $env:GITHUB_ENV
@@ -93,6 +113,31 @@ jobs:
         run: python clings verify --verbose
       - name: Exercises still start unsolved
         run: python clings selftest
+      # Escapes must not reach a pipe, and forcing them must still work: a
+      # learner pasting a failing run into a chat is the case that hurts.
+      # (A real console, where clings turns VT processing on itself, is
+      # covered by the manual smoke test - CI has no console to render to.)
+      - name: Colour stays out of pipelines
+        run: |
+          $esc = [char]27
+          [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
+          if ((python clings list | Out-String).Contains($esc)) {
+            throw "escapes leaked into piped output"
+          }
+          $env:CLINGS_COLOR = "always"
+          if (-not (python clings list | Out-String).Contains($esc)) {
+            throw "CLINGS_COLOR=always was ignored"
+          }
+          Remove-Item Env:\CLINGS_COLOR
+          $env:NO_COLOR = "1"
+          if ((python clings list | Out-String).Contains($esc)) {
+            throw "NO_COLOR was ignored"
+          }
+          Remove-Item Env:\NO_COLOR
+          if (-not (python clings doctor | Out-String).Contains("颜色")) {
+            throw "doctor does not report the colour decision"
+          }
+          Write-Host "colour policy ok"
       - name: Build the beginner package
         run: python tools/package_windows.py --flavor slim
       - name: Upload the package

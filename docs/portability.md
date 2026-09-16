@@ -55,6 +55,11 @@ Windows 机器的前提下如何获得闭环反馈。
 标识符、函数名、格式说明符、`TODO:` 前缀和命令保持英文：新手要在报错信息、
 教材和 Stack Overflow 之间对照，翻译这些只会增加噪音。
 
+唯一的例外是 20 个主题页里的 `./clings run <slug>`：那是写给 POSIX 读者的，
+而 cmd.exe 会把开头的 `./` 当成一个叫 `.` 的命令，直接报"不是内部或外部命令"。
+翻译层把它改写成 `clings.cmd run <slug>`，围栏标记也从 `sh` 改成 `bat`，
+和本工程 README 的写法一致（见 `tools/zh_translate.py` 里的 `windows_command`）。
+
 翻译过程中发现的两个 Windows 细节：
 
 - `chcp 65001` 只切换控制台，Python 仍然按控制台代码页编码 stdout，在
@@ -64,6 +69,66 @@ Windows 机器的前提下如何获得闭环反馈。
 - 这个崩溃只有在「解压后的完整包 + 自带 Python」下才会出现，Linux 上的
   `clings verify` 永远碰不到。它属于 T1 回路该抓的问题。
 
+## 控制台颜色
+
+上游的运行器用 ANSI 转义序列上色（`\033[36mrunning\033[0m`，本工程译作
+`\033[36m运行\033[0m`）。Linux 终端默认解释这些转义，Windows 控制台**不会**：
+进程必须打开控制台输出模式里的**两个**位——`ENABLE_VIRTUAL_TERMINAL_PROCESSING`
+和 `ENABLE_PROCESSED_OUTPUT`——否则 conhost 把转义当成普通字符存进屏幕缓冲区，
+学员看到的就是 `?[36m运行?[0m` 这种噪声。
+
+这不是猜测，是在真 Windows 控制台上量出来的（往 `CONOUT$` 写一行带转义的文本，
+再用 `ReadConsoleOutputCharacter` 读回来）：
+
+| 控制台模式 | 屏幕缓冲区里实际存的内容 |
+| --- | --- |
+| `0x3` / `0x4` / `0x6`（缺 `ENABLE_PROCESSED_OUTPUT`） | `'Q\x1b[36mXY\x1b[0mZ'`（原样存下，屏幕上就是噪声） |
+| `0x5` / `0x7`（两个位都有） | `'QXYZ'`（转义被解释，颜色生效） |
+
+`ENABLE_PROCESSED_OUTPUT` 这个位容易漏：只打开 VT 位是不够的，`0x4` 和 `0x6`
+都把转义原样留在缓冲区里。而全新控制台的模式是 `0x3`，在它上面 `| 0x5` 之后
+恰好两个位都有，于是"随手试一下能用"会把差别掩盖过去——上游那句
+`sys.stdout.isatty()` 就是踩在这里：isatty 为真不等于控制台会解释转义。
+`clings` 因此两个位都显式检查、显式设置。
+
+因此运行器的 `color()` 换成了一套显式策略：
+
+- `CLINGS_COLOR=always` / `never` 优先，用来自动化测试和"猜错了"的学员；
+- 其次是通行的 `NO_COLOR`（<https://no-color.org/>）；
+- 然后是自动判断：不是终端就关颜色；是终端就调用一次
+  `GetConsoleMode` / `SetConsoleMode`，控制台不接受 ANSI 时**退回纯文本**，
+  而不是把转义码打到屏幕上。`GetConsoleMode` 失败说明这个句柄根本不是
+  Windows 控制台（重定向到文件、`NUL` 这类字符设备、或者管道式伪终端），
+  没有 conhost 需要说服。
+
+三个容易记错的细节，都在真机上量过：
+
+- **ConPTY 之下的 mintty 走得通**：原生 Windows Python 在那里 `isatty()` 为真、
+  `GetConsoleMode` 成功且模式已经是 `0x7`（VT 已开），所以走的是"已经支持"
+  那条分支，而不是上面的失败分支。
+- **管道式伪终端（Git Bash 默认路径）根本没有颜色**：那里的 stdout 连
+  `isatty()` 都是假，运行器按"输出不是终端"关闭颜色，`doctor` 会这么说。
+  想在 Git Bash 里看颜色，用 `CLINGS_COLOR=always`——不要指望自动判断，
+  它优先相信 `isatty()`。
+- **颜色模式属于屏幕缓冲区，不属于进程**：`SetConsoleMode` 打开的两个位会被
+  同一个窗口里的其它程序继承，并且在 `clings` 退出后仍然有效（`git`、`gcc`
+  这些程序同样如此）。所以 `clings` 只负责打开，不负责还原。
+
+`clings doctor` 会打印当前判断和原因，用来确认"这一台机器到底走的是哪条路"：
+
+```text
+颜色:     开启
+颜色:     关闭（控制台不支持 ANSI）
+```
+
+## 维护工具在 Windows 上
+
+`tools/` 里的生成脚本原先用 `Path.write_text()` 写文件，它默认把 `\n` 翻译成
+`os.linesep`，所以在 Windows 上生成的整棵树比上游多一个字节/行，
+`sync_from_source.py --check` 会把每个文件都报成 `differs`——`make check`
+在 Windows 上等于永远失败，只有 Linux CI 能给出真话。现在每个写生成物的
+地方都显式 `newline="\n"`，Windows 上的 `make check` 和 CI 结论一致。
+
 ## 发布包
 
 `make package` 产出两个 zip，对应两种真实情况：
@@ -72,6 +137,10 @@ Windows 机器的前提下如何获得闭环反馈。
 | --- | --- | ---: | --- |
 | `-full.zip` | 练习 + w64devkit + 嵌入式 Python | 约 190 MB | 机器上没有任何开发工具的人 |
 | `-slim.zip` | 只有练习 | 约 0.4 MB | 已经有 Python 3 和 MinGW-w64 GCC 的人 |
+
+文件名里的 `<commit>` 是**本仓库**的 commit。早先用的是上游 commit，结果每次重建
+（包括修掉控制台颜色那次）都和上一个坏包同名，下载目录里两个不同的 zip 重名，
+分不出哪个是修好的。上游 commit 仍然记在 `docs/provenance.md` 和 Release 说明里。
 
 打 tag（`v*`）会触发 [`.github/workflows/release.yml`](../.github/workflows/release.yml)：
 在真 Windows runner 上先 `verify` + `selftest`，再拉取 w64devkit 和 Python 打进

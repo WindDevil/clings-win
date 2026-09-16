@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_object_macro
+```bat
+clings.cmd run 01_object_macro
 ```
 
 | 练习 | 目标 |

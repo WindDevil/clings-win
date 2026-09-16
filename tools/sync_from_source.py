@@ -34,10 +34,126 @@ COPY_DIRS = ("include", "exercises", "solutions", "templates")
 COPY_FILES = ("clings", "LICENSE")
 GENERATED = COPY_DIRS + COPY_FILES + ("docs/provenance.md",)
 
+# Upstream's colour helper assumes the terminal renders ANSI escapes.  Windows
+# consoles only do once the process asks for ENABLE_VIRTUAL_TERMINAL_PROCESSING,
+# and the first console a learner meets is the one where a stray "\033[36m"
+# turns a friendly line into noise.  Swapped wholesale rather than line by
+# line; the reasoning is written up in docs/portability.md.
+UPSTREAM_COLOR = '''def color(text: str, code: str) -> str:
+    if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
+        return text
+    return f"\\033[{code}m{text}\\033[0m"
+'''
+WINDOWS_COLOR = '''# Colour is decoration: every message says the same thing with the escapes
+# stripped, so a console that cannot render ANSI gets plain text instead.
+#
+# A Windows console needs *two* output-mode bits before it interprets
+# "\\033[36m": ENABLE_VIRTUAL_TERMINAL_PROCESSING and ENABLE_PROCESSED_OUTPUT.
+# With only the first one set conhost stores the escape in the screen buffer as
+# ordinary characters, which is what turns "运行" into "?[36m运行?[0m" in cmd and
+# in Windows PowerShell.  Measured on Windows 10 by writing an escape into a
+# console and reading the buffer back: mode 0x4 and 0x6 stay literal, 0x5 and
+# 0x7 render the colour.
+#
+# The mode belongs to the console screen buffer, not to this process: it is
+# shared with everything else attached to that window and it outlives clings,
+# so switching the bits on is a change the learner's shell inherits.
+STD_OUTPUT_HANDLE = -11
+ENABLE_PROCESSED_OUTPUT = 0x0001
+ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+ANSI_CONSOLE_MODE = ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING
+# The answer cannot change while the process runs, so it is worth one probe.
+_ansi_console: bool | None = None
+
+
+def enable_ansi_console() -> bool:
+    """Ask the console behind stdout to render ANSI escapes.
+
+    False means it will not, and colour has to go.  On Windows the console
+    needs both output-mode bits above before it interprets an escape, and
+    SetConsoleMode refuses a handle that is not a console (a pipe or a file) as
+    well as consoles older than Windows 10.  A GetConsoleMode that fails means
+    the handle is not a Windows console at all - redirected output, a
+    character device such as NUL, or a pipe-backed pseudo terminal - so there
+    is no conhost to convince.  (A ConPTY-backed mintty succeeds here with VT
+    already on; a Git Bash pty is not even a tty, so color_off_reason has
+    already decided before this probe is reached.)
+    """
+    global _ansi_console
+    if _ansi_console is not None:
+        return _ansi_console
+    if os.name != "nt":
+        _ansi_console = True
+        return _ansi_console
+    try:
+        import ctypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.GetStdHandle.argtypes = [ctypes.c_uint32]
+        kernel32.GetStdHandle.restype = ctypes.c_void_p
+        kernel32.GetConsoleMode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint32),
+        ]
+        kernel32.SetConsoleMode.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+        mode = ctypes.c_uint32()
+        handle = kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+        if not kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+            _ansi_console = True
+        elif (mode.value & ANSI_CONSOLE_MODE) == ANSI_CONSOLE_MODE:
+            _ansi_console = True
+        else:
+            wanted = mode.value | ANSI_CONSOLE_MODE
+            _ansi_console = bool(kernel32.SetConsoleMode(handle, wanted))
+    except (AttributeError, ImportError, OSError, ValueError):
+        # A Python whose _ctypes cannot load raises ImportError here; colour is
+        # decoration, so it costs plain text and not a traceback.
+        _ansi_console = False
+    return _ansi_console
+
+
+def color_off_reason() -> str:
+    """Why the output is plain text, or "" when it carries colour.
+
+    CLINGS_COLOR decides first, because it is what a learner reaches for when
+    the guess is wrong and what the CI job pins down; then the NO_COLOR
+    convention (https://no-color.org/); then auto detection.
+    """
+    choice = os.environ.get("CLINGS_COLOR", "auto").strip().lower()
+    if choice == "never":
+        return "CLINGS_COLOR=never"
+    if choice != "always":
+        if os.environ.get("NO_COLOR"):
+            return "NO_COLOR 已设置"
+        # A missing stdout (pythonw, or a shell that closed fd 1) is not a
+        # terminal either, and asking it would raise instead of answering.
+        try:
+            interactive = sys.stdout is not None and sys.stdout.isatty()
+        except ValueError:
+            interactive = False
+        if not interactive:
+            return "输出不是终端"
+        if not enable_ansi_console():
+            return "控制台不支持 ANSI"
+        return ""
+    # Forced on.  A Windows console still has to be asked to render the
+    # escapes, or CLINGS_COLOR=always would print them as literal text in the
+    # very consoles this whole dance exists to keep readable.
+    enable_ansi_console()
+    return ""
+
+
+def color(text: str, code: str) -> str:
+    if color_off_reason():
+        return text
+    return f"\\033[{code}m{text}\\033[0m"
+'''
+
 # The runner is copied too, then patched with these exact replacements.  Every
 # replacement must match exactly once; otherwise upstream changed the runner
 # and this script has to be revisited.
 RUNNER_PATCHES: list[tuple[str, str]] = [
+    (UPSTREAM_COLOR, WINDOWS_COLOR),
     (
         'DEFAULT_LDLIBS = ["-lm", "-pthread"]\n'
         'if sys.platform.startswith("linux"):\n'
@@ -114,6 +230,14 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
         "def main(argv: list[str] | None = None) -> int:\n"
         "    configure_output()\n"
         "    parser = build_parser()\n",
+    ),
+    (
+        "    print(f\"flags:    {' '.join(cflags())}\")\n",
+        "    print(f\"flags:    {' '.join(cflags())}\")\n"
+        "    # The first thing to check when colour comes out as escape codes:\n"
+        "    # which console is this, and did clings decide it can show them?\n"
+        "    reason = color_off_reason()\n"
+        "    print(f\"颜色:     {'开启' if not reason else '关闭（' + reason + '）'}\")\n",
     ),
 ]
 
@@ -205,15 +329,20 @@ def render(source: Path, destination: Path) -> None:
         text = normalized_bytes(origin).decode("utf-8")
         if name == "clings":
             text = patch_runner(text)
-        (destination / name).write_text(text, encoding="utf-8")
+        # write_bytes, not write_text: text mode translates every "\n" to
+        # os.linesep, so a maintainer running --check on Windows would see the
+        # whole tree differ by one byte per line.  The twin is LF everywhere
+        # (.gitattributes).  (write_text grew a newline= argument only in 3.10,
+        # and these tools run under whatever Python the maintainer has.)
+        (destination / name).write_bytes(text.encode("utf-8"))
     (destination / "clings").chmod(0o755)
 
     overrides.apply(destination)
 
     docs = destination / "docs"
     docs.mkdir(parents=True, exist_ok=True)
-    (docs / "provenance.md").write_text(
-        provenance(source, destination), encoding="utf-8"
+    (docs / "provenance.md").write_bytes(
+        provenance(source, destination).encode("utf-8")
     )
 
     report = zh_translate.Report()

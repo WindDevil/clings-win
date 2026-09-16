@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_if_else
+```bat
+clings.cmd run 01_if_else
 ```
 
 | 练习 | 目标 |

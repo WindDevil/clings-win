@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
@@ -52,8 +53,36 @@ def upstream_commit() -> str:
     return "dev"
 
 
+def twin_commit() -> str:
+    """The commit this package was built from, or "" outside a git checkout."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short=12", "HEAD"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+    return result.stdout.strip()
+
+
+def package_version() -> str:
+    """What goes in the file name.
+
+    The twin commit, not the upstream one: this name has to tell two builds of
+    the same exercises apart, and the exercises are only half of what changed
+    here.  Naming the zip after upstream meant every rebuild - including the
+    one that fixed the console colours - produced the same file name as the
+    broken build before it.  Upstream provenance is still recorded in
+    docs/provenance.md and in the release notes.
+    """
+    return twin_commit() or upstream_commit()
+
+
 def build(with_runtime: bool, out_dir: Path, allow_missing_runtime: bool) -> Path:
-    version = upstream_commit()
+    version = package_version()
     flavor = "full" if with_runtime else "slim"
     package = f"clings-win-{version}-{flavor}"
     out_dir.mkdir(parents=True, exist_ok=True)

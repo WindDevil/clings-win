@@ -8,3 +8,8 @@ __pycache__/
 *.obj
 *.exe
 *.zip
+
+# 00_basics/03_scanf writes these in the working directory (the Windows
+# override drops the /tmp prefix) and its test deletes them at the end, so a
+# failing run - the intended initial state - leaves them behind.
+clings_scanf_*.txt

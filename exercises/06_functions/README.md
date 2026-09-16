@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_declaration_definition
+```bat
+clings.cmd run 01_declaration_definition
 ```
 
 | 练习 | 目标 |

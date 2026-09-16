@@ -2,8 +2,8 @@
 
 运行练习：
 
-```sh
-./clings run 01_fprintf_fscanf
+```bat
+clings.cmd run 01_fprintf_fscanf
 ```
 
 | 练习 | 目标 |
