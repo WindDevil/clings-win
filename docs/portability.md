@@ -5,7 +5,7 @@ Windows 机器的前提下如何获得闭环反馈。
 
 ## 结论
 
-185 个练习里只有 5 个需要 Windows 变体，其余原样可用。因此孪生工程采用
+185 个练习里只有 6 个需要 Windows 变体，其余原样可用。因此孪生工程采用
 「同步 + 覆盖表」结构，而不是维护两套练习。
 
 ## 实测数据
@@ -29,6 +29,7 @@ Windows 机器的前提下如何获得闭环反馈。
 | --- | --- | --- | --- |
 | `03_types_variables/01_integer_types` | `(long)INT_MAX + 1L` | Windows 是 LLP64，`long` 只有 32 位，表达式溢出，`-Werror=overflow` 直接编译失败 | 只在 `sizeof(long) > sizeof(int)` 时取下一个值，并在 `else` 分支断言 `sizeof(long) == sizeof(int)`，把数据模型差异变成学习点 |
 | `12_standard_library/11_environment` | `setenv` / `unsetenv` | POSIX 接口，MSVCRT/UCRT 没有 | `_putenv_s(name, value)` / `_putenv_s(name, "")` |
+| `12_standard_library/15_rand_max` | 初始代码 `RAND_MAX == 32767` | 这个破绽在 glibc 上不成立（`RAND_MAX` 是 2147483647），但在 Microsoft CRT 上恰好为真，练习会一开局就通过 | 只改初始练习和模板：`RAND_MAX > 32767`，保留「保证的最小值是闭区间」这一教学点 |
 | `13_character_io/02_eof_ferror` | `CLINGS_CHECK_INT(feof(f), 1)` | Microsoft CRT 的 `feof` 返回内部标志（`0x10`），不是 1 | 断言改为 `feof(f) != 0` |
 | `17_translation_units/05_dynamic_linking` | `dlopen` / `dlsym` / `dlclose` | POSIX 动态加载，Windows 没有 `dlfcn.h` | `LoadLibraryA` / `GetProcAddress` / `FreeLibrary`，库名换成 `msvcrt.dll` |
 | `19_modern_c_library/01_noreturn` | `fork` / `waitpid` | Windows 没有 `fork` | 子进程改为「用 `child` 参数重新执行自己」+ `_spawnv` / `_cwait` |
