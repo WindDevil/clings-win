@@ -92,7 +92,7 @@ jobs:
       - name: Verify every solution
         run: python clings verify --verbose
       - name: Exercises still start unsolved
-        run: python clings selftest --verbose
+        run: python clings selftest
       - name: Build the beginner package
         run: python tools/package_windows.py
       - name: Upload the package

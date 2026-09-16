@@ -41,7 +41,7 @@ jobs:
         run: python clings verify --verbose
 
       - name: Exercises still start unsolved
-        run: python clings selftest --verbose
+        run: python clings selftest
 
       # The full package bundles the toolchain a learner would otherwise have to
       # install: w64devkit (mingw-w64 + make + gdb) and the embeddable Python.
