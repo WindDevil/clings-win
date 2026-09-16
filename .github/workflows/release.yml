@@ -86,4 +86,5 @@ jobs:
             下载 `-slim.zip`：只有练习本身。需要自己准备 Python 3 和 MinGW-w64 GCC。
 
             练习内容和上游 [clings](https://github.com/${{ env.UPSTREAM_REPOSITORY }}) 保持一致，
-            注释、标题和提示已译成中文，其中 6 个练习针对 Windows 做了平台适配。
+            注释、标题和提示已译成中文。少数练习针对 Windows 做了平台适配，
+            清单和原因见仓库里的 `docs/portability.md`。
