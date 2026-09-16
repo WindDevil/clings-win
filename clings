@@ -331,6 +331,17 @@ def exec_prefix() -> list[str]:
     return shlex.split(os.environ.get("CLINGS_EXEC_PREFIX", ""))
 
 
+def launcher() -> str:
+    """How the learner names this script on the command line.
+
+    The two Windows shells agree on exactly one spelling.  cmd.exe reads
+    a leading './' as a command named '.', and PowerShell does not look
+    in the current directory at all, so './clings' and a bare 'clings'
+    each fail in one of them while .\\.clings.cmd works in both.
+    """
+    return r".\clings.cmd" if WINDOWS_TARGET else "./clings"
+
+
 def cflags() -> list[str]:
     extra = os.environ.get("CFLAGS", "")
     return DEFAULT_CFLAGS + shlex.split(extra)
@@ -486,7 +497,7 @@ def command_list(args: argparse.Namespace) -> int:
 def command_next(args: argparse.Namespace) -> int:
     exercise = resolve_exercise(args.exercise)
     if exercise is None:
-        print(green("所有练习都完成了。可以运行 `./clings verify` 做一次全量校验。"))
+        print(green(f"所有练习都完成了。可以运行 `{launcher()} verify` 做一次全量校验。"))
         return 0
     print_exercise(exercise, load_progress())
     return 0
@@ -503,7 +514,7 @@ def command_run(args: argparse.Namespace) -> int:
     else:
         exercise = resolve_exercise(args.exercise)
         if exercise is None:
-            print(green("所有练习都完成了。可以运行 `./clings verify` 做一次全量校验。"))
+            print(green(f"所有练习都完成了。可以运行 `{launcher()} verify` 做一次全量校验。"))
             return 0
         targets = [exercise]
 

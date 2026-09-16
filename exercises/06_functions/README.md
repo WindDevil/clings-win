@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_declaration_definition
+.\clings.cmd run 01_declaration_definition
 ```
 
 | 练习 | 目标 |

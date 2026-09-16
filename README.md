@@ -28,15 +28,18 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 解压到一个**路径不含空格和中文**的目录（例如 `D:\clings`），双击 `clings.cmd`：
 
 ```bat
-clings.cmd list                 :: 列出全部练习
-clings.cmd run                  :: 编译并运行下一个未完成练习
-clings.cmd run 01_printf        :: 运行指定练习
-clings.cmd hint 01_printf       :: 看提示
-clings.cmd solution 01_printf   :: 看参考答案
-clings.cmd reset 01_printf      :: 恢复初始文件
-clings.cmd verify               :: 校验全部参考答案
-clings.cmd doctor               :: 打印工具链信息
+.\clings.cmd list                 :: 列出全部练习
+.\clings.cmd run                  :: 编译并运行下一个未完成练习
+.\clings.cmd run 01_printf        :: 运行指定练习
+.\clings.cmd hint 01_printf       :: 看提示
+.\clings.cmd solution 01_printf   :: 看参考答案
+.\clings.cmd reset 01_printf      :: 恢复初始文件
+.\clings.cmd verify               :: 校验全部参考答案
+.\clings.cmd doctor               :: 打印工具链信息
 ```
+
+开头的 `.\` 是给 PowerShell 看的：它不会在当前目录里找命令，写 `clings.cmd`
+会报"无法识别"。cmd.exe 两种写法都认，所以 `.\clings.cmd` 是两边都能用的一种。
 
 分发包自带编译器（w64devkit）和 Python，不需要安装、不需要管理员权限、
 不需要改 PATH。`-slim.zip` 不含 `runtime\`，需要自己准备 Python 3 和

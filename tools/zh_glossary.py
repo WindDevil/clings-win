@@ -1354,8 +1354,11 @@ RUNNER: list[tuple[str, str]] = [
      'green("已完成") if exercise.ident in completed else yellow("待完成")'),
     ('print(f"\\n{completed_count}/{len(exercises)} completed")',
      'print(f"\\n已完成 {completed_count}/{len(exercises)}")'),
+    # The command in this message is read on the learner's own shell, so it has
+    # to be the spelling both Windows shells accept - see launcher() in the
+    # runner patches.
     ('print(green("All exercises are complete. Try `./clings verify`."))',
-     'print(green("所有练习都完成了。可以运行 `./clings verify` 做一次全量校验。"))'),
+     'print(green(f"所有练习都完成了。可以运行 `{launcher()} verify` 做一次全量校验。"))'),
     ('print(f"\\n{cyan(\'running\')} {exercise.ident} - {exercise.title}")',
      'print(f"\\n{cyan(\'运行\')} {exercise.ident} - {exercise.title}")'),
     ('print(green("  passed"))', 'print(green("  通过"))'),

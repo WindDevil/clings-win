@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_array_basics
+.\clings.cmd run 01_array_basics
 ```
 
 | 练习 | 目标 |

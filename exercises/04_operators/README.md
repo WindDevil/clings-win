@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_arithmetic
+.\clings.cmd run 01_arithmetic
 ```
 
 | 练习 | 目标 |

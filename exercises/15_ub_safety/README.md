@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_signed_overflow
+.\clings.cmd run 01_signed_overflow
 ```
 
 | 练习 | 目标 |

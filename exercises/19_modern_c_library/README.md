@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_noreturn
+.\clings.cmd run 01_noreturn
 ```
 
 | 练习 | 目标 |

@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_base_conversion
+.\clings.cmd run 01_base_conversion
 ```
 
 | 练习 | 目标 |

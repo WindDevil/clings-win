@@ -57,8 +57,21 @@ Windows 机器的前提下如何获得闭环反馈。
 
 唯一的例外是 20 个主题页里的 `./clings run <slug>`：那是写给 POSIX 读者的，
 而 cmd.exe 会把开头的 `./` 当成一个叫 `.` 的命令，直接报"不是内部或外部命令"。
-翻译层把它改写成 `clings.cmd run <slug>`，围栏标记也从 `sh` 改成 `bat`，
+翻译层把它改写成 `.\clings.cmd run <slug>`，围栏标记也从 `sh` 改成 `bat`，
 和本工程 README 的写法一致（见 `tools/zh_translate.py` 里的 `windows_command`）。
+
+开头的 `.\` 不是随手加的：**两个 Windows shell 只有这一种写法都能用**。
+
+| 写法 | cmd.exe | PowerShell |
+| --- | --- | --- |
+| `./clings` | 报"不是内部或外部命令" | 报"不是内部或外部命令" |
+| `clings.cmd` | 能用（默认设置下 cmd 会先找当前目录） | 报"无法将…识别为 cmdlet" |
+| `.\clings.cmd` | 能用 | 能用 |
+
+裸 `clings.cmd` 在 PowerShell 里必失败，因为 PowerShell 从不搜索当前目录；
+在 cmd 里能不能用则取决于 `NoDefaultCurrentDirectoryInExePath`——设了这个环境
+变量（不少加固过的机器会设）之后同样失败。运行器在所有练习做完后提示的那句
+`verify` 走的也是同一个 `launcher()`。
 
 翻译过程中发现的两个 Windows 细节：
 
@@ -126,8 +139,13 @@ Windows 机器的前提下如何获得闭环反馈。
 `tools/` 里的生成脚本原先用 `Path.write_text()` 写文件，它默认把 `\n` 翻译成
 `os.linesep`，所以在 Windows 上生成的整棵树比上游多一个字节/行，
 `sync_from_source.py --check` 会把每个文件都报成 `differs`——`make check`
-在 Windows 上等于永远失败，只有 Linux CI 能给出真话。现在每个写生成物的
-地方都显式 `newline="\n"`，Windows 上的 `make check` 和 CI 结论一致。
+在 Windows 上等于永远失败，只有 Linux CI 能给出真话。
+
+写生成物的地方现在一律走 `Path.write_bytes(text.encode("utf-8"))`。不用
+`write_text(..., newline="\n")` 是为了兼容：`newline=` 参数 Python 3.10 才有，
+而维护者用的是自己机器上的 Python。`write_bytes` 没有换行翻译这一步，从
+Python 3.8 到 3.13 行为一致，也就没有"在新 Python 上绿、在旧 Python 上红"
+的可能。Windows 上的 `make check` 和 CI 结论一致。
 
 ## 发布包
 
@@ -140,7 +158,12 @@ Windows 机器的前提下如何获得闭环反馈。
 
 文件名里的 `<commit>` 是**本仓库**的 commit。早先用的是上游 commit，结果每次重建
 （包括修掉控制台颜色那次）都和上一个坏包同名，下载目录里两个不同的 zip 重名，
-分不出哪个是修好的。上游 commit 仍然记在 `docs/provenance.md` 和 Release 说明里。
+分不出哪个是修好的。
+
+上游 commit 只记在 `docs/provenance.md` 和包内的同一份文件里——**Release 说明里
+没有**。说明正文是 `release.yml` 里写死的 `body:`，每次发布都一模一样，不会跟着
+commit 走；包名改用本仓库 commit 之后，上游 commit 在 Release 页面上就不再出现了。
+要核对上游版本，看 `docs/provenance.md`，别看 Release 页面。
 
 打 tag（`v*`）会触发 [`.github/workflows/release.yml`](../.github/workflows/release.yml)：
 在真 Windows runner 上先 `verify` + `selftest`，再拉取 w64devkit 和 Python 打进

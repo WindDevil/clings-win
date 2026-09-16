@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_printf
+.\clings.cmd run 01_printf
 ```
 
 | 练习 | 目标 |

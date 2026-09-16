@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_integer_types
+.\clings.cmd run 01_integer_types
 ```
 
 | 练习 | 目标 |

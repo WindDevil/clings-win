@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_getc_putc
+.\clings.cmd run 01_getc_putc
 ```
 
 | 练习 | 目标 |

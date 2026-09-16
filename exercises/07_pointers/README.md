@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_pointer_basics
+.\clings.cmd run 01_pointer_basics
 ```
 
 | 练习 | 目标 |

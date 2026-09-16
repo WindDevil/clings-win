@@ -4,8 +4,8 @@
 Runs as the last step of ``make sync``, after the Windows overrides, so the
 exercise files that learners open are Chinese while identifiers, API names and
 format specifiers stay English.  It also rewrites the one POSIX-ism the topic
-READMEs hand to a Windows learner: the ``./clings`` command line (see
-``windows_command``).
+READMEs hand to a Windows learner: the ``./clings`` command line, which becomes
+``.\\clings.cmd`` (see ``windows_command``).
 
 Any English text without an entry is reported.  ``--strict`` (what sync and CI
 use) turns that report into a failure, so an upstream text change shows up as a
@@ -35,7 +35,7 @@ CJK = re.compile(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]")
 POSIX_INVOCATION = re.compile(r"^(\s*)\./clings\b", re.MULTILINE)
 # Upstream tags that block ```sh; once the command inside it is a cmd command
 # the tag is wrong too, and this is the only fence the topic pages have.
-WINDOWS_FENCE = re.compile(r"```sh\n(clings\.cmd [^\n]*\n)```")
+WINDOWS_FENCE = re.compile(r"```sh\n(\.\\clings\.cmd [^\n]*\n)```")
 FIELD_LINE = re.compile(r"^(title|objective|hint): (.*)$")
 EXERCISE_LINE = re.compile(r"^clings exercise: (.*)$")
 README_TABLE_ROW = re.compile(r"^\| `([^`]+)` \| (.*) \|$")
@@ -151,15 +151,18 @@ def translate_source(path: Path, report: Report) -> str:
 
 
 def windows_command(line: str) -> str:
-    """Turn `./clings run x` into `clings.cmd run x`.
+    """Turn `./clings run x` into `.\\clings.cmd run x`.
 
     The topic READMEs are upstream's, and upstream's readers are on POSIX.
     Here the reader is on Windows, where `./clings` is not a command: cmd.exe
     looks for a program named "." and fails before anything runs.  The twin's
-    own README documents `clings.cmd`, so the topic pages have to say the same
-    thing or the first command a beginner copies out of them is a dead end.
+    own README documents `.\\clings.cmd`, so the topic pages have to say the
+    same thing or the first command a beginner copies out of them is a dead
+    end.  A bare `clings.cmd` is not enough either - it works in cmd.exe but
+    PowerShell never searches the current directory, and the leading `.\\` is
+    the one prefix both shells accept.
     """
-    return POSIX_INVOCATION.sub(r"\1clings.cmd", line)
+    return POSIX_INVOCATION.sub(r"\1.\\clings.cmd", line)
 
 
 def translate_readme(path: Path, report: Report) -> str:

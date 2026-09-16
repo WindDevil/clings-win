@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_variadic
+.\clings.cmd run 01_variadic
 ```
 
 | 练习 | 目标 |

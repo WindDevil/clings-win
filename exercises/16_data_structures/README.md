@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_queue_adt
+.\clings.cmd run 01_queue_adt
 ```
 
 | 练习 | 目标 |

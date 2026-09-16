@@ -106,9 +106,26 @@ jobs:
           gcc --version
           python --version
           python clings doctor
+      # The entry point has to work when *typed* too, and the two Windows
+      # shells only agree on one spelling: cmd.exe rejects a leading "./" while
+      # PowerShell never searches the current directory.  `.\clings.cmd` is it,
+      # and this is the step that notices when a doc drifts back to `clings.cmd`.
       - name: Check the double-click entry point
         shell: cmd
-        run: clings.cmd doctor
+        run: .\clings.cmd doctor
+      - name: Check the entry point from PowerShell
+        shell: pwsh
+        run: .\clings.cmd doctor
+      - name: Learner commands in the topic READMEs are runnable here
+        shell: pwsh
+        run: |
+          $bad = Select-String -Path exercises/*/README.md `
+                              -Pattern '^\s*(\./clings|clings\.cmd)\b' `
+                              -ErrorAction SilentlyContinue
+          if ($bad) {
+            $bad | ForEach-Object { Write-Host "$($_.Path):$($_.LineNumber): $($_.Line)" }
+            throw "a topic README tells the learner to run a command that fails in cmd or PowerShell"
+          }
       - name: Verify every solution
         run: python clings verify --verbose
       - name: Exercises still start unsolved

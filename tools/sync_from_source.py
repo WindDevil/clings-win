@@ -190,7 +190,18 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
         "    Empty on Windows.  The Wine regression loop sets CLINGS_EXEC_PREFIX\n"
         "    so PE binaries produced by the cross compiler can be executed.\n"
         '    """\n'
-        '    return shlex.split(os.environ.get("CLINGS_EXEC_PREFIX", ""))\n',
+        '    return shlex.split(os.environ.get("CLINGS_EXEC_PREFIX", ""))\n'
+        "\n"
+        "\n"
+        "def launcher() -> str:\n"
+        '    """How the learner names this script on the command line.\n'
+        "\n"
+        "    The two Windows shells agree on exactly one spelling.  cmd.exe reads\n"
+        "    a leading './' as a command named '.', and PowerShell does not look\n"
+        "    in the current directory at all, so './clings' and a bare 'clings'\n"
+        "    each fail in one of them while .\\\\.clings.cmd works in both.\n"
+        '    """\n'
+        '    return r".\\clings.cmd" if WINDOWS_TARGET else "./clings"\n',
     ),
     (
         '    suffix = "solution" if solution else "exercise"\n'

@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_if_else
+.\clings.cmd run 01_if_else
 ```
 
 | 练习 | 目标 |

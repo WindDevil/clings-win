@@ -3,7 +3,7 @@
 运行练习：
 
 ```bat
-clings.cmd run 01_header_source_split
+.\clings.cmd run 01_header_source_split
 ```
 
 | 练习 | 目标 |
