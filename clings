@@ -1,0 +1,670 @@
+#!/usr/bin/env python3
+"""clings: a small, dependency-free runner for the clings C exercises.
+
+The runner intentionally uses only the Python standard library.  It compiles
+one exercise at a time with the system C compiler, runs it, and records
+completed exercises in .clings/progress.json.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import platform
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+from dataclasses import dataclass
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+EXERCISES_DIR = ROOT / "exercises"
+SOLUTIONS_DIR = ROOT / "solutions"
+TEMPLATES_DIR = ROOT / "templates"
+BUILD_DIR = ROOT / "build" / "clings"
+PROGRESS_FILE = ROOT / ".clings" / "progress.json"
+
+DEFAULT_CFLAGS = [
+    "-std=c17",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-Werror",
+    "-Wshadow",
+    "-Wstrict-prototypes",
+    "-Wpointer-arith",
+    "-Wformat=2",
+    "-Wundef",
+    "-g",
+    "-O0",
+    "-D_POSIX_C_SOURCE=200809L",
+    "-D_DEFAULT_SOURCE",
+]
+DEFAULT_LDLIBS = ["-lm", "-pthread"]
+# True on Windows, and on a Linux host running the Wine regression loop
+# (CLINGS_TARGET=windows) against the mingw-w64 cross compiler.
+WINDOWS_TARGET = os.name == "nt" or os.environ.get("CLINGS_TARGET") == "windows"
+if WINDOWS_TARGET:
+    # Link one self-contained .exe per exercise.  Without this, programs
+    # that use pthreads need libwinpthread-1.dll next to them, which is
+    # the classic first blocker for Windows users.
+    DEFAULT_LDLIBS.append("-static")
+if sys.platform.startswith("linux") and not WINDOWS_TARGET:
+    DEFAULT_LDLIBS.append("-ldl")
+
+
+@dataclass(frozen=True)
+class Exercise:
+    topic: str
+    slug: str
+    path: Path
+    title: str
+    objective: str
+    reference: str
+    hint: str
+    is_project: bool = False
+
+    @property
+    def ident(self) -> str:
+        return f"{self.topic}/{self.slug}"
+
+    @property
+    def sources(self) -> tuple[Path, ...]:
+        if self.is_project:
+            return tuple(sorted(self.path.parent.glob("*.c")))
+        return (self.path,)
+
+    @property
+    def solution_root(self) -> Path:
+        if self.is_project:
+            return SOLUTIONS_DIR / self.topic / self.slug
+        return SOLUTIONS_DIR / self.topic / f"{self.slug}.c"
+
+    @property
+    def template_root(self) -> Path:
+        if self.is_project:
+            return TEMPLATES_DIR / self.topic / self.slug
+        return TEMPLATES_DIR / self.topic / f"{self.slug}.c"
+
+    @property
+    def solution(self) -> Path:
+        if self.is_project:
+            return self.solution_root / "main.c"
+        return self.solution_root
+
+    @property
+    def template(self) -> Path:
+        if self.is_project:
+            return self.template_root / "main.c"
+        return self.template_root
+
+    @property
+    def solution_sources(self) -> tuple[Path, ...]:
+        if self.is_project:
+            return tuple(sorted(self.solution_root.glob("*.c")))
+        return (self.solution_root,)
+
+    def mtime_ns(self) -> int | None:
+        files = list(self.sources)
+        if self.is_project:
+            files.extend(self.path.parent.glob("*.h"))
+        newest: int | None = None
+        for path in files:
+            try:
+                value = path.stat().st_mtime_ns
+            except FileNotFoundError:
+                continue
+            newest = value if newest is None else max(newest, value)
+        return newest
+
+
+def color(text: str, code: str) -> str:
+    if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
+        return text
+    return f"\033[{code}m{text}\033[0m"
+
+
+def green(text: str) -> str:
+    return color(text, "32")
+
+
+def red(text: str) -> str:
+    return color(text, "31")
+
+
+def yellow(text: str) -> str:
+    return color(text, "33")
+
+
+def cyan(text: str) -> str:
+    return color(text, "36")
+
+
+def read_metadata(path: Path) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if not line.startswith(" * "):
+                if line.strip() == "*/":
+                    break
+                continue
+            payload = line[3:].strip()
+            if ":" not in payload:
+                continue
+            key, value = payload.split(":", 1)
+            metadata[key.strip().lower()] = value.strip()
+    return metadata
+
+
+def discover() -> list[Exercise]:
+    exercises: list[Exercise] = []
+    if not EXERCISES_DIR.exists():
+        return exercises
+    for path in sorted(EXERCISES_DIR.glob("*/*.c")):
+        meta = read_metadata(path)
+        exercises.append(
+            Exercise(
+                topic=path.parent.name,
+                slug=path.stem,
+                path=path,
+                title=meta.get("title", path.stem.replace("_", " ")),
+                objective=meta.get("objective", ""),
+                reference=meta.get("reference", ""),
+                hint=meta.get("hint", "No hint available."),
+            )
+        )
+    for path in sorted(EXERCISES_DIR.glob("*/*/main.c")):
+        meta = read_metadata(path)
+        exercises.append(
+            Exercise(
+                topic=path.parent.parent.name,
+                slug=path.parent.name,
+                path=path,
+                title=meta.get("title", path.parent.name.replace("_", " ")),
+                objective=meta.get("objective", ""),
+                reference=meta.get("reference", ""),
+                hint=meta.get("hint", "No hint available."),
+                is_project=True,
+            )
+        )
+    exercises.sort(key=lambda exercise: (exercise.topic, exercise.slug))
+    return exercises
+
+
+def load_progress() -> set[str]:
+    if not PROGRESS_FILE.exists():
+        return set()
+    try:
+        data = json.loads(PROGRESS_FILE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    return set(data.get("completed", []))
+
+
+def save_progress(completed: set[str]) -> None:
+    PROGRESS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    PROGRESS_FILE.write_text(
+        json.dumps({"completed": sorted(completed)}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def compiler() -> str:
+    """The C compiler to use, overridable through the CC environment variable."""
+    default = "gcc" if WINDOWS_TARGET else "cc"
+    return os.environ.get("CC", default)
+
+
+def exe_suffix() -> str:
+    """``.exe`` on Windows and for the Wine regression loop."""
+    return ".exe" if WINDOWS_TARGET else ""
+
+
+def exec_prefix() -> list[str]:
+    """Launcher placed in front of every built binary.
+
+    Empty on Windows.  The Wine regression loop sets CLINGS_EXEC_PREFIX
+    so PE binaries produced by the cross compiler can be executed.
+    """
+    return shlex.split(os.environ.get("CLINGS_EXEC_PREFIX", ""))
+
+
+def cflags() -> list[str]:
+    extra = os.environ.get("CFLAGS", "")
+    return DEFAULT_CFLAGS + shlex.split(extra)
+
+
+def binary_path(exercise: Exercise, solution: bool = False) -> Path:
+    suffix = "solution" if solution else "exercise"
+    return BUILD_DIR / exercise.topic / f"{exercise.slug}.{suffix}{exe_suffix()}"
+
+
+def compile_sources(
+    sources: tuple[Path, ...],
+    output: Path,
+    include_dirs: tuple[Path, ...] = (),
+) -> subprocess.CompletedProcess[str]:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        compiler(),
+        *cflags(),
+        f"-I{ROOT / 'include'}",
+    ]
+    for directory in include_dirs:
+        command.append(f"-I{directory}")
+    command.extend(str(source) for source in sources)
+    command.append(str(ROOT / "include" / "clings" / "test.c"))
+    command.extend(["-o", str(output), *DEFAULT_LDLIBS])
+    return subprocess.run(
+        command,
+        cwd=ROOT,
+        text=True,
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+
+
+def compile_source(source: Path, output: Path) -> subprocess.CompletedProcess[str]:
+    return compile_sources((source,), output)
+
+
+def run_binary(path: Path, timeout: float = 10.0) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [*exec_prefix(), str(path)],
+        cwd=ROOT,
+        text=True,
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=timeout,
+        check=False,
+    )
+
+
+def resolve_exercise(needle: str | None) -> Exercise | None:
+    exercises = discover()
+    if not exercises:
+        return None
+    if needle is None:
+        completed = load_progress()
+        for exercise in exercises:
+            if exercise.ident not in completed:
+                return exercise
+        return None
+
+    exact = [exercise for exercise in exercises if exercise.ident == needle]
+    if exact:
+        return exact[0]
+
+    matches = [
+        exercise
+        for exercise in exercises
+        if exercise.ident.endswith(f"/{needle}")
+        or exercise.slug == needle
+        or needle in exercise.ident
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        print(red(f"ambiguous exercise: {needle}"))
+        for exercise in matches:
+            print(f"  {exercise.ident}")
+    else:
+        print(red(f"unknown exercise: {needle}"))
+    return None
+
+
+def run_exercise(exercise: Exercise, verbose: bool = False) -> tuple[bool, str]:
+    output = binary_path(exercise)
+    include_dirs = (exercise.path.parent,) if exercise.is_project else ()
+    build = compile_sources(exercise.sources, output, include_dirs)
+    if build.returncode != 0:
+        return False, "compilation failed\n" + build.stdout
+
+    try:
+        result = run_binary(output)
+    except subprocess.TimeoutExpired:
+        return False, "exercise timed out after 10 seconds"
+
+    if verbose or result.returncode != 0:
+        return result.returncode == 0, result.stdout
+    return result.returncode == 0, result.stdout
+
+
+def run_solution(exercise: Exercise) -> tuple[bool, str]:
+    if not exercise.solution_sources or not all(
+        source.exists() for source in exercise.solution_sources
+    ):
+        return False, f"missing solution: {exercise.solution_root}"
+    output = binary_path(exercise, solution=True)
+    include_dirs = (
+        (exercise.solution_root,) if exercise.is_project else ()
+    )
+    build = compile_sources(exercise.solution_sources, output, include_dirs)
+    if build.returncode != 0:
+        return False, "solution compilation failed\n" + build.stdout
+    try:
+        result = run_binary(output)
+    except subprocess.TimeoutExpired:
+        return False, "solution timed out after 10 seconds"
+    return result.returncode == 0, result.stdout
+
+
+def print_exercise(exercise: Exercise, completed: set[str]) -> None:
+    status = green("done") if exercise.ident in completed else yellow("todo")
+    print(f"[{status}] {cyan(exercise.ident)}  {exercise.title}")
+    if exercise.objective:
+        print(f"       {exercise.objective}")
+    if exercise.reference:
+        print(f"       reference: {exercise.reference}")
+
+
+def command_list(args: argparse.Namespace) -> int:
+    exercises = discover()
+    completed = load_progress()
+    if not exercises:
+        print(red("no exercises found"))
+        return 1
+
+    current_topic = None
+    for exercise in exercises:
+        if args.topic and exercise.topic != args.topic:
+            continue
+        if exercise.topic != current_topic:
+            current_topic = exercise.topic
+            print(f"\n{cyan(current_topic)}")
+        print_exercise(exercise, completed)
+    completed_count = sum(1 for exercise in exercises if exercise.ident in completed)
+    print(f"\n{completed_count}/{len(exercises)} completed")
+    return 0
+
+
+def command_next(args: argparse.Namespace) -> int:
+    exercise = resolve_exercise(args.exercise)
+    if exercise is None:
+        print(green("All exercises are complete. Try `./clings verify`."))
+        return 0
+    print_exercise(exercise, load_progress())
+    return 0
+
+
+def command_run(args: argparse.Namespace) -> int:
+    exercises = discover()
+    if not exercises:
+        print(red("no exercises found"))
+        return 1
+
+    if args.all:
+        targets = exercises
+    else:
+        exercise = resolve_exercise(args.exercise)
+        if exercise is None:
+            print(green("All exercises are complete. Try `./clings verify`."))
+            return 0
+        targets = [exercise]
+
+    completed = load_progress()
+    failures = 0
+    for exercise in targets:
+        print(f"\n{cyan('running')} {exercise.ident} - {exercise.title}")
+        passed, output = run_exercise(exercise, verbose=args.verbose)
+        if passed:
+            completed.add(exercise.ident)
+            save_progress(completed)
+            print(green("  passed"))
+            if args.verbose and output:
+                print(output, end="" if output.endswith("\n") else "\n")
+            continue
+
+        failures += 1
+        print(red("  failed"))
+        if output:
+            print(output, end="" if output.endswith("\n") else "\n")
+        if not args.continue_on_error:
+            break
+
+    if failures:
+        print(red(f"\n{failures} exercise(s) failed"))
+        return 1
+    print(green("\nall selected exercises passed"))
+    return 0
+
+
+def command_hint(args: argparse.Namespace) -> int:
+    exercise = resolve_exercise(args.exercise)
+    if exercise is None:
+        return 1
+    print(f"{cyan(exercise.ident)} - {exercise.title}")
+    print(f"objective: {exercise.objective}")
+    if exercise.reference:
+        print(f"reference: {exercise.reference}")
+    print(f"hint: {exercise.hint}")
+    return 0
+
+
+def command_solution(args: argparse.Namespace) -> int:
+    exercise = resolve_exercise(args.exercise)
+    if exercise is None:
+        return 1
+    if not exercise.solution_root.exists():
+        print(red(f"missing solution: {exercise.solution_root}"))
+        return 1
+    if args.apply:
+        if exercise.is_project:
+            shutil.rmtree(exercise.path.parent, ignore_errors=True)
+            shutil.copytree(exercise.solution_root, exercise.path.parent)
+            print(green(f"applied solution to {exercise.path.parent}"))
+        else:
+            shutil.copyfile(exercise.solution, exercise.path)
+            print(green(f"applied solution to {exercise.path}"))
+        return 0
+    if exercise.is_project:
+        for source in exercise.solution_sources:
+            print(f"// ===== {source.name} =====")
+            print(source.read_text(encoding="utf-8"), end="")
+    else:
+        print(exercise.solution.read_text(encoding="utf-8"), end="")
+    return 0
+
+
+def command_reset(args: argparse.Namespace) -> int:
+    exercise = resolve_exercise(args.exercise)
+    if exercise is None:
+        return 1
+    if not exercise.template_root.exists():
+        print(red(f"missing template: {exercise.template_root}"))
+        return 1
+    if exercise.is_project:
+        shutil.rmtree(exercise.path.parent, ignore_errors=True)
+        shutil.copytree(exercise.template_root, exercise.path.parent)
+    else:
+        shutil.copyfile(exercise.template, exercise.path)
+    completed = load_progress()
+    completed.discard(exercise.ident)
+    save_progress(completed)
+    print(green(f"reset {exercise.ident}"))
+    return 0
+
+
+def command_verify(args: argparse.Namespace) -> int:
+    exercises = discover()
+    if not exercises:
+        print(red("no exercises found"))
+        return 1
+
+    failures = 0
+    for exercise in exercises:
+        passed, output = run_solution(exercise)
+        if passed:
+            print(f"{green('ok')}   {exercise.ident}")
+            continue
+        failures += 1
+        print(f"{red('FAIL')} {exercise.ident}")
+        if args.verbose:
+            print(output, end="" if output.endswith("\n") else "\n")
+
+    if failures:
+        print(red(f"\n{failures} solution(s) failed"))
+        return 1
+    print(green(f"\nall {len(exercises)} solutions passed"))
+    return 0
+
+
+def command_selftest(args: argparse.Namespace) -> int:
+    """Check that exercises start unsolved and solutions pass."""
+    exercises = discover()
+    failures = 0
+    for exercise in exercises:
+        solved, solution_output = run_solution(exercise)
+        if not solved:
+            failures += 1
+            print(f"{red('FAIL')} solution {exercise.ident}")
+            print(solution_output, end="" if solution_output.endswith("\n") else "\n")
+            continue
+
+        # A broken exercise may fail to compile or fail at runtime.  Both are
+        # valid starting states; it must not pass before the learner edits it.
+        passed, _ = run_exercise(exercise)
+        if passed:
+            failures += 1
+            print(f"{red('FAIL')} exercise {exercise.ident} already passes")
+            continue
+
+        print(f"{green('ok')}   {exercise.ident}")
+
+    if failures:
+        print(red(f"\n{failures} selftest failure(s)"))
+        return 1
+    print(green(f"\nall {len(exercises)} exercises behave correctly"))
+    return 0
+
+
+def command_doctor(args: argparse.Namespace) -> int:
+    print(f"python:   {platform.python_version()}")
+    print(f"platform: {platform.platform()}")
+    print(f"root:     {ROOT}")
+    print(f"compiler: {compiler()}")
+    print(f"flags:    {' '.join(cflags())}")
+    result = subprocess.run(
+        [compiler(), "--version"],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    print(result.stdout.splitlines()[0] if result.stdout else "compiler not found")
+    return 0
+
+
+def command_watch(args: argparse.Namespace) -> int:
+    exercise = resolve_exercise(args.exercise)
+    if exercise is None:
+        return 1
+    print(f"watching {exercise.ident}; press Ctrl-C to stop")
+    last_mtime = None
+    while True:
+        mtime = exercise.mtime_ns()
+        if mtime != last_mtime:
+            last_mtime = mtime
+            print(f"\n{cyan('running')} {exercise.ident}")
+            passed, output = run_exercise(exercise, verbose=True)
+            print(green("passed") if passed else red("failed"))
+            if output:
+                print(output, end="" if output.endswith("\n") else "\n")
+        time.sleep(0.5)
+
+
+def command_clean(args: argparse.Namespace) -> int:
+    if BUILD_DIR.exists():
+        shutil.rmtree(BUILD_DIR)
+        print(green(f"removed {BUILD_DIR}"))
+    else:
+        print("nothing to clean")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="clings",
+        description="Run and verify the clings C exercises.",
+    )
+    subparsers = parser.add_subparsers(dest="command")
+
+    list_parser = subparsers.add_parser("list", help="list all exercises")
+    list_parser.add_argument("--topic", help="only show one topic")
+    list_parser.set_defaults(func=command_list)
+
+    next_parser = subparsers.add_parser("next", help="show the next exercise")
+    next_parser.add_argument("exercise", nargs="?")
+    next_parser.set_defaults(func=command_next)
+
+    run_parser = subparsers.add_parser("run", help="compile and run an exercise")
+    run_parser.add_argument("exercise", nargs="?")
+    run_parser.add_argument("--all", action="store_true", help="run every exercise")
+    run_parser.add_argument(
+        "--continue",
+        dest="continue_on_error",
+        action="store_true",
+        help="keep going after a failure",
+    )
+    run_parser.add_argument("--verbose", action="store_true")
+    run_parser.set_defaults(func=command_run)
+
+    hint_parser = subparsers.add_parser("hint", help="show a hint")
+    hint_parser.add_argument("exercise")
+    hint_parser.set_defaults(func=command_hint)
+
+    solution_parser = subparsers.add_parser("solution", help="show or apply a solution")
+    solution_parser.add_argument("exercise")
+    solution_parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="copy the solution over the exercise",
+    )
+    solution_parser.set_defaults(func=command_solution)
+
+    reset_parser = subparsers.add_parser("reset", help="restore the original exercise")
+    reset_parser.add_argument("exercise")
+    reset_parser.set_defaults(func=command_reset)
+
+    verify_parser = subparsers.add_parser("verify", help="verify every solution")
+    verify_parser.add_argument("--verbose", action="store_true")
+    verify_parser.set_defaults(func=command_verify)
+
+    selftest_parser = subparsers.add_parser(
+        "selftest", help="check exercises start broken and solutions pass"
+    )
+    selftest_parser.set_defaults(func=command_selftest)
+
+    doctor_parser = subparsers.add_parser("doctor", help="show toolchain information")
+    doctor_parser.set_defaults(func=command_doctor)
+
+    watch_parser = subparsers.add_parser("watch", help="re-run an exercise on change")
+    watch_parser.add_argument("exercise", nargs="?")
+    watch_parser.set_defaults(func=command_watch)
+
+    clean_parser = subparsers.add_parser("clean", help="remove compiled artifacts")
+    clean_parser.set_defaults(func=command_clean)
+
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if not hasattr(args, "func"):
+        args = parser.parse_args(["list"])
+    try:
+        return int(args.func(args))
+    except KeyboardInterrupt:
+        print("\ninterrupted")
+        return 130
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

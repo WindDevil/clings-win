@@ -1,0 +1,10 @@
+/build/
+/.clings/
+/.winbox/
+/dist/
+__pycache__/
+*.py[cod]
+*.o
+*.obj
+*.exe
+*.zip

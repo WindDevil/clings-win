@@ -1,0 +1,93 @@
+name: windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  UPSTREAM_REPOSITORY: WindDevil/clings
+
+jobs:
+  # The twin is generated: this job proves it still matches upstream.
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out upstream clings
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM_REPOSITORY }}
+          path: upstream
+      - name: Twin matches upstream
+        run: python3 tools/sync_from_source.py --source upstream --check
+
+  # Fast loop: cross compile to PE and run through Wine on Linux.  No Windows
+  # machine is involved, yet the binaries are real Windows binaries.
+  wine-loop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out upstream clings
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM_REPOSITORY }}
+          path: upstream
+      - name: Sync twin
+        run: python3 tools/sync_from_source.py --source upstream
+      - name: Install cross compiler and Wine
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-mingw-w64-x86-64-posix wine64 xvfb
+      - name: Configure the Wine loop
+        run: |
+          echo "CC=x86_64-w64-mingw32-gcc-posix" >> "$GITHUB_ENV"
+          echo "CLINGS_TARGET=windows" >> "$GITHUB_ENV"
+          echo "CLINGS_EXEC_PREFIX=xvfb-run -a wine" >> "$GITHUB_ENV"
+          echo "WINEDEBUG=-all" >> "$GITHUB_ENV"
+          echo "WINEDLLOVERRIDES=mscoree,mshtml=" >> "$GITHUB_ENV"
+      - name: Verify every solution
+        run: python3 clings verify
+      - name: Exercises still start unsolved
+        run: python3 clings selftest
+
+  # Ground truth: a real Windows runner with a real MinGW toolchain.
+  real-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out upstream clings
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM_REPOSITORY }}
+          path: upstream
+      - name: Sync twin
+        run: python tools/sync_from_source.py --source upstream
+      - name: Use the runner's MinGW-w64 toolchain
+        run: |
+          echo "CC=gcc" >> $env:GITHUB_ENV
+          echo "C:\msys64\mingw64\bin" >> $env:GITHUB_PATH
+      - name: Show toolchain
+        run: |
+          gcc --version
+          python --version
+          python clings doctor
+      - name: Check the double-click entry point
+        shell: cmd
+        run: clings.cmd doctor
+      - name: Verify every solution
+        run: python clings verify
+      - name: Exercises still start unsolved
+        run: python clings selftest
+      - name: Build the beginner package
+        run: python tools/package_windows.py
+      - name: Upload the package
+        uses: actions/upload-artifact@v4
+        with:
+          name: clings-win-package
+          path: dist/*.zip
+          if-no-files-found: error

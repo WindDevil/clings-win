@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+"""Sync the Windows twin from an upstream clings checkout.
+
+The twin never edits exercise content by hand.  This script copies the
+upstream learning material, applies the Windows overrides from
+tools/windows_overrides.py and rewrites the runner for Windows defaults, so
+``--check`` can prove that the twin matches a given upstream commit.
+
+Usage:
+    python3 tools/sync_from_source.py --source ../cling
+    python3 tools/sync_from_source.py --source ../cling --check
+"""
+
+from __future__ import annotations
+
+import argparse
+import filecmp
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "tools"))
+
+import windows_overrides as overrides  # noqa: E402
+
+# Directories and files copied verbatim from upstream, plus the generated
+# provenance note.  ``clings`` is copied too and then patched below.
+COPY_DIRS = ("include", "exercises", "solutions", "templates")
+COPY_FILES = ("clings", "LICENSE")
+GENERATED = COPY_DIRS + COPY_FILES + ("docs/provenance.md",)
+
+# The runner is copied too, then patched with these exact replacements.  Every
+# replacement must match exactly once; otherwise upstream changed the runner
+# and this script has to be revisited.
+RUNNER_PATCHES: list[tuple[str, str]] = [
+    (
+        'DEFAULT_LDLIBS = ["-lm", "-pthread"]\n'
+        'if sys.platform.startswith("linux"):\n'
+        "    DEFAULT_LDLIBS.append(\"-ldl\")\n",
+        'DEFAULT_LDLIBS = ["-lm", "-pthread"]\n'
+        "# True on Windows, and on a Linux host running the Wine regression loop\n"
+        "# (CLINGS_TARGET=windows) against the mingw-w64 cross compiler.\n"
+        'WINDOWS_TARGET = os.name == "nt" or os.environ.get("CLINGS_TARGET") == "windows"\n'
+        "if WINDOWS_TARGET:\n"
+        "    # Link one self-contained .exe per exercise.  Without this, programs\n"
+        "    # that use pthreads need libwinpthread-1.dll next to them, which is\n"
+        "    # the classic first blocker for Windows users.\n"
+        '    DEFAULT_LDLIBS.append("-static")\n'
+        'if sys.platform.startswith("linux") and not WINDOWS_TARGET:\n'
+        "    DEFAULT_LDLIBS.append(\"-ldl\")\n",
+    ),
+    (
+        "def compiler() -> str:\n"
+        '    return os.environ.get("CC", "cc")\n',
+        "def compiler() -> str:\n"
+        '    """The C compiler to use, overridable through the CC environment variable."""\n'
+        '    default = "gcc" if WINDOWS_TARGET else "cc"\n'
+        '    return os.environ.get("CC", default)\n'
+        "\n"
+        "\n"
+        "def exe_suffix() -> str:\n"
+        '    """``.exe`` on Windows and for the Wine regression loop."""\n'
+        '    return ".exe" if WINDOWS_TARGET else ""\n'
+        "\n"
+        "\n"
+        "def exec_prefix() -> list[str]:\n"
+        '    """Launcher placed in front of every built binary.\n'
+        "\n"
+        "    Empty on Windows.  The Wine regression loop sets CLINGS_EXEC_PREFIX\n"
+        "    so PE binaries produced by the cross compiler can be executed.\n"
+        '    """\n'
+        '    return shlex.split(os.environ.get("CLINGS_EXEC_PREFIX", ""))\n',
+    ),
+    (
+        '    suffix = "solution" if solution else "exercise"\n'
+        '    return BUILD_DIR / exercise.topic / f"{exercise.slug}.{suffix}"\n',
+        '    suffix = "solution" if solution else "exercise"\n'
+        '    return BUILD_DIR / exercise.topic / f"{exercise.slug}.{suffix}{exe_suffix()}"\n',
+    ),
+    (
+        "    return subprocess.run(\n"
+        "        [str(path)],\n"
+        "        cwd=ROOT,\n",
+        "    return subprocess.run(\n"
+        "        [*exec_prefix(), str(path)],\n"
+        "        cwd=ROOT,\n",
+    ),
+]
+
+
+def normalized_bytes(path: Path) -> bytes:
+    """File content with CRLF folded to LF so the twin is host independent."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
+def patch_runner(text: str) -> str:
+    for old, new in RUNNER_PATCHES:
+        occurrences = text.count(old)
+        if occurrences != 1:
+            raise SystemExit(
+                "runner patch mismatch: expected 1 occurrence of\n"
+                f"---\n{old}---\nfound {occurrences}.\n"
+                "Upstream clings changed; update tools/sync_from_source.py."
+            )
+        text = text.replace(old, new)
+    return text
+
+
+def git_value(source: Path, *args: str) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(source), *args],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    except OSError:
+        return None
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip() or None
+
+
+def provenance(source: Path, tree: Path) -> str:
+    exercises = sorted((tree / "exercises").glob("*/*.c"))
+    projects = sorted((tree / "exercises").glob("*/*/main.c"))
+    topics = {path.parent.name for path in exercises}
+    topics |= {path.parent.parent.name for path in projects}
+    return (
+        "# Provenance\n"
+        "\n"
+        "Generated by `tools/sync_from_source.py`; do not edit by hand.\n"
+        "\n"
+        f"- upstream repository: {git_value(source, 'remote', 'get-url', 'origin') or source}\n"
+        f"- upstream commit: {git_value(source, 'rev-parse', 'HEAD') or 'unknown'}\n"
+        f"- topics: {len(topics)}\n"
+        f"- exercises: {len(exercises) + len(projects)}\n"
+        f"- windows overrides: {len(overrides.rewritten_exercises())}\n"
+        "\n"
+        "## Windows overrides\n"
+        "\n"
+        + "".join(f"- `{ident}`\n" for ident in overrides.rewritten_exercises())
+    )
+
+
+def render(source: Path, destination: Path) -> None:
+    """Write a complete generated tree into *destination*."""
+    for name in COPY_DIRS:
+        origin = source / name
+        if not origin.is_dir():
+            raise SystemExit(f"upstream tree is missing {name}/: {origin}")
+        shutil.copytree(
+            origin,
+            destination / name,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+        )
+
+    for name in COPY_FILES:
+        origin = source / name
+        if not origin.is_file():
+            raise SystemExit(f"upstream tree is missing {name}: {origin}")
+        text = normalized_bytes(origin).decode("utf-8")
+        if name == "clings":
+            text = patch_runner(text)
+        (destination / name).write_text(text, encoding="utf-8")
+    (destination / "clings").chmod(0o755)
+
+    overrides.apply(destination)
+
+    docs = destination / "docs"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "provenance.md").write_text(
+        provenance(source, destination), encoding="utf-8"
+    )
+
+
+def compare(generated: Path, current: Path) -> list[str]:
+    differences: list[str] = []
+    for name in GENERATED:
+        left = generated / name
+        right = current / name
+        if not right.exists():
+            differences.append(f"missing: {name}")
+            continue
+        if left.is_dir():
+            comparison = filecmp.dircmp(left, right)
+            differences.extend(_walk_differences(comparison, name))
+        elif left.read_bytes() != right.read_bytes():
+            differences.append(f"differs: {name}")
+    return differences
+
+
+def _walk_differences(comparison: filecmp.dircmp, prefix: str) -> list[str]:
+    differences = [f"missing: {prefix}/{name}" for name in comparison.right_only]
+    differences += [f"stale: {prefix}/{name}" for name in comparison.left_only]
+    differences += [
+        f"differs: {prefix}/{name}" for name in comparison.diff_files
+    ]
+    for name, sub in comparison.subdirs.items():
+        differences.extend(_walk_differences(sub, f"{prefix}/{name}"))
+    return differences
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--source",
+        default=str(ROOT.parent / "cling"),
+        help="upstream clings checkout (default: sibling ../cling)",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="fail instead of writing when the twin is out of date",
+    )
+    args = parser.parse_args(argv)
+
+    source = Path(args.source).expanduser().resolve()
+    if not (source / "clings").is_file():
+        print(f"not an upstream clings checkout: {source}", file=sys.stderr)
+        return 2
+
+    with tempfile.TemporaryDirectory(prefix="clings-win-sync-") as work:
+        generated = Path(work) / "tree"
+        generated.mkdir()
+        render(source, generated)
+
+        if args.check:
+            differences = compare(generated, ROOT)
+            if differences:
+                print("windows twin is out of date:", file=sys.stderr)
+                for entry in differences:
+                    print(f"  {entry}", file=sys.stderr)
+                print(
+                    "run: python3 tools/sync_from_source.py --source "
+                    f"{source}",
+                    file=sys.stderr,
+                )
+                return 1
+            print("windows twin matches the upstream tree")
+            return 0
+
+        for name in COPY_DIRS:
+            shutil.rmtree(ROOT / name, ignore_errors=True)
+        for name in GENERATED:
+            origin = generated / name
+            target = ROOT / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if origin.is_dir():
+                shutil.rmtree(target, ignore_errors=True)
+                shutil.copytree(origin, target)
+            else:
+                shutil.copyfile(origin, target)
+                if name == "clings":
+                    target.chmod(0o755)
+
+    report = (ROOT / "docs" / "provenance.md").read_text(encoding="utf-8")
+    exercise_line = next(
+        line for line in report.splitlines() if line.startswith("- exercises:")
+    )
+    print(f"synced from {source}")
+    print(exercise_line)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
