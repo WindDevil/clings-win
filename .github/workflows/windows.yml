@@ -94,7 +94,7 @@ jobs:
       - name: Exercises still start unsolved
         run: python clings selftest
       - name: Build the beginner package
-        run: python tools/package_windows.py
+        run: python tools/package_windows.py --flavor slim
       - name: Upload the package
         uses: actions/upload-artifact@v4
         with:
