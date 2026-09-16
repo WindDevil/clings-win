@@ -39,18 +39,28 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            gcc-mingw-w64-x86-64-posix wine64 xvfb
-      - name: Configure the Wine loop
+            gcc-mingw-w64-x86-64-posix wine wine64 xvfb
+      - name: Windows regression loop
         run: |
-          echo "CC=x86_64-w64-mingw32-gcc-posix" >> "$GITHUB_ENV"
-          echo "CLINGS_TARGET=windows" >> "$GITHUB_ENV"
-          echo "CLINGS_EXEC_PREFIX=xvfb-run -a wine" >> "$GITHUB_ENV"
-          echo "WINEDEBUG=-all" >> "$GITHUB_ENV"
-          echo "WINEDLLOVERRIDES=mscoree,mshtml=" >> "$GITHUB_ENV"
-      - name: Verify every solution
-        run: python3 clings verify
-      - name: Exercises still start unsolved
-        run: python3 clings selftest
+          printf '#include <stdio.h>\nint main(void) { return 0; }\n' > /tmp/warm.c
+          x86_64-w64-mingw32-gcc-posix /tmp/warm.c -o /tmp/warm.exe
+          xvfb-run -a bash -euc '
+            export WINEDEBUG=-all
+            export WINEDLLOVERRIDES=mscoree,mshtml=
+            export CC=x86_64-w64-mingw32-gcc-posix
+            export CLINGS_TARGET=windows
+            export CLINGS_EXEC_PREFIX=wine
+
+            # One cold start, then keep the Wine server alive: without this each
+            # of the 370 programs pays a ~4 s startup.
+            wine /tmp/warm.exe
+            ( while :; do wine /tmp/warm.exe >/dev/null 2>&1; sleep 2; done ) &
+            keepalive=$!
+            trap "kill $keepalive 2>/dev/null || true" EXIT
+
+            python3 clings verify --verbose
+            python3 clings selftest
+          '
 
   # Ground truth: a real Windows runner with a real MinGW toolchain.
   real-windows:
@@ -80,9 +90,9 @@ jobs:
         shell: cmd
         run: clings.cmd doctor
       - name: Verify every solution
-        run: python clings verify
+        run: python clings verify --verbose
       - name: Exercises still start unsolved
-        run: python clings selftest
+        run: python clings selftest --verbose
       - name: Build the beginner package
         run: python tools/package_windows.py
       - name: Upload the package
