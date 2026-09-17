@@ -12,9 +12,31 @@ who never wants the studio never loads it.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 
 from . import menu, server, vscode
+
+
+def configure_output() -> None:
+    """Keep Chinese output from dying on a legacy console code page.
+
+    Same reasoning as the runner's own configure_output: when stdout is not a
+    terminal, Python picks the console code page (cp936, cp1252, ...) and
+    raises UnicodeEncodeError on text it cannot represent - which is every
+    Chinese message this package prints.  clings.cmd sets PYTHONUTF8=1 for
+    the paths it starts, but a caller that runs `python -m studio` any other
+    way (a script, a redirected pipe on a CI runner) must not turn the usage
+    text into a traceback.
+    """
+    if os.name != "nt":
+        return
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -40,6 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    configure_output()
     args = list(sys.argv[1:] if argv is None else argv)
     # No command at all is the double-click case; say so rather than printing
     # argparse's help at someone who did not ask a question.

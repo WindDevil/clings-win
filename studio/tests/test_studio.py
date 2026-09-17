@@ -424,6 +424,43 @@ class TheLauncher(unittest.TestCase):
         with redirect_stdout(io.StringIO()):
             self.assertEqual(self.main("nope"), 2)
 
+    def test_chinese_survives_a_legacy_code_page(self) -> None:
+        """The runner reconfigures its streams on Windows; the studio has to.
+
+        Without this, `python -m studio --help` on a machine whose console
+        code page is cp1252 (a CI runner, or a Windows box set to English)
+        raised UnicodeEncodeError while printing its own usage text - found by
+        the packaged-package smoke step in the release workflow.
+        """
+        from .. import __main__ as launcher
+
+        class Stream:
+            def __init__(self) -> None:
+                self.calls: list[dict[str, str]] = []
+
+            def reconfigure(self, **kwargs: str) -> None:
+                self.calls.append(kwargs)
+
+        out, err = Stream(), Stream()
+        with mock.patch.object(launcher.os, "name", "nt"), mock.patch.object(
+            launcher.sys, "stdout", out
+        ), mock.patch.object(launcher.sys, "stderr", err):
+            launcher.configure_output()
+        self.assertEqual(out.calls, [{"encoding": "utf-8", "errors": "replace"}])
+        self.assertEqual(err.calls, [{"encoding": "utf-8", "errors": "replace"}])
+
+    def test_a_stream_that_cannot_be_reconfigured_is_left_alone(self) -> None:
+        from .. import __main__ as launcher
+
+        class Odd:
+            def reconfigure(self, **kwargs: str) -> None:
+                raise ValueError("not a text stream")
+
+        with mock.patch.object(launcher.os, "name", "nt"), mock.patch.object(
+            launcher.sys, "stdout", Odd()
+        ), mock.patch.object(launcher.sys, "stderr", Odd()):
+            launcher.configure_output()  # 不抛异常就算通过
+
 
 class FindingAnEditor(unittest.TestCase):
     """Opening a file in VS Code, without opening a window in a test."""

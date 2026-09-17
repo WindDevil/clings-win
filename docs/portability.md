@@ -190,6 +190,7 @@ MinGW-w64，"装了但没进 PATH"是新手最常撞的第一堵墙。放任不�
 | 语言 | 语言是插件（`studio/languages/`）：`plain.py` 什么也不答，所以编辑器不是 C 专用的；`c.py` **不解析 C**，它把缓冲区写进临时目录，用 `run` 编译这个练习时的同一套参数跑 `-fsyntax-only`，编辑器的报错于是不可能和 `run` 打架；没有编译器时它只说"去跑 doctor"，不猜 |
 | 前端 | 无构建步骤，打开就是源码；`studio/web/vendor/` 里是 CodeMirror 5.65.16 和 marked 4.3.0（都是 MIT） |
 | 安全 | 只监听 `127.0.0.1`；页面注入一次性令牌，接口另外校验 `Origin`；文件读写被限制在运行器列出的文件清单内；CSP 为 `script-src 'self'`、无 `unsafe-eval` |
+| 编码 | `clings.cmd` 设了 `PYTHONUTF8=1`，studio 自己也把 stdout/stderr 重设成 utf-8（和运行器的 `configure_output` 同因）。stdout 不是终端时 Python 按系统代码页（cp936、cp1252……）编码，中文用法说明会让它抛 `UnicodeEncodeError`：v0.3.1 的 release workflow 就是被打包冒烟里那句 `python -m studio --help` 抓到的 |
 | 测试 | `make test`；`windows.yml` 的 `real-windows` job 和 `release.yml` 都会跑它，`studio/tests` 不打进分发包——它需要 checkout 才有意义，而且会改写练习 |
 
 ## 维护工具在 Windows 上
