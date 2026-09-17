@@ -1,0 +1,6 @@
+{
+  // A learner who just pressed [2] has VS Code open on the exercises and no
+  // idea that C support is an extension.  Recommending it turns "why is there
+  // no completion" into a one-click prompt.
+  "recommendations": ["ms-vscode.cpptools"]
+}

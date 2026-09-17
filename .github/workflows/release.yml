@@ -48,6 +48,11 @@ jobs:
       - name: Exercises still start unsolved
         run: python clings selftest
 
+      # A release is the worst place to find out the editor is broken, and
+      # this is the job with the toolchain the package will actually bundle.
+      - name: Studio tests
+        run: python -m unittest discover -s studio/tests -t . -v
+
       # The full package bundles the toolchain a learner would otherwise have to
       # install: w64devkit (mingw-w64 + make + gdb) and the embeddable Python.
       - name: Fetch the bundled runtime

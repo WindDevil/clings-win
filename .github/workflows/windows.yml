@@ -130,6 +130,11 @@ jobs:
         run: python clings verify --verbose
       - name: Exercises still start unsolved
         run: python clings selftest
+      # The studio against the real runner, the real compiler and the real
+      # exercises.  It runs here rather than only in wine-loop because the
+      # double-click entry point and the VS Code lookup are Windows things.
+      - name: Studio tests
+        run: python -m unittest discover -s studio/tests -t . -v
       # Escapes must not reach a pipe, and forcing them must still work: a
       # learner pasting a failing run into a chat is the case that hurts.
       # (A real console, where clings turns VT processing on itself, is

@@ -1,0 +1,21 @@
+{
+  // Shipped to learners, so that `clings.cmd open` lands in a window where
+  // #include "clings/test.h" resolves: without this the C/C++ extension has no
+  // reason to look in include/ and the macros the exercises are checked with
+  // are the one thing it cannot see.
+  //
+  // compilerPath is deliberately absent.  Hard-coding the bundled
+  // runtime/mingw/bin/gcc.exe is right for the full package and wrong for the
+  // slim one and for a checkout; leaving it out lets the extension find the
+  // compiler the learner already has, and clings.cmd puts the bundled one on
+  // PATH before it starts VS Code anyway.
+  "version": 4,
+  "configurations": [
+    {
+      "name": "clings-win",
+      "includePath": ["${workspaceFolder}/include"],
+      "cStandard": "c17",
+      "intelliSenseMode": "windows-gcc-x64"
+    }
+  ]
+}

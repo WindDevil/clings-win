@@ -32,12 +32,25 @@ PACKAGE_ITEMS = (
     "solutions",
     "templates",
     "docs",
+    # The editor a learner gets without VS Code.  Delete this line and the
+    # package still compiles, runs and checks every exercise; only the
+    # no-editor case goes away - clings.cmd detects the missing directory.
+    "studio",
+    # Not an editor, but what makes the VS Code one work: the C/C++ extension
+    # only sees include/ if a workspace config says so.
+    ".vscode",
 )
 
 RUNTIME_ITEMS = (
     (ROOT / ".winbox" / "native" / "w64devkit", "runtime/mingw"),
     (ROOT / ".winbox" / "native" / "python", "runtime/python"),
 )
+
+IGNORED = ("__pycache__", "*.pyc")
+# The studio's tests ship nowhere.  They are maintainer material, they need a
+# checkout to be meaningful, and running them rewrites exercises - which is
+# exactly what a learner's copy should never do behind their back.
+IGNORED_IN_STUDIO = (*IGNORED, "tests")
 
 
 def upstream_commit() -> str:
@@ -99,7 +112,9 @@ def build(with_runtime: bool, out_dir: Path, allow_missing_runtime: bool) -> Pat
                 shutil.copytree(
                     origin,
                     stage / item,
-                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+                    ignore=shutil.ignore_patterns(
+                        *(IGNORED_IN_STUDIO if item == "studio" else IGNORED)
+                    ),
                 )
             else:
                 shutil.copyfile(origin, stage / item)
