@@ -8,7 +8,7 @@ help:
 		'clings-win targets:' \
 		'  make sync            copy exercises/solutions from $(SOURCE) and apply Windows overrides' \
 		'  make check           fail if the twin is out of sync with $(SOURCE)' \
-		'  make test            run the studio tests (compiler-backed ones skip without a compiler)' \
+		'  make test            run the studio and packaging tests (compiler-backed ones skip)' \
 		'  make winbox          fetch the Linux-side mingw-w64 + Wine toolbox into .winbox/' \
 		'  make winbox-native   also fetch w64devkit and Windows Python for packaging' \
 		'  make windows-check   cross compile + run everything through Wine' \
@@ -26,6 +26,7 @@ check:
 # contracts worth testing, and a stub would only agree with itself.
 test:
 	$(PYTHON) -m unittest discover -s studio/tests -t . -v
+	$(PYTHON) -m unittest discover -s tools/tests -t . -v
 
 winbox:
 	tools/winbox.sh fetch

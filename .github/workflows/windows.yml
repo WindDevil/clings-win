@@ -7,6 +7,7 @@ on:
 
 env:
   UPSTREAM_REPOSITORY: WindDevil/clings
+  PYTHON_EMBED_VERSION: "3.12.10"
 
 jobs:
   # The twin is generated: this job proves it still matches upstream.
@@ -135,6 +136,10 @@ jobs:
       # double-click entry point and the VS Code lookup are Windows things.
       - name: Studio tests
         run: python -m unittest discover -s studio/tests -t . -v
+      # The packaging step is where a released download can be broken while
+      # every test above is green - see docs/portability.md, "自带的 Python".
+      - name: Packaging tests
+        run: python -m unittest discover -s tools/tests -t . -v
       # Escapes must not reach a pipe, and forcing them must still work: a
       # learner pasting a failing run into a chat is the case that hurts.
       # (A real console, where clings turns VT processing on itself, is
@@ -160,8 +165,34 @@ jobs:
             throw "doctor does not report the colour decision"
           }
           Write-Host "colour policy ok"
-      - name: Build the beginner package
-        run: python tools/package_windows.py --flavor slim
+      # The full package needs w64devkit, which is 750 MB of download - this
+      # job only needs the Python half of it to check the part that broke in
+      # v0.3.0.  The exercises run against the mingw-w64 already on PATH.
+      - name: Fetch the embedded Python
+        run: |
+          $native = ".winbox\native"
+          New-Item -ItemType Directory -Force -Path $native | Out-Null
+          $zip = "$native\python.zip"
+          curl.exe -fSL -o $zip "https://www.python.org/ftp/python/$env:PYTHON_EMBED_VERSION/python-$env:PYTHON_EMBED_VERSION-embed-amd64.zip"
+          Expand-Archive -Path $zip -DestinationPath "$native\python" -Force
+      - name: Build the beginner packages
+        run: python tools/package_windows.py --flavor both --allow-missing-runtime
+      - name: The packaged entry point works as shipped
+        run: |
+          Expand-Archive -Path (Get-ChildItem dist\*-full.zip).FullName -DestinationPath smoke
+          $root = (Get-ChildItem smoke -Directory | Select-Object -First 1).FullName
+          Push-Location $root
+          try {
+            # Importing studio from the bundled Python is the whole check: a
+            # ._pth file switches PYTHONPATH off, so it only works when
+            # tools/package_windows.py wrote this package's root into it.
+            .\runtime\python\python.exe -c "import studio, studio.server"
+            if ($LASTEXITCODE -ne 0) { throw "包里的 Python 导入不了 studio 模块" }
+            # ...and the entry point a double-click reaches.
+            $run = cmd /c ".\clings.cmd run 00_basics/01_printf" 2>&1 | Out-String
+            if (-not $run.Contains("要改的文件")) { throw "失败的 run 没有给新手提示：$run" }
+            Write-Host "package smoke ok"
+          } finally { Pop-Location }
       - name: Upload the package
         uses: actions/upload-artifact@v4
         with:
