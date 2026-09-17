@@ -149,6 +149,198 @@ def color(text: str, code: str) -> str:
     return f"\\033[{code}m{text}\\033[0m"
 '''
 
+# Machine-readable output.  Everything the twin adds on top of the exercises -
+# the studio in studio/, and whatever reaches it through a shell - talks to the
+# runner through this and nothing else: no imports, no parsing of the human
+# output, no second copy of "where do exercises live and what is in them".
+# ``--json`` is deliberately generic (a listing, a toolchain report, a run
+# result) so that the interface stays the runner's, not the studio's.
+JSON_LIST_BLOCK = r'''def exercise_files(exercise: Exercise) -> list[Path]:
+    """Every file that belongs to an exercise, in the order to show them.
+
+    For the five multi-file exercises this is the whole directory: the .c
+    files that get compiled, and the headers they include, which are just as
+    much the learner's to edit but never appear on a command line.
+    """
+    files = list(exercise.sources)
+    if exercise.is_project:
+        files.extend(sorted(exercise.path.parent.glob("*.h")))
+    return files
+
+
+def exercise_record(exercise: Exercise, completed: set[str]) -> dict[str, object]:
+    """The machine-readable shape of one exercise.
+
+    A consumer that only has this JSON must be able to render the exercise
+    list on its own, so it carries the header metadata, whether the learner
+    has passed it, the files that make it up, and which of them a build
+    actually compiles.  Paths are relative to ROOT with forward slashes,
+    which reads the same on a POSIX host and on Windows.
+    """
+    return {
+        "ident": exercise.ident,
+        "topic": exercise.topic,
+        "slug": exercise.slug,
+        "title": exercise.title,
+        "objective": exercise.objective,
+        "reference": exercise.reference,
+        "hint": exercise.hint,
+        "is_project": exercise.is_project,
+        "completed": exercise.ident in completed,
+        "files": [
+            path.relative_to(ROOT).as_posix() for path in exercise_files(exercise)
+        ],
+        "sources": [
+            source.relative_to(ROOT).as_posix() for source in exercise.sources
+        ],
+    }
+
+
+def emit_json(payload: object) -> None:
+    """Write one JSON document and flush it.
+
+    ensure_ascii=False keeps the Chinese titles readable to a human reading
+    the raw output; consumers decode UTF-8, which configure_output already
+    guarantees for this process on Windows.
+    """
+    json.dump(payload, sys.stdout, ensure_ascii=False, indent=2)
+    sys.stdout.write("\n")
+    sys.stdout.flush()
+
+
+def command_list(args: argparse.Namespace) -> int:
+    exercises = discover()
+    completed = load_progress()
+    if not exercises:
+        print(red("no exercises found"))
+        return 1
+
+    if getattr(args, "json", False):
+        topics: list[dict[str, object]] = []
+        for exercise in exercises:
+            if args.topic and exercise.topic != args.topic:
+                continue
+            if not topics or topics[-1]["name"] != exercise.topic:
+                topics.append({"name": exercise.topic, "exercises": []})
+            listed = topics[-1]["exercises"]
+            if isinstance(listed, list):
+                listed.append(exercise_record(exercise, completed))
+        emit_json(
+            {
+                "root": str(ROOT),
+                "launcher": launcher(),
+                "total": len(exercises),
+                "completed_count": sum(
+                    1 for exercise in exercises if exercise.ident in completed
+                ),
+                "topics": topics,
+            }
+        )
+        return 0
+
+    current_topic = None
+'''
+
+JSON_RUN_BLOCK = r'''    json_mode = bool(getattr(args, "json", False))
+    completed = load_progress()
+    failures = 0
+    results: list[dict[str, object]] = []
+    for exercise in targets:
+        if not json_mode:
+            print(f"\n{cyan('running')} {exercise.ident} - {exercise.title}")
+        passed, output, stage = run_exercise(exercise, verbose=args.verbose)
+        results.append(
+            {
+                "ident": exercise.ident,
+                "title": exercise.title,
+                "passed": passed,
+                "stage": stage,
+                "output": output,
+            }
+        )
+        if passed:
+            completed.add(exercise.ident)
+            save_progress(completed)
+            if not json_mode:
+                print(green("  passed"))
+            if args.verbose and output and not json_mode:
+                print(output, end="" if output.endswith("\n") else "\n")
+            continue
+
+        failures += 1
+        if not json_mode:
+            print(red("  failed"))
+            if output:
+                print(output, end="" if output.endswith("\n") else "\n")
+        if not args.continue_on_error:
+            break
+
+    if json_mode:
+        emit_json(
+            {
+                "results": results,
+                "failures": failures,
+                "completed_count": sum(
+                    1 for exercise in exercises if exercise.ident in completed
+                ),
+            }
+        )
+        return 1 if failures else 0
+    if failures:
+        print(red(f"\n{failures} exercise(s) failed"))
+        return 1
+    print(green("\nall selected exercises passed"))
+    return 0
+'''
+
+JSON_DOCTOR_BLOCK = r'''    if getattr(args, "json", False):
+        import inspect
+
+        # A missing compiler is a state the caller has to be able to report -
+        # the slim package expects the learner to have installed one - so it
+        # must not come back as a traceback.
+        try:
+            probe = subprocess.run(
+                [compiler(), "--version"],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+            version = probe.stdout.splitlines()[0] if probe.stdout else ""
+        except OSError:
+            version = ""
+        emit_json(
+            {
+                "python": platform.python_version(),
+                "platform": platform.platform(),
+                "root": str(ROOT),
+                "launcher": launcher(),
+                "compiler": compiler(),
+                "compiler_found": bool(version),
+                "compiler_version": version,
+                # A caller that shows diagnostics while the learner types has
+                # to compile the way `run` does, or it reports a different set
+                # of errors than the exercise itself does.  These are the only
+                # flags and search paths that decide that.
+                "cflags": cflags(),
+                "ldlibs": DEFAULT_LDLIBS,
+                "include_dirs": [
+                    (ROOT / "include").relative_to(ROOT).as_posix(),
+                    ".",
+                ],
+                "test_source": "include/clings/test.c",
+                # Read off run_binary rather than repeated here, so a caller
+                # that puts its own deadline around a run cannot drift away
+                # from the deadline the runner itself applies.
+                "timeout_seconds": inspect.signature(run_binary)
+                .parameters["timeout"]
+                .default,
+            }
+        )
+        return 0
+'''
+
 # The runner is copied too, then patched with these exact replacements.  Every
 # replacement must match exactly once; otherwise upstream changed the runner
 # and this script has to be revisited.
@@ -249,6 +441,120 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
         "    # which console is this, and did clings decide it can show them?\n"
         "    reason = color_off_reason()\n"
         "    print(f\"颜色:     {'开启' if not reason else '关闭（' + reason + '）'}\")\n",
+    ),
+    # --- machine-readable output, for the studio and for scripts ------------
+    (
+        r'''def command_list(args: argparse.Namespace) -> int:
+    exercises = discover()
+    completed = load_progress()
+    if not exercises:
+        print(red("no exercises found"))
+        return 1
+
+    current_topic = None
+''',
+        JSON_LIST_BLOCK,
+    ),
+    (
+        r'''def run_exercise(exercise: Exercise, verbose: bool = False) -> tuple[bool, str]:
+    output = binary_path(exercise)
+    include_dirs = (exercise.path.parent,) if exercise.is_project else ()
+    build = compile_sources(exercise.sources, output, include_dirs)
+    if build.returncode != 0:
+        return False, "compilation failed\n" + build.stdout
+
+    try:
+        result = run_binary(output)
+    except subprocess.TimeoutExpired:
+        return False, "exercise timed out after 10 seconds"
+
+    if verbose or result.returncode != 0:
+        return result.returncode == 0, result.stdout
+    return result.returncode == 0, result.stdout
+''',
+        r'''def run_exercise(
+    exercise: Exercise, verbose: bool = False
+) -> tuple[bool, str, str]:
+    """Compile and run one exercise.
+
+    The third element names the stage that produced this result - "compile",
+    "run" or "timeout" - so a caller reporting it to a learner can say which
+    one failed without matching on the message text.
+    """
+    output = binary_path(exercise)
+    include_dirs = (exercise.path.parent,) if exercise.is_project else ()
+    build = compile_sources(exercise.sources, output, include_dirs)
+    if build.returncode != 0:
+        return False, "compilation failed\n" + build.stdout, "compile"
+
+    try:
+        result = run_binary(output)
+    except subprocess.TimeoutExpired:
+        return False, "exercise timed out after 10 seconds", "timeout"
+
+    if verbose or result.returncode != 0:
+        return result.returncode == 0, result.stdout, "run"
+    return result.returncode == 0, result.stdout, "run"
+''',
+    ),
+    (
+        r'''    completed = load_progress()
+    failures = 0
+    for exercise in targets:
+        print(f"\n{cyan('running')} {exercise.ident} - {exercise.title}")
+        passed, output = run_exercise(exercise, verbose=args.verbose)
+        if passed:
+            completed.add(exercise.ident)
+            save_progress(completed)
+            print(green("  passed"))
+            if args.verbose and output:
+                print(output, end="" if output.endswith("\n") else "\n")
+            continue
+
+        failures += 1
+        print(red("  failed"))
+        if output:
+            print(output, end="" if output.endswith("\n") else "\n")
+        if not args.continue_on_error:
+            break
+
+    if failures:
+        print(red(f"\n{failures} exercise(s) failed"))
+        return 1
+    print(green("\nall selected exercises passed"))
+    return 0
+''',
+        JSON_RUN_BLOCK,
+    ),
+    (
+        '            passed, output = run_exercise(exercise, verbose=True)\n',
+        '            passed, output, _ = run_exercise(exercise, verbose=True)\n',
+    ),
+    (
+        "        passed, _ = run_exercise(exercise)\n",
+        "        passed, _, _ = run_exercise(exercise)\n",
+    ),
+    (
+        'def command_doctor(args: argparse.Namespace) -> int:\n'
+        '    print(f"python:   {platform.python_version()}")\n',
+        'def command_doctor(args: argparse.Namespace) -> int:\n'
+        + JSON_DOCTOR_BLOCK
+        + '    print(f"python:   {platform.python_version()}")\n',
+    ),
+    (
+        '    list_parser.add_argument("--topic", help="only show one topic")\n',
+        '    list_parser.add_argument("--topic", help="only show one topic")\n'
+        '    list_parser.add_argument("--json", action="store_true", help="以 JSON 输出")\n',
+    ),
+    (
+        '    run_parser.add_argument("--verbose", action="store_true")\n',
+        '    run_parser.add_argument("--verbose", action="store_true")\n'
+        '    run_parser.add_argument("--json", action="store_true", help="以 JSON 输出")\n',
+    ),
+    (
+        '    doctor_parser = subparsers.add_parser("doctor", help="show toolchain information")\n',
+        '    doctor_parser = subparsers.add_parser("doctor", help="show toolchain information")\n'
+        '    doctor_parser.add_argument("--json", action="store_true", help="以 JSON 输出")\n',
     ),
 ]
 

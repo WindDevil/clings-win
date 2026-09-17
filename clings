@@ -429,21 +429,29 @@ def resolve_exercise(needle: str | None) -> Exercise | None:
     return None
 
 
-def run_exercise(exercise: Exercise, verbose: bool = False) -> tuple[bool, str]:
+def run_exercise(
+    exercise: Exercise, verbose: bool = False
+) -> tuple[bool, str, str]:
+    """Compile and run one exercise.
+
+    The third element names the stage that produced this result - "compile",
+    "run" or "timeout" - so a caller reporting it to a learner can say which
+    one failed without matching on the message text.
+    """
     output = binary_path(exercise)
     include_dirs = (exercise.path.parent,) if exercise.is_project else ()
     build = compile_sources(exercise.sources, output, include_dirs)
     if build.returncode != 0:
-        return False, "编译失败\n" + build.stdout
+        return False, "编译失败\n" + build.stdout, "compile"
 
     try:
         result = run_binary(output)
     except subprocess.TimeoutExpired:
-        return False, "练习运行超过 10 秒，已中止"
+        return False, "练习运行超过 10 秒，已中止", "timeout"
 
     if verbose or result.returncode != 0:
-        return result.returncode == 0, result.stdout
-    return result.returncode == 0, result.stdout
+        return result.returncode == 0, result.stdout, "run"
+    return result.returncode == 0, result.stdout, "run"
 
 
 def run_solution(exercise: Exercise) -> tuple[bool, str]:
@@ -474,12 +482,88 @@ def print_exercise(exercise: Exercise, completed: set[str]) -> None:
         print(f"       reference: {exercise.reference}")
 
 
+def exercise_files(exercise: Exercise) -> list[Path]:
+    """Every file that belongs to an exercise, in the order to show them.
+
+    For the five multi-file exercises this is the whole directory: the .c
+    files that get compiled, and the headers they include, which are just as
+    much the learner's to edit but never appear on a command line.
+    """
+    files = list(exercise.sources)
+    if exercise.is_project:
+        files.extend(sorted(exercise.path.parent.glob("*.h")))
+    return files
+
+
+def exercise_record(exercise: Exercise, completed: set[str]) -> dict[str, object]:
+    """The machine-readable shape of one exercise.
+
+    A consumer that only has this JSON must be able to render the exercise
+    list on its own, so it carries the header metadata, whether the learner
+    has passed it, the files that make it up, and which of them a build
+    actually compiles.  Paths are relative to ROOT with forward slashes,
+    which reads the same on a POSIX host and on Windows.
+    """
+    return {
+        "ident": exercise.ident,
+        "topic": exercise.topic,
+        "slug": exercise.slug,
+        "title": exercise.title,
+        "objective": exercise.objective,
+        "reference": exercise.reference,
+        "hint": exercise.hint,
+        "is_project": exercise.is_project,
+        "completed": exercise.ident in completed,
+        "files": [
+            path.relative_to(ROOT).as_posix() for path in exercise_files(exercise)
+        ],
+        "sources": [
+            source.relative_to(ROOT).as_posix() for source in exercise.sources
+        ],
+    }
+
+
+def emit_json(payload: object) -> None:
+    """Write one JSON document and flush it.
+
+    ensure_ascii=False keeps the Chinese titles readable to a human reading
+    the raw output; consumers decode UTF-8, which configure_output already
+    guarantees for this process on Windows.
+    """
+    json.dump(payload, sys.stdout, ensure_ascii=False, indent=2)
+    sys.stdout.write("\n")
+    sys.stdout.flush()
+
+
 def command_list(args: argparse.Namespace) -> int:
     exercises = discover()
     completed = load_progress()
     if not exercises:
         print(red("没有找到任何练习"))
         return 1
+
+    if getattr(args, "json", False):
+        topics: list[dict[str, object]] = []
+        for exercise in exercises:
+            if args.topic and exercise.topic != args.topic:
+                continue
+            if not topics or topics[-1]["name"] != exercise.topic:
+                topics.append({"name": exercise.topic, "exercises": []})
+            listed = topics[-1]["exercises"]
+            if isinstance(listed, list):
+                listed.append(exercise_record(exercise, completed))
+        emit_json(
+            {
+                "root": str(ROOT),
+                "launcher": launcher(),
+                "total": len(exercises),
+                "completed_count": sum(
+                    1 for exercise in exercises if exercise.ident in completed
+                ),
+                "topics": topics,
+            }
+        )
+        return 0
 
     current_topic = None
     for exercise in exercises:
@@ -518,26 +602,51 @@ def command_run(args: argparse.Namespace) -> int:
             return 0
         targets = [exercise]
 
+    json_mode = bool(getattr(args, "json", False))
     completed = load_progress()
     failures = 0
+    results: list[dict[str, object]] = []
     for exercise in targets:
-        print(f"\n{cyan('运行')} {exercise.ident} - {exercise.title}")
-        passed, output = run_exercise(exercise, verbose=args.verbose)
+        if not json_mode:
+            print(f"\n{cyan('运行')} {exercise.ident} - {exercise.title}")
+        passed, output, stage = run_exercise(exercise, verbose=args.verbose)
+        results.append(
+            {
+                "ident": exercise.ident,
+                "title": exercise.title,
+                "passed": passed,
+                "stage": stage,
+                "output": output,
+            }
+        )
         if passed:
             completed.add(exercise.ident)
             save_progress(completed)
-            print(green("  通过"))
-            if args.verbose and output:
+            if not json_mode:
+                print(green("  通过"))
+            if args.verbose and output and not json_mode:
                 print(output, end="" if output.endswith("\n") else "\n")
             continue
 
         failures += 1
-        print(red("  未通过"))
-        if output:
-            print(output, end="" if output.endswith("\n") else "\n")
+        if not json_mode:
+            print(red("  未通过"))
+            if output:
+                print(output, end="" if output.endswith("\n") else "\n")
         if not args.continue_on_error:
             break
 
+    if json_mode:
+        emit_json(
+            {
+                "results": results,
+                "failures": failures,
+                "completed_count": sum(
+                    1 for exercise in exercises if exercise.ident in completed
+                ),
+            }
+        )
+        return 1 if failures else 0
     if failures:
         print(red(f"\n{failures} 个练习未通过"))
         return 1
@@ -639,7 +748,7 @@ def command_selftest(args: argparse.Namespace) -> int:
 
         # A broken exercise may fail to compile or fail at runtime.  Both are
         # valid starting states; it must not pass before the learner edits it.
-        passed, _ = run_exercise(exercise)
+        passed, _, _ = run_exercise(exercise)
         if passed:
             failures += 1
             print(f"{red('FAIL')} 练习 {exercise.ident} 初始状态就通过了")
@@ -655,6 +764,52 @@ def command_selftest(args: argparse.Namespace) -> int:
 
 
 def command_doctor(args: argparse.Namespace) -> int:
+    if getattr(args, "json", False):
+        import inspect
+
+        # A missing compiler is a state the caller has to be able to report -
+        # the slim package expects the learner to have installed one - so it
+        # must not come back as a traceback.
+        try:
+            probe = subprocess.run(
+                [compiler(), "--version"],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+            version = probe.stdout.splitlines()[0] if probe.stdout else ""
+        except OSError:
+            version = ""
+        emit_json(
+            {
+                "python": platform.python_version(),
+                "platform": platform.platform(),
+                "root": str(ROOT),
+                "launcher": launcher(),
+                "compiler": compiler(),
+                "compiler_found": bool(version),
+                "compiler_version": version,
+                # A caller that shows diagnostics while the learner types has
+                # to compile the way `run` does, or it reports a different set
+                # of errors than the exercise itself does.  These are the only
+                # flags and search paths that decide that.
+                "cflags": cflags(),
+                "ldlibs": DEFAULT_LDLIBS,
+                "include_dirs": [
+                    (ROOT / "include").relative_to(ROOT).as_posix(),
+                    ".",
+                ],
+                "test_source": "include/clings/test.c",
+                # Read off run_binary rather than repeated here, so a caller
+                # that puts its own deadline around a run cannot drift away
+                # from the deadline the runner itself applies.
+                "timeout_seconds": inspect.signature(run_binary)
+                .parameters["timeout"]
+                .default,
+            }
+        )
+        return 0
     print(f"Python:   {platform.python_version()}")
     print(f"系统:     {platform.platform()}")
     print(f"项目目录: {ROOT}")
@@ -686,7 +841,7 @@ def command_watch(args: argparse.Namespace) -> int:
         if mtime != last_mtime:
             last_mtime = mtime
             print(f"\n{cyan('running')} {exercise.ident}")
-            passed, output = run_exercise(exercise, verbose=True)
+            passed, output, _ = run_exercise(exercise, verbose=True)
             print(green("passed") if passed else red("failed"))
             if output:
                 print(output, end="" if output.endswith("\n") else "\n")
@@ -711,6 +866,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     list_parser = subparsers.add_parser("list", help="列出全部练习")
     list_parser.add_argument("--topic", help="only show one topic")
+    list_parser.add_argument("--json", action="store_true", help="以 JSON 输出")
     list_parser.set_defaults(func=command_list)
 
     next_parser = subparsers.add_parser("next", help="显示下一个练习")
@@ -727,6 +883,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="失败后继续往下跑",
     )
     run_parser.add_argument("--verbose", action="store_true")
+    run_parser.add_argument("--json", action="store_true", help="以 JSON 输出")
     run_parser.set_defaults(func=command_run)
 
     hint_parser = subparsers.add_parser("hint", help="查看提示")
@@ -756,6 +913,7 @@ def build_parser() -> argparse.ArgumentParser:
     selftest_parser.set_defaults(func=command_selftest)
 
     doctor_parser = subparsers.add_parser("doctor", help="显示工具链信息")
+    doctor_parser.add_argument("--json", action="store_true", help="以 JSON 输出")
     doctor_parser.set_defaults(func=command_doctor)
 
     watch_parser = subparsers.add_parser("watch", help="文件变化后自动重跑")
