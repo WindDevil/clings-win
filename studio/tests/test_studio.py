@@ -211,6 +211,26 @@ class TheNextExercise(unittest.TestCase):
 class TheMenu(unittest.TestCase):
     """The double-click flow: run, then stay open."""
 
+    def build_listing(self, *completed: bool) -> Listing:
+        """A listing whose progress the test decides, not the checkout.
+
+        A developer's copy has real progress in .clings/, so a test about the
+        first run cannot read it off the tree.
+        """
+        exercises = tuple(
+            Exercise(
+                ident=SIMPLE if index == 0 else f"t/{index}", topic="t", slug="s",
+                title="标题", objective="目标", reference="", hint="提示",
+                is_project=False, completed=done,
+                files=("exercises/00_basics/01_printf.c",), sources=(),
+            )
+            for index, done in enumerate(completed)
+        )
+        return Listing(
+            root=str(paths.ROOT), launcher="clings.cmd", total=len(exercises),
+            completed_count=sum(completed), topics=(Topic("t", exercises),),
+        )
+
     def run_menu(self, answers, ident: str = SIMPLE):
         """Run the menu with the terminal replaced and the runner intercepted.
 
@@ -233,6 +253,27 @@ class TheMenu(unittest.TestCase):
         self.assertEqual(calls, [SIMPLE])
         self.assertIn(SIMPLE, text)
         self.assertIn(harness.exercise(SIMPLE).title, text)
+
+    def test_the_first_run_says_what_this_is(self) -> None:
+        # The learner double-clicks a .cmd file having never used a terminal:
+        # without this, the window is a compiler error and a menu.
+        with mock.patch.object(menu.bridge, "listing", return_value=self.build_listing(False, False)):
+            code, text, _ = self.run_menu(["0"])
+        self.assertEqual(code, 0)
+        self.assertIn("第一次用", text)
+        self.assertIn("一开始不通过是正常的", text)
+        self.assertIn("记事本", text)
+
+    def test_every_run_names_the_file_to_edit(self) -> None:
+        with mock.patch.object(menu.bridge, "listing", return_value=self.build_listing(False)):
+            _, text, _ = self.run_menu(["0"])
+        self.assertIn("要改的文件", text)
+        self.assertIn("01_printf.c", text)
+
+    def test_a_returning_learner_is_not_lectured_again(self) -> None:
+        with mock.patch.object(menu.bridge, "listing", return_value=self.build_listing(True, False)):
+            _, text, _ = self.run_menu(["0"])
+        self.assertNotIn("第一次用", text)
 
     def test_it_repeats_on_demand(self) -> None:
         code, _, calls = self.run_menu(["1", "0"])
@@ -297,20 +338,36 @@ class ChoosingFromTheMenu(unittest.TestCase):
     def test_eof_means_stop(self) -> None:
         with mock.patch("builtins.input", side_effect=EOFError):
             with redirect_stdout(io.StringIO()):
-                self.assertEqual(menu.choose(), "0")
+                self.assertEqual(menu.choose(harness.exercise(SIMPLE)), "0")
 
     def test_interrupt_means_stop(self) -> None:
         with mock.patch("builtins.input", side_effect=KeyboardInterrupt):
             with redirect_stdout(io.StringIO()):
-                self.assertEqual(menu.choose(), "0")
+                self.assertEqual(menu.choose(harness.exercise(SIMPLE)), "0")
 
     def test_the_choices_are_listed(self) -> None:
+        labels = menu.choices(harness.exercise(SIMPLE))
         with mock.patch("builtins.input", return_value="1"):
             with redirect_stdout(io.StringIO()) as output:
-                self.assertEqual(menu.choose(), "1")
-        for key, label in menu.CHOICES:
+                self.assertEqual(menu.choose(harness.exercise(SIMPLE)), "1")
+        for key, label in labels:
             self.assertIn(f"[{key}]", output.getvalue())
             self.assertIn(label, output.getvalue())
+
+    def test_the_editors_are_offered_by_name(self) -> None:
+        # "用 VS Code 打开" without an object is how this menu read when a
+        # beginner had no idea yet what the object was.
+        labels = dict(menu.choices(harness.exercise(SIMPLE)))
+        self.assertIn("01_printf.c", labels["2"])
+        self.assertIn("内置编辑器", labels["3"])
+        self.assertEqual([key for key, _ in menu.choices(harness.exercise(SIMPLE))],
+                         ["1", "2", "3", "4", "0"])
+
+    def test_the_menu_without_an_exercise_is_still_listed(self) -> None:
+        with mock.patch("builtins.input", return_value="0"):
+            with redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(menu.choose(), "0")
+        self.assertIn("[1]", output.getvalue())
 
 
 class TheLauncher(unittest.TestCase):

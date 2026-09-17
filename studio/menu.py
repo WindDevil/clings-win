@@ -5,6 +5,11 @@ The shape is: run the current exercise with the terminal attached (so a
 program that reads the keyboard still works, and the learner sees the runner's
 own colours), then offer the four things they are most likely to want next.
 
+The learner here is a first-year student who has never used a terminal, so the
+window also has to say what "it" is: the first run orients them (see _welcome),
+every run names the file to edit, and the menu names that file next to "用 VS
+Code 打开" - which is useless without it.
+
 Everything here goes through the runner or through bridge.py.  Nothing in this
 file knows how an exercise is compiled - when the flags change upstream, this
 keeps working, which is the point of the split.
@@ -13,16 +18,37 @@ keeps working, which is the point of the split.
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 from . import bridge, paths, server, vscode
 
 CHOICES = (
-    ("1", "重跑一遍"),
+    ("1", "改完了，重跑一遍"),
     ("2", "用 VS Code 打开"),
     ("3", "打开内置编辑器（浏览器）"),
-    ("4", "看提示"),
+    ("4", "看这道题的提示"),
     ("0", "退出"),
 )
+
+
+def _display(relative: str) -> str:
+    """A package-relative path spelled the way the learner's own shell does."""
+    return str(Path(relative))
+
+
+def choices(exercise: bridge.Exercise | None = None) -> tuple[tuple[str, str], ...]:
+    """The menu, naming the file wherever the learner has to open one.
+
+    "[2] 用 VS Code 打开" only helps if the *what* is spelled out, and the
+    learner may never have seen the tree this package is.
+    """
+    if exercise is None:
+        return CHOICES
+    named = _display(exercise.main_file)
+    return tuple(
+        (key, f"{label} {named}" if key == "2" else label)
+        for key, label in CHOICES
+    )
 
 
 def _rule(title: str = "") -> None:
@@ -40,8 +66,36 @@ def _show(exercise: bridge.Exercise) -> None:
     _rule(f"{exercise.ident}  {exercise.title}")
     if exercise.objective:
         print(f"  {exercise.objective}")
+    print(f"  要改的文件: {_display(exercise.main_file)}")
     if exercise.is_project:
-        print("  （多文件练习）")
+        print("  （这道题有多个文件，都是你要改的）")
+    # This block is what the learner reads *before* the compiler output, and
+    # the run below hands the terminal to a child process - a redirected
+    # stdout would otherwise flush these lines after it.
+    sys.stdout.flush()
+
+
+def _welcome(listing: bridge.Listing) -> None:
+    """The orientation a first-year student needs and nothing else gives them.
+
+    Printed on every double-click until the first exercise is passed, rather
+    than exactly once: a learner who is stuck on exercise one is precisely the
+    one who closes the window and comes back tomorrow, and re-reading this
+    costs them less than having to remember where they were.
+    """
+    _rule("第一次用，先看这里")
+    print(f"  这个包里有 {listing.total} 道 C 语言练习题，每道题都是一个能编译、"
+          "能运行的程序，")
+    print("  里面留了一处空（注释里写着 TODO）。打开文件、把空补上、保存，再跑一遍就会通过。")
+    print()
+    print("  一开始不通过是正常的：报错就是这道题给你的线索，不是环境装坏了。")
+    print("  做过的题会记下来，下次双击 clings.cmd 接着做没做完的那一道。")
+    print()
+    print("  改文件有三种办法，挑一种就行：")
+    print(r"    记事本      在 exercises\ 里找到练习文件，右键 →「打开方式」→ 记事本")
+    print("    VS Code     跑完在下面的菜单里按 2")
+    print("    内置编辑器   在下面的菜单里按 3，用浏览器写，有高亮和自动查错")
+    _rule()
 
 
 def _hint(exercise: bridge.Exercise) -> None:
@@ -95,10 +149,10 @@ def _next_hint(exercise: bridge.Exercise) -> None:
         return
 
 
-def choose() -> str:
+def choose(exercise: bridge.Exercise | None = None) -> str:
     """One menu answer, or "0" for anything that means stop."""
     print()
-    for key, label in CHOICES:
+    for key, label in choices(exercise):
         print(f"  [{key}] {label}")
     try:
         answer = input("选择: ").strip()
@@ -130,6 +184,8 @@ def run(ident: str | None = None) -> int:
             print("所有练习都完成了。想重做的话，从下面的菜单里选“打开内置编辑器”。")
         return 1
 
+    if not listing.completed_count:
+        _welcome(listing)
     _show(exercise)
     code = bridge.run_streaming(exercise.ident)
     # The exit code says the harness ran; progress says the exercise passed,
@@ -142,7 +198,7 @@ def run(ident: str | None = None) -> int:
         _next_hint(exercise)
 
     while True:
-        answer = choose()
+        answer = choose(exercise)
         if answer in ("0", "q", "quit", "exit", ""):
             return 0
         if answer == "1":
