@@ -66,6 +66,25 @@ if /i "%~1"=="menu" goto studio
 %PY% "%ROOT%clings" %*
 exit /b %ERRORLEVEL%
 
+:default
+rem No arguments: the first thing a learner sees should be the next exercise
+rem being compiled and tested, not a bare list that scrolls away.  With the
+rem studio that means its menu, which does the run itself and then stays open;
+rem without it, the runner does the run and the message below says where to
+rem go next.
+if defined STUDIO goto default_studio
+echo [clings] 这个包里没有内置编辑器（studio\ 目录不存在），直接编译运行下一个练习。
+echo [clings] 编译通不过不用慌：练习文件里留了空（TODO），报错的行号就是线索。
+%PY% "%ROOT%clings" run
+set "CODE=%ERRORLEVEL%"
+if defined INTERACTIVE pause
+exit /b %CODE%
+
+:default_studio
+call :studio menu
+set "CODE=%ERRORLEVEL%"
+exit /b %CODE%
+
 :studio
 if not defined STUDIO (
   echo [clings] 这个包里没有内置编辑器（studio\ 目录不存在）。
@@ -73,24 +92,23 @@ if not defined STUDIO (
   if defined INTERACTIVE pause
   exit /b 1
 )
+rem For a learner's own Python this is what makes studio/ importable; the
+rem bundled one needs the ._pth line instead (see the import check below).
 set "PYTHONPATH=%ROOT%"
-%PY% -m studio %*
-set "CODE=%ERRORLEVEL%"
-if defined INTERACTIVE pause
-exit /b %CODE%
-
-:default
-rem No arguments: the first thing a learner sees should be the next exercise
-rem being compiled and tested, not a bare list that scrolls away.
-if not defined STUDIO (
-  echo [clings] Tip: run "clings.cmd run" to compile and test the next exercise.
-  %PY% "%ROOT%clings" run
-  set "CODE=%ERRORLEVEL%"
+rem The bundled Python is the embeddable distribution, and a python3xx._pth
+rem file makes that one ignore PYTHONPATH: "import studio" only works because
+rem tools/package_windows.py wrote this package's root into that file.  When
+rem it does not work - a package edited by hand, a stripped one - one line of
+rem explanation beats a Python traceback in a beginner's face.
+%PY% -c "import studio" >nul 2>&1
+if errorlevel 1 (
+  echo [clings] 内置编辑器没能启动：Python 找不到 studio 模块。
+  echo [clings] 多半是这个包被改动过（runtime\python\python3xx._pth 里少了包根目录那一行）。
+  echo [clings] 练习本身不受影响：用 "%~nx0 run" 编译运行，"%~nx0 doctor" 看环境。
   if defined INTERACTIVE pause
-  exit /b %CODE%
+  exit /b 1
 )
-set "PYTHONPATH=%ROOT%"
-%PY% -m studio menu
+%PY% -m studio %*
 set "CODE=%ERRORLEVEL%"
 if defined INTERACTIVE pause
 exit /b %CODE%
