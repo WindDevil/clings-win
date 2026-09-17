@@ -158,6 +158,21 @@ Windows 机器的前提下如何获得闭环反馈。
 只有 `open`、`web`、`menu` 和「不带参数」这四条路会走到暂停；其余参数直接转交运行器
 （`run`、`list`、`doctor`），把控制台原样交还给调用者，从哪个 shell 调用都一样。
 
+运行器自己还会在 `run` 失败之后补三行：这道题一开始就是坏的、要改哪个文件、
+`hint` 和 `run` 怎么打（`RUNNER_PATCHES` 里的 `next_steps`）。新手看到的第一份
+输出就是一条编译错误，而编译错误单独放着读起来像"装坏了"；这几行是唯一能说明
+「这就是题目」的地方，所以它放在运行器里而不是 `clings.cmd` 里——双击、菜单、
+手打命令，三条路看到的字一模一样。它只出现在人看的输出里：`--json` 一个字符都
+不多，studio 和脚本读到的结构没有变化（`tools/tests/test_runner_guidance.py`
+盯着这两件事）。
+
+**找不到编译器**是另一条独立的提示（`ToolchainError`）：slim 包要求学员自己装
+MinGW-w64，"装了但没进 PATH"是新手最常撞的第一堵墙。放任不管的话
+`subprocess.run` 抛的 `FileNotFoundError` 会以 Python traceback 的形式糊到脸上，
+所以编译器调用被包起来，`run`/`verify`/`selftest` 都改成打印「没找到 C 编译器 +
+去哪找 + `doctor` 怎么看」并以 2 退出。内置编辑器那边早就单独处理过：没有编译器
+时它只在问题列表里留一条中文说明，让你去跑 `doctor`，不猜、不崩。
+
 `.\clings.cmd` 这个写法本身的原因见上一节：它是两个 Windows shell 唯一都认的
 一种拼法。Python 的查找顺序是包内 `runtime\python\python.exe` → `py -3` →
 `PATH` 上的 `python`，都没有就打印安装提示并暂停（这里**必须**暂停，否则双击
@@ -211,6 +226,31 @@ commit 走；包名改用本仓库 commit 之后，上游 commit 在 Release 页
 打 tag（`v*`）会触发 [`.github/workflows/release.yml`](../.github/workflows/release.yml)：
 在真 Windows runner 上先 `verify` + `selftest`，再拉取 w64devkit 和 Python 打进
 full 包，最后把两个 zip 挂到 GitHub Release。
+
+## 自带的 Python
+
+full 包里的 `runtime\python` 是 Python 官方的 **embeddable** 发行版。它旁边的
+`python3xx._pth` 文件里写着「这个解释器的 `sys.path` 就是下面这几行」，CPython
+对它的处理是：打开 isolated 模式、**不看 `PYTHONPATH` 和 `PYTHONHOME`**、当前
+目录和脚本所在目录都不进 `sys.path`。于是 `clings.cmd` 里那句
+`set "PYTHONPATH=%ROOT%"` 对**它**完全无效，`python -m studio` 当场死在
+`No module named studio` 上；同一个包里的 `clings.cmd run` 却一切正常，因为运行器
+是单文件、只用标准库，`sys.path` 里有没有包根目录都无所谓。
+
+v0.3.0 的 full 包就是这么发出去的：双击起不来菜单（`python -m studio menu`），
+`clings.cmd web` 报找不到 `studio` 模块，而 slim 包没事——学员自己装的 Python
+认 `PYTHONPATH`，恰好是这个变量救了它，也恰好掩盖了 full 包的问题。
+
+修法是用它自己的机制：`tools/package_windows.py` 打包时把包根目录写进那个
+`._pth` 文件（相对 `._pth` 自己所在的目录，也就是 `..\..`），相对层数从目录
+布局算出来而不是写死。检查分三层：`tools/tests/test_packaging.py` 验证写入的
+位置和层数，`real-windows` job 解开刚打好的包、用包里那个 Python 真跑一次
+`clings.cmd`，release job 对要发布的那两个 zip 做同样的事。打包这件事的错误
+在单测里是看不见的——只有把包解开、按学员的方式启动一次才看得见。
+
+`clings.cmd` 交给 `studio` 之前还会先试一次 `python -c "import studio"`：这一步
+失败说明包被改动过，于是打印三行说明（练习不受影响、怎么绕开），而不是把一段
+Python traceback 丢给没见过 traceback 的人。
 
 ## 保持可移植的写法
 

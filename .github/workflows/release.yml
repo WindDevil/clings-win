@@ -53,6 +53,12 @@ jobs:
       - name: Studio tests
         run: python -m unittest discover -s studio/tests -t . -v
 
+      # The packaging step decides whether the download works at all - the
+      # bundled Python is the embeddable distribution, and it only finds the
+      # studio because of the ._pth line these tests check for.
+      - name: Packaging tests
+        run: python -m unittest discover -s tools/tests -t . -v
+
       # The full package bundles the toolchain a learner would otherwise have to
       # install: w64devkit (mingw-w64 + make + gdb) and the embeddable Python.
       - name: Fetch the bundled runtime
@@ -76,6 +82,29 @@ jobs:
       - name: Inspect the packages
         run: Get-ChildItem dist | Select-Object Name, @{n = "MiB"; e = { [math]::Round($_.Length / 1MB, 1) } }
 
+      # Everything above this line tested the checkout.  This is the only step
+      # that tests what the learner downloads: unpack it, then drive it the
+      # way a double-click does, with the Python that is inside the zip.
+      - name: The built package works as shipped
+        run: |
+          Expand-Archive -Path (Get-ChildItem dist\*-full.zip).FullName -DestinationPath smoke
+          $root = (Get-ChildItem smoke -Directory | Select-Object -First 1).FullName
+          Push-Location $root
+          try {
+            # The embeddable Python ignores PYTHONPATH, so this is where a
+            # missing `..\..` in runtime\python\python3xx._pth shows up - as
+            # "No module named studio" in a learner's console.
+            .\runtime\python\python.exe -c "import studio, studio.server"
+            if ($LASTEXITCODE -ne 0) { throw "包里的 Python 导入不了 studio 模块" }
+            .\runtime\python\python.exe -m studio --help | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "包里的 Python 跑不了 python -m studio" }
+            # ...and the entry point a double-click reaches: the exercise
+            # fails on purpose, and the failure has to explain itself.
+            $run = cmd /c ".\clings.cmd run 00_basics/01_printf" 2>&1 | Out-String
+            if (-not $run.Contains("要改的文件")) { throw "失败的 run 没有给新手提示：$run" }
+            Write-Host "package smoke ok"
+          } finally { Pop-Location }
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -90,11 +119,38 @@ jobs:
           files: dist/*.zip
           generate_release_notes: true
           body: |
-            下载 `-full.zip`：自带编译器（w64devkit）和 Python，解压后双击 `clings.cmd` 即可，
-            不用安装任何开发工具。首次使用请把压缩包解压到一个路径不含空格和中文的目录。
+            ## 怎么用
 
-            下载 `-slim.zip`：只有练习本身。需要自己准备 Python 3 和 MinGW-w64 GCC。
+            185 道 C 语言练习题。程序里的标识符和函数名保持英文，题目说明、提示和命令行
+            输出都是中文。两个包按自己的情况挑一个，解压到哪都行（中文、带空格的路径也在
+            验收清单里）：
 
-            练习内容和上游 [clings](https://github.com/${{ env.UPSTREAM_REPOSITORY }}) 保持一致，
-            注释、标题和提示已译成中文。少数练习针对 Windows 做了平台适配，
-            清单和原因见仓库里的 `docs/portability.md`。
+            - `-full.zip`（约 190 MB）：自带编译器（w64devkit）和 Python，不用装任何开发
+              工具，也不需要管理员权限。
+            - `-slim.zip`（约 0.6 MB）：只有练习，需要自己装 Python 3 和 MinGW-w64 GCC。
+
+            双击 `clings.cmd` 就开始：第一次运行先讲一遍用法（一共多少道题、要改哪个文件、
+            一开始不通过是正常的），然后编译并测试第一道题，跑完停在菜单上，窗口不会一闪
+            而过。菜单里 `1` 重跑、`2` 用 VS Code 打开、`3` 用浏览器里的内置编辑器打开、
+            `4` 看提示。做过的题记在 `.clings\progress.json` 里，下次双击接着做没做完的
+            那一道。
+
+            每道题发到手上时都是坏的，留了一处空，编译器或测试框架报的错就是题目本身。
+            第一次跑不通过属于正常流程；改完文件回到菜单按 `1` 重跑，通过之后它会告诉你
+            下一道题在哪。
+
+            只想用命令行的话，`list`、`run`、`hint`、`solution`、`reset`、`verify`、
+            `doctor`、`open`、`web` 都有，用法见包里的 `README.md`。练习名写成
+            `00_basics/01_printf` 这样的全名最省事。
+
+            ## 关于这个包
+
+            - 练习内容和上游 [clings](https://github.com/${{ env.UPSTREAM_REPOSITORY }}) 同步，
+              差异只有三处：平台变体、运行器的 Windows 适配、中英对照表。打包和真机验收由
+              CI 在 `windows-latest` 上跑完才发布。
+            - 少数练习有 Windows 变体，清单和原因见 `docs/portability.md`。
+            - 已知问题：v0.3.0 及更早的 `-full.zip` 里内置编辑器起不来（Python 找不到
+              `studio` 模块，双击和 `clings.cmd web` 都受影响），`clings.cmd run` 正常。
+              换这一版即可。
+
+            这一版具体改了什么，见下面的变更列表。
