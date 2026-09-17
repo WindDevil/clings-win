@@ -12,28 +12,50 @@
 
 ## 流程
 
-1. [ ] 双击 `clings.cmd`：出现中文界面、列出 185 个练习，并且**没有**弹窗
-       要求安装 Python。
-2. [ ] 首次运行时 Windows Defender / SmartScreen **没有**拦截或误报。
-3. [ ] 运行 `.\clings.cmd doctor`：编译器显示为随包自带的 gcc，路径正确。
-4. [ ] 运行 `.\clings.cmd run 00_basics/01_printf`：故意失败，并显示**编译或测试
+1. [ ] 双击 `clings.cmd`：**编译并测试**当前练习（不是列个清单就消失），然后
+       出现 `[1] 重跑一遍 / [2] 用 VS Code 打开 / [3] 打开内置编辑器 / [4] 看提示 /
+       [0] 退出`，窗口**不关闭**，并且**没有**弹窗要求安装 Python。
+2. [ ] 按 `1` 重跑一遍；按 `0` 退出：窗口这时才关闭。
+3. [ ] 再双击一次，按 `2`：装了 VS Code 的话，VS Code 打开**整个包目录**并定位到
+       该练习文件（要的是一份能补全 `clings/test.h` 的工作区）；没装的话，打印
+       安装提示和 `web` 这条替代路径，**不崩溃**，菜单仍然可用。
+4. [ ] 再双击一次，按 `3`：内置编辑器启动、浏览器自动打开页面；在控制台按
+       `Ctrl-C` 能关闭它。
+5. [ ] 在内置编辑器里：左侧列出全部练习（按主题分组，显示完成数）；选一个练习，
+       代码有高亮；故意写一个语法错误，**边栏出现红标、下方出现一条中文问题
+       说明**（位置、`-Werror=` 规则、上下文都看得见）；`Ctrl-S` 保存、`Ctrl-Enter`
+       运行，输出面板出现编译或测试结果。
+6. [ ] 在内置编辑器里点「参考答案」「应用」「重置」，结果与命令行一致；点一个主题
+       README（只读）不会让编辑区变成可写。
+7. [ ] 在**已打开的 cmd 窗口**里运行 `.\clings.cmd`（不带参数）：跑完当前练习后直接
+       回到提示符，**没有**"请按任意键继续"。
+       （PowerShell 里跑会多一次按键——它和双击一样经由 `cmd /c` 启动，脚本无法区分，
+       代价是"多按一次键"，而不是"窗口一闪就没了"，见
+       [portability.md](portability.md)。）
+8. [ ] 在已打开的 cmd 或 PowerShell 里运行 `.\clings.cmd web`：同样的页面能打开，
+       `Ctrl-C` 能关掉它。
+9. [ ] 首次运行时 Windows Defender / SmartScreen **没有**拦截或误报。
+10. [ ] 运行 `.\clings.cmd doctor`：编译器显示为随包自带的 gcc，路径正确。
+11. [ ] 运行 `.\clings.cmd run 00_basics/01_printf`：故意失败，并显示**编译或测试
        诊断**（这是教学内容，不能是崩溃或乱码）。
-5. [ ] 运行 `.\clings.cmd doctor`：`颜色:` 一行是 `开启`，并且 `.\clings.cmd list`
+12. [ ] 运行 `.\clings.cmd doctor`：`颜色:` 一行是 `开启`，并且 `.\clings.cmd list`
        的输出**真的是彩色**。Windows 10/11 的控制台都支持 ANSI，所以这一条
        不是"彩色或纯文本都可以"：退化成纯文本说明 VT 位没打开，按阻塞问题处理。
-6. [ ] 上面两步的输出里**看不到** `[36m`、`[0m` 这类转义码——彩色文字里不该
+13. [ ] 上面两步的输出里**看不到** `[36m`、`[0m` 这类转义码——彩色文字里不该
        出现转义码，纯文本里也不该（见 [portability.md](portability.md)）。
-7. [ ] 换终端再跑一次步骤 4 和 5：Windows Terminal（含 PowerShell 7）和传统
+14. [ ] 换终端再跑一次步骤 11 和 12：Windows Terminal（含 PowerShell 7）和传统
        conhost（cmd、Windows PowerShell 5.1）都必须是彩色，且都不出现转义码。
-8. [ ] 用 VS Code 或记事本编辑该练习文件并保存，再跑一次 `run`：诊断随之变化。
-9. [ ] 运行 `.\clings.cmd solution 00_basics/01_printf --apply` 后再 `run`：通过。
-10. [ ] 运行 `.\clings.cmd reset 00_basics/01_printf`：文件回到初始状态，进度清除。
-11. [ ] 运行 `.\clings.cmd run 18_advanced_c/03_pthreads`（先应用答案）：线程类练习
+15. [ ] 用 VS Code 或记事本编辑该练习文件并保存，再跑一次 `run`：诊断随之变化。
+16. [ ] 运行 `.\clings.cmd solution 00_basics/01_printf --apply` 后再 `run`：通过。
+17. [ ] 运行 `.\clings.cmd reset 00_basics/01_printf`：文件回到初始状态，进度清除。
+18. [ ] 运行 `.\clings.cmd run 18_advanced_c/03_pthreads`（先应用答案）：线程类练习
        能正常编译运行（验证 `libwinpthread-1.dll` 的部署）。
-12. [ ] 运行 `.\clings.cmd watch 00_basics/01_printf`，保存文件后自动重跑，
+19. [ ] 运行 `.\clings.cmd watch 00_basics/01_printf`，保存文件后自动重跑，
        `Ctrl-C` 能正常退出。
-13. [ ] 控制台中文不乱码；`Ctrl-C`、方向键、复制粘贴不产生异常输出。
-14. [ ] 断网重试步骤 2 和 4：不应该因为缺少网络而失败。
+20. [ ] 控制台中文不乱码；`Ctrl-C`、方向键、复制粘贴不产生异常输出。
+21. [ ] 断网重试步骤 9 和 11：不应该因为缺少网络而失败。
+22. [ ] 把 `studio\` 整个删掉，再跑一次步骤 10 和 11：练习照样能编译、运行、检查，
+       只有步骤 1 的 `[3]` 会提示这个包里没有内置编辑器。
 
 ## 记录
 

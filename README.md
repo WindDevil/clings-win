@@ -26,8 +26,10 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 文件名都不同，不会和上一版混淆。
 
 解压到一个**路径不含空格和中文**的目录（例如 `D:\clings`），双击 `clings.cmd`：
+它会**直接编译并测试当前练习**，跑完停在一个菜单上，不会一闪而过。
 
 ```bat
+.\clings.cmd                      :: 跑当前练习，然后给一个菜单（双击就是这个）
 .\clings.cmd list                 :: 列出全部练习
 .\clings.cmd run                  :: 编译并运行下一个未完成练习
 .\clings.cmd run 01_printf        :: 运行指定练习
@@ -36,6 +38,8 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 .\clings.cmd reset 01_printf      :: 恢复初始文件
 .\clings.cmd verify               :: 校验全部参考答案
 .\clings.cmd doctor               :: 打印工具链信息
+.\clings.cmd open 01_printf       :: 用 VS Code 打开这个练习
+.\clings.cmd web                  :: 打开内置的网页编辑器
 ```
 
 开头的 `.\` 是给 PowerShell 看的：它不会在当前目录里找命令，写 `clings.cmd`
@@ -44,6 +48,31 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 分发包自带编译器（w64devkit）和 Python，不需要安装、不需要管理员权限、
 不需要改 PATH。`-slim.zip` 不含 `runtime\`，需要自己准备 Python 3 和
 MinGW-w64 GCC。
+
+## 编辑器：三种，挑一个
+
+练习文件就是普通的 `.c` 文件，用记事本也能改。想舒服一点有三条路：
+
+| 方式 | 怎么进 | 需要什么 |
+| --- | --- | --- |
+| 命令行 | `.\clings.cmd run` | 什么也不用装 |
+| VS Code | 双击后按 `2`，或 `.\clings.cmd open 01_printf` | 自己装 VS Code 和 C/C++ 扩展。打开的是**整个包目录**，包里带的 `.vscode/c_cpp_properties.json` 已经把 `include/` 配好，所以补全、跳转、`CLINGS_CHECK` 这些宏都认得 |
+| 内置编辑器 | 双击后按 `3`，或 `.\clings.cmd web` | 什么也不用装，用浏览器 |
+
+内置编辑器在浏览器里打开，可以：
+
+- 左侧按主题列出全部练习，标出做完的进度；
+- 代码高亮（C 的语法、括号匹配、折叠）；
+- **边写边查语法**：用的是 `run` 编译这个练习时的同一套编译参数，所以它报的错
+  和 `run` 报的错不会互相矛盾，错误会同时出现在行号的标记和下方的问题列表里；
+- **代码提示**：`Ctrl-Space` 手动呼出，输入两个字以后自动弹出；提示来自 C 标准库
+  （带函数签名和所属头文件）、关键字、常用代码片段，以及**这个练习自己声明的
+  名字**；
+- `Ctrl-S` 保存、`Ctrl-Enter` 运行，另有参考答案、应用、重置、看提示的按钮。
+
+它只监听 `127.0.0.1`，页面需要一次性令牌才能调用接口，别的网页打不开也调不动；
+文件读写被限制在「运行器列出的这个练习的文件」之内。`studio\` 目录是可选的：
+删掉它，练习照样编译、运行、检查，只是没有内置编辑器。
 
 命令行颜色会自动适应当前的终端：Windows Terminal 和现代控制台上是彩色的，
 在不认识 ANSI 的老式控制台上自动退回纯文本，不会打出 `[36m` 这类转义码。
@@ -57,6 +86,7 @@ MinGW-w64 GCC。
 ```sh
 make sync            # 从 ../cling 同步练习并应用 Windows 覆盖
 make check           # 检查孪生工程是否与上游一致（CI 用）
+make test            # 跑 studio 的测试（没编译器时跳过需要编译的那部分）
 make winbox          # 在 .winbox/ 里准备 mingw-w64 + Wine（不需要 root）
 make windows-check   # 交叉编译 + Wine 运行全部练习（Linux 上的 Windows 回路）
 make winbox-native   # 额外拉取 w64devkit 和 Windows Python，用于打包
@@ -78,10 +108,19 @@ make package         # 产出 dist/ 下的 slim 和 full 两个 zip
 clings-win/
 ├── clings              # 运行器：上游版本 + Windows 适配（生成物）
 ├── clings.cmd          # Windows 双击入口：找 Python、加 PATH、转交 CLI
+├── .vscode/            # 手写：让 VS Code 的 C/C++ 扩展找到 include/
 ├── exercises/          # 生成物：初始练习
 ├── solutions/          # 生成物：参考答案
 ├── templates/          # 生成物：reset 用的原始练习
 ├── include/clings/     # 生成物：自带测试框架
+├── studio/             # 手写：双击菜单、VS Code 入口、内置网页编辑器（可删）
+│   ├── bridge.py       #   └ 唯一和运行器说话的地方：跑它，读它的 --json
+│   ├── menu.py         #     双击后的流程
+│   ├── vscode.py       #     找 VS Code，用「一个窗口 + 整个包目录」打开
+│   ├── server.py       #     内置编辑器的后端（stdlib，只监听 127.0.0.1）
+│   ├── languages/      #     语言插件：c.py 问编译器，plain.py 什么也不答
+│   ├── web/            #     前端：无构建步骤，vendor/ 里是 CodeMirror 5 和 marked
+│   └── tests/          #     测试（不打进分发包）
 ├── docs/
 │   ├── provenance.md   # 生成物：上游仓库、commit、练习数量
 │   ├── portability.md  # 可移植性评估与 Windows 覆盖说明

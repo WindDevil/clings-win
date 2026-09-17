@@ -134,6 +134,49 @@ Windows 机器的前提下如何获得闭环反馈。
 颜色:     关闭（控制台不支持 ANSI）
 ```
 
+## 双击入口
+
+`clings.cmd` 是手写的（不在生成物之列），做四件事：找到 Python、把 `runtime\`
+加进 `PATH`、按参数转交给运行器或 `studio`、在该暂停的时候暂停。
+
+不带参数时它**先跑下一个未完成的练习，再给菜单**，而不是打印一份清单：双击是
+新手唯一的入口，而"快速弹一个窗口又关掉"的教学价值是零。命令行用法不受影响——
+任何参数都照旧直达运行器，`clings.cmd run` 的行为一个字没变。
+
+暂停的判断只有一条规则：`%cmdcmdline%` 里出现脚本名就暂停。
+
+| 启动方式 | `%cmdcmdline%` 里有什么 | 结果 |
+| --- | --- | --- |
+| 双击（Explorer 的文件关联） | `cmd /c ""D:\...\clings.cmd" "` | 暂停——窗口本来会随进程一起消失 |
+| PowerShell 里 `.\clings.cmd web` | `cmd.exe /c ""D:\...\clings.cmd""` | 暂停——**多余**，那个窗口不会消失 |
+| 已打开的 cmd.exe 里 `.\clings.cmd web` | 只有 `cmd.exe` 自己的路径 | 不暂停 |
+
+第二行是在真机上量出来的（Windows 10 19045）：PowerShell 也经由 `cmd /c`
+启动，命令行里同样有脚本名，所以这条规则**分不出**它和双击。两种判断错误的
+代价不对称——多按一次键，和窗口在学员读到第一行字之前关掉——所以宁可多按一次。
+
+只有 `open`、`web`、`menu` 和「不带参数」这四条路会走到暂停；其余参数直接转交运行器
+（`run`、`list`、`doctor`），把控制台原样交还给调用者，从哪个 shell 调用都一样。
+
+`.\clings.cmd` 这个写法本身的原因见上一节：它是两个 Windows shell 唯一都认的
+一种拼法。Python 的查找顺序是包内 `runtime\python\python.exe` → `py -3` →
+`PATH` 上的 `python`，都没有就打印安装提示并暂停（这里**必须**暂停，否则双击
+看到的还是一闪而过）。
+
+## 内置编辑器（`studio\`）
+
+内置编辑器是一个可选的目录，**删掉它练习照样能跑**（冒烟清单第 22 步验证这
+一点）：运行器不知道它存在，它也只通过运行器的命令行接口说话。
+
+| 关注点 | 做法 |
+| --- | --- |
+| 去耦 | `studio/bridge.py` 是唯一和运行器说话的地方（`list`/`doctor`/`run` 走 `--json`，`solution`/`reset` 原样调用）；不 import 运行器，不解析人类可读输出，不另存一份"练习在哪、里面有什么" |
+| 数据来源 | `--json` 是 `RUNNER_PATCHES` 加进生成运行器的，属于运行器的接口而不是 studio 的——任何 shell 都能用，不需要 Python 以外的依赖 |
+| 语言 | 语言是插件（`studio/languages/`）：`plain.py` 什么也不答，所以编辑器不是 C 专用的；`c.py` **不解析 C**，它把缓冲区写进临时目录，用 `run` 编译这个练习时的同一套参数跑 `-fsyntax-only`，编辑器的报错于是不可能和 `run` 打架；没有编译器时它只说"去跑 doctor"，不猜 |
+| 前端 | 无构建步骤，打开就是源码；`studio/web/vendor/` 里是 CodeMirror 5.65.16 和 marked 4.3.0（都是 MIT） |
+| 安全 | 只监听 `127.0.0.1`；页面注入一次性令牌，接口另外校验 `Origin`；文件读写被限制在运行器列出的文件清单内；CSP 为 `script-src 'self'`、无 `unsafe-eval` |
+| 测试 | `make test`；`windows.yml` 的 `real-windows` job 和 `release.yml` 都会跑它，`studio/tests` 不打进分发包——它需要 checkout 才有意义，而且会改写练习 |
+
 ## 维护工具在 Windows 上
 
 `tools/` 里的生成脚本原先用 `Path.write_text()` 写文件，它默认把 `\n` 翻译成
@@ -204,6 +247,11 @@ QEMU 只在 T2 和 T3 都不适用（离线、需要 GUI 截图或录屏）时�
 ## 已知差距
 
 - MSVC（`cl.exe`）链路尚未进入 CI 矩阵，上面的 MSVC 结论来自文档而非实测。
+- `clings.cmd` 的暂停规则分不出双击和 PowerShell，后者会多按一次键（原因和取舍
+  见「[双击入口](#双击入口)」）。`%cmdcmdline%` 里那条尾随空格的差别来自文件
+  关联模板，不是稳定契约，因此没有拿它做判断。
+- `studio` 的测试只在 Windows runner 和真机上跑；Linux 上的 T0/T1 回路
+  （`make windows-check`）覆盖的是运行器，不覆盖 `studio\`。
 - `clings.cmd` 无法在 Wine 下验证：Wine 的 `cmd.exe` 需要真正的控制台，在无终端
   的环境里静默不执行。因此该脚本由 `real-windows` job 里的
   `cmd /c clings.cmd doctor` 以及人工冒烟清单覆盖。
