@@ -12,6 +12,7 @@ Two flavours are produced, because the trade-off is real:
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -46,11 +47,60 @@ RUNTIME_ITEMS = (
     (ROOT / ".winbox" / "native" / "python", "runtime/python"),
 )
 
+EMBEDDED_PYTHON_MARKER = (
+    "# clings: the package root, so `python -m studio` (the double-click menu\n"
+    "# and `web`) can import it even though a ._pth file switches PYTHONPATH off.\n"
+)
+
 IGNORED = ("__pycache__", "*.pyc")
 # The studio's tests ship nowhere.  They are maintainer material, they need a
 # checkout to be meaningful, and running them rewrites exercises - which is
 # exactly what a learner's copy should never do behind their back.
 IGNORED_IN_STUDIO = (*IGNORED, "tests")
+
+
+def patch_embedded_python(python_dir: Path, package_root: Path) -> list[Path]:
+    """Make the bundled embeddable Python able to import the studio.
+
+    The embeddable distribution ships a ``python3xx._pth`` file, and CPython
+    reads that file as *the* contents of ``sys.path``: it turns on isolated
+    mode, switches ``PYTHONPATH`` and ``PYTHONHOME`` off, and keeps the
+    current directory (and the script's) out of the search path.  So the
+    ``PYTHONPATH`` that clings.cmd sets is exactly the variable the bundled
+    interpreter ignores, and ``python -m studio`` dies with "No module named
+    studio" in the full package while working fine in the slim one, where the
+    learner's own Python honours it.
+
+    Adding the package root to the ``._pth`` file is the supported way to say
+    it: the entries in that file are read relative to the directory the file
+    itself sits in, so ``..\\..`` means "the root of the unpacked package"
+    whatever folder the learner unzipped it into.
+
+    Returns the files that were changed (empty when there is no ``._pth``
+    file, in which case the interpreter honours ``PYTHONPATH`` as usual).
+    """
+    if not python_dir.is_dir():
+        return []
+    # Learned from the layout rather than hard-coded, so moving runtime/python
+    # under another level cannot leave a ._pth entry pointing at the wrong
+    # directory.
+    entry = os.path.relpath(package_root, python_dir).replace("/", "\\")
+    changed: list[Path] = []
+    for path in sorted(python_dir.glob("*._pth")):
+        data = path.read_bytes()
+        lines = [
+            line.partition("#")[0].strip()
+            for line in data.decode("utf-8").splitlines()
+        ]
+        if any(line.replace("/", "\\") == entry for line in lines):
+            continue
+        if not data.endswith(b"\n"):
+            data += b"\n"
+        # Written as bytes: the file belongs to Windows, and the zips are
+        # built on Linux too.
+        path.write_bytes(data + (EMBEDDED_PYTHON_MARKER + entry + "\n").encode("utf-8"))
+        changed.append(path)
+    return changed
 
 
 def upstream_commit() -> str:
@@ -120,6 +170,7 @@ def build(with_runtime: bool, out_dir: Path, allow_missing_runtime: bool) -> Pat
                 shutil.copyfile(origin, stage / item)
 
         bundled: list[str] = []
+        patched: list[str] = []
         for origin, destination in RUNTIME_ITEMS:
             if not with_runtime:
                 continue
@@ -130,6 +181,14 @@ def build(with_runtime: bool, out_dir: Path, allow_missing_runtime: bool) -> Pat
                 raise SystemExit(
                     f"{origin} is missing; run 'tools/winbox.sh fetch-native'"
                 )
+
+        if with_runtime and (stage / "runtime" / "python").is_dir():
+            patched = [
+                path.relative_to(stage).as_posix()
+                for path in patch_embedded_python(
+                    stage / "runtime" / "python", stage
+                )
+            ]
 
         # Batch files are stored with LF in the repository (see .gitattributes)
         # but cmd.exe is happiest with CRLF, and the zip is what learners get.
@@ -149,6 +208,10 @@ def build(with_runtime: bool, out_dir: Path, allow_missing_runtime: bool) -> Pat
         print(f"  bundled runtime: {', '.join(bundled)}")
     else:
         print("  no bundled toolchain: the learner needs Python 3 and gcc on PATH")
+    for path in patched:
+        # The embeddable Python ignores PYTHONPATH; this is the line that
+        # makes `python -m studio` work in the package shipping it.
+        print(f"  added the package root to {path}")
     return archive
 
 
