@@ -341,6 +341,79 @@ JSON_DOCTOR_BLOCK = r'''    if getattr(args, "json", False):
         return 0
 '''
 
+# What a beginner gets after a failed run.  The exercises are *designed* to
+# fail before they are edited - `clings selftest` enforces exactly that - so
+# the first thing a learner sees from `run` is a compiler error or a failed
+# test, and a compiler error on its own reads like "my installation is broken"
+# rather than "this is the exercise".  The runner prints it rather than
+# clings.cmd or the studio, so that every way into `run` - a double-click, the
+# menu, a typed command - says the same thing.
+NEXT_STEPS_BLOCK = r'''
+
+def next_steps(exercise: Exercise) -> None:
+    """Name the file and the two commands that move a stuck learner forward.
+
+    The blank in the exercise is the teaching device and the compiler output
+    is what it teaches with.  This adds the sentence neither of them can: that
+    the failure is the starting point, and which file to open.
+    """
+    print()
+    print("  这道题一开始就是通不过的：文件里留了空（注释里的 TODO），报错就是它给的线索。")
+    print(f"  要改的文件:  {exercise.path.relative_to(ROOT)}")
+    print(f"  看提示:      {launcher()} hint {exercise.ident}")
+    print(f"  改完重跑:    {launcher()} run {exercise.ident}")
+'''
+
+# A missing compiler is the one failure a beginner can hit before the first
+# exercise even starts: the slim package asks them to install MinGW-w64, and
+# installing it "nearly right" (not on PATH) is the classic first wall.  Left
+# alone, subprocess raises FileNotFoundError and the learner gets a Python
+# traceback that says nothing about what to install.  The compiler call is
+# wrapped instead, and main() prints this.
+MISSING_COMPILER_BLOCK = r'''class ToolchainError(RuntimeError):
+    """The C compiler this package compiles with is not there at all."""
+
+
+def missing_compiler_message() -> str:
+    return (
+        red(f"没有找到 C 编译器: {compiler()}") + "\n"
+        "  这个包自带的编译器在 runtime\\mingw\\bin（只有 -full.zip 才有）；\n"
+        "  它不在的话，重新解压一份 full 包，或者自己装 MinGW-w64 并把 gcc 放进 PATH。\n"
+        f"  看当前工具链: {launcher()} doctor\n"
+        "  装好之后，把刚才那条命令再跑一遍。"
+    )
+
+
+def compile_sources(
+    sources: tuple[Path, ...],
+    output: Path,
+    include_dirs: tuple[Path, ...] = (),
+) -> subprocess.CompletedProcess[str]:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        compiler(),
+        *cflags(),
+        f"-I{ROOT / 'include'}",
+    ]
+    for directory in include_dirs:
+        command.append(f"-I{directory}")
+    command.extend(str(source) for source in sources)
+    command.append(str(ROOT / "include" / "clings" / "test.c"))
+    command.extend(["-o", str(output), *DEFAULT_LDLIBS])
+    try:
+        return subprocess.run(
+            command,
+            cwd=ROOT,
+            text=True,
+            errors="replace",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+    except OSError as error:
+        raise ToolchainError(missing_compiler_message()) from error
+'''
+
 # The runner is copied too, then patched with these exact replacements.  Every
 # replacement must match exactly once; otherwise upstream changed the runner
 # and this script has to be revisited.
@@ -555,6 +628,109 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
         '    doctor_parser = subparsers.add_parser("doctor", help="show toolchain information")\n',
         '    doctor_parser = subparsers.add_parser("doctor", help="show toolchain information")\n'
         '    doctor_parser.add_argument("--json", action="store_true", help="以 JSON 输出")\n',
+    ),
+    # --- a failed run explains itself, for the learner ----------------------
+    # Anchored on upstream's command_hint rather than on command_run: that one
+    # is rewritten by JSON_RUN_BLOCK above, so the placement stays stable
+    # however the JSON blocks change.  Applied last, after those blocks, so
+    # that the call site below matches the text they wrote.
+    (
+        "def command_hint(args: argparse.Namespace) -> int:\n",
+        NEXT_STEPS_BLOCK.lstrip("\n") + "\n\ndef command_hint(args: argparse.Namespace) -> int:\n",
+    ),
+    (
+        '        failures += 1\n'
+        '        if not json_mode:\n'
+        '            print(red("  failed"))\n'
+        '            if output:\n'
+        '                print(output, end="" if output.endswith("\\n") else "\\n")\n',
+        '        failures += 1\n'
+        '        if not json_mode:\n'
+        '            print(red("  failed"))\n'
+        '            if output:\n'
+        '                print(output, end="" if output.endswith("\\n") else "\\n")\n'
+        '            next_steps(exercise)\n',
+    ),
+    # --- a missing compiler is a toolchain message, not a traceback --------
+    (
+        r'''def compile_sources(
+    sources: tuple[Path, ...],
+    output: Path,
+    include_dirs: tuple[Path, ...] = (),
+) -> subprocess.CompletedProcess[str]:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        compiler(),
+        *cflags(),
+        f"-I{ROOT / 'include'}",
+    ]
+    for directory in include_dirs:
+        command.append(f"-I{directory}")
+    command.extend(str(source) for source in sources)
+    command.append(str(ROOT / "include" / "clings" / "test.c"))
+    command.extend(["-o", str(output), *DEFAULT_LDLIBS])
+    return subprocess.run(
+        command,
+        cwd=ROOT,
+        text=True,
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+''',
+        MISSING_COMPILER_BLOCK,
+    ),
+    (
+        "    try:\n"
+        "        return int(args.func(args))\n"
+        "    except KeyboardInterrupt:\n",
+        "    try:\n"
+        "        return int(args.func(args))\n"
+        "    except ToolchainError as error:\n"
+        "        print(error)\n"
+        "        return 2\n"
+        "    except KeyboardInterrupt:\n",
+    ),
+    # --- a name that does not resolve is not a finished course --------------
+    # resolve_exercise() answers None both for "no name given and nothing left
+    # to do" and for "that name is unknown or ambiguous".  Only the first one
+    # is worth a green line and an exit code of 0; the second already printed
+    # why, and telling a learner "all exercises are complete" after a typo -
+    # then reporting success to whatever called clings - is wrong twice.
+    (
+        "def command_next(args: argparse.Namespace) -> int:\n"
+        "    exercise = resolve_exercise(args.exercise)\n"
+        "    if exercise is None:\n"
+        '        print(green("All exercises are complete. Try `./clings verify`."))\n'
+        "        return 0\n",
+        "def command_next(args: argparse.Namespace) -> int:\n"
+        "    exercise = resolve_exercise(args.exercise)\n"
+        "    if exercise is None:\n"
+        "        if args.exercise:\n"
+        "            return 1\n"
+        '        print(green("All exercises are complete. Try `./clings verify`."))\n'
+        "        return 0\n",
+    ),
+    (
+        "    if args.all:\n"
+        "        targets = exercises\n"
+        "    else:\n"
+        "        exercise = resolve_exercise(args.exercise)\n"
+        "        if exercise is None:\n"
+        '            print(green("All exercises are complete. Try `./clings verify`."))\n'
+        "            return 0\n"
+        "        targets = [exercise]\n",
+        "    if args.all:\n"
+        "        targets = exercises\n"
+        "    else:\n"
+        "        exercise = resolve_exercise(args.exercise)\n"
+        "        if exercise is None:\n"
+        "            if args.exercise:\n"
+        "                return 1\n"
+        '            print(green("All exercises are complete. Try `./clings verify`."))\n'
+        "            return 0\n"
+        "        targets = [exercise]\n",
     ),
 ]
 
