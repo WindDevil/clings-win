@@ -196,8 +196,8 @@ Python 3.8 到 3.13 行为一致，也就没有"在新 Python 上绿、在旧 Py
 
 | 包 | 内容 | 大小 | 面向 |
 | --- | --- | ---: | --- |
-| `-full.zip` | 练习 + w64devkit + 嵌入式 Python | 约 190 MB | 机器上没有任何开发工具的人 |
-| `-slim.zip` | 只有练习 | 约 0.4 MB | 已经有 Python 3 和 MinGW-w64 GCC 的人 |
+| `-full.zip` | 练习 + 内置编辑器 + w64devkit + 嵌入式 Python | 约 190 MB | 机器上没有任何开发工具的人 |
+| `-slim.zip` | 只有练习 + 内置编辑器 | 约 0.6 MB | 已经有 Python 3 和 MinGW-w64 GCC 的人 |
 
 文件名里的 `<commit>` 是**本仓库**的 commit。早先用的是上游 commit，结果每次重建
 （包括修掉控制台颜色那次）都和上一个坏包同名，下载目录里两个不同的 zip 重名，

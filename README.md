@@ -20,7 +20,7 @@ Windows 原生入口、Windows 工具链、Windows 分发包，面向只有 Wind
 | 包 | 大小 | 适合谁 |
 | --- | ---: | --- |
 | `clings-win-<commit>-full.zip` | 约 190 MB | 机器上什么都没有的人。自带编译器（w64devkit）和 Python，解压就能用 |
-| `clings-win-<commit>-slim.zip` | 约 0.4 MB | 已经装了 Python 3 和 MinGW-w64 GCC 的人 |
+| `clings-win-<commit>-slim.zip` | 约 0.6 MB | 已经装了 Python 3 和 MinGW-w64 GCC 的人 |
 
 `<commit>` 是本仓库的 commit（上游 commit 见 `docs/provenance.md`），所以每次重建
 文件名都不同，不会和上一版混淆。
