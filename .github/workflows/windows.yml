@@ -191,6 +191,9 @@ jobs:
             # ...and the entry point a double-click reaches.
             $run = cmd /c ".\clings.cmd run 00_basics/01_printf" 2>&1 | Out-String
             if (-not $run.Contains("要改的文件")) { throw "失败的 run 没有给新手提示：$run" }
+            # That run is supposed to fail - it is the exercise - and pwsh
+            # would otherwise leave the step with its exit code of 1.
+            $LASTEXITCODE = 0
             Write-Host "package smoke ok"
           } finally { Pop-Location }
       - name: Upload the package
