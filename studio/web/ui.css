@@ -35,6 +35,11 @@ body.dark {
 
 * { box-sizing: border-box; }
 
+/* `hidden` has to win over the `display` below: it is the UA rule that hides
+   the editor hint and the two disclosure boxes, and a class that sets `display`
+   outranks it. Without this the hint stays painted on top of the code. */
+[hidden] { display: none !important; }
+
 html, body {
   height: 100%;
   margin: 0;
@@ -230,7 +235,11 @@ main {
 
 .workspace {
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  /* The toolbar's row is `auto` and the two rows that can be tall are minmax()s
+     with real minimums, so the buttons keep their height at any window size:
+     the editor and the panels give way first, the toolbar never does. Plain
+     `1fr auto` let the two of them together ask for more than the column had. */
+  grid-template-rows: auto minmax(80px, 1fr) auto minmax(120px, 30vh);
   min-height: 0;
   min-width: 0;
 }
@@ -335,7 +344,12 @@ main {
 .tabs button.dirty::after { content: " •"; color: var(--warn); }
 .tabs button.readonly { opacity: .7; }
 
-.editor-host { position: relative; min-height: 0; background: var(--bg); }
+.editor-host {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
 
 .editor-placeholder {
   position: absolute;
@@ -346,8 +360,19 @@ main {
   pointer-events: none;
 }
 
+/* Absolute, not `height: 100%`: this host's height comes from a grid row, and a
+   percentage against it resolves to `auto`, so the wrapper grew to the height
+   of the code - taller than the space it was given, and it painted over the
+   toolbar and the panel headers underneath. Pinned to the host, the wrapper has
+   a definite height, its own scroller (`height: 100%` inside) gets one too, and
+   the editor scrolls instead of covering the buttons. */
 .CodeMirror {
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  /* `auto` is load-bearing: CodeMirror ships `height: 300px` on this element and
+     an explicit height beats the `bottom: 0` of `inset`, which would leave the
+     editor hanging 20px over the toolbar. */
+  height: auto;
   font: 13.5px/1.5 var(--mono);
   background: var(--bg);
   color: var(--text);
@@ -380,9 +405,25 @@ main {
   flex-wrap: wrap;
 }
 
-.actions .spacer, .panel-head .spacer { flex: 1; }
+.panel-head .spacer { flex: 1; }
 
-.status { color: var(--muted); font-size: 12.5px; }
+/* The message owns the toolbar's slack. Wanted twice over: a message appearing
+   takes empty space instead of pushing the buttons (it used to sit after 重置 and
+   drag the whole right-hand group left by its own width), and one line with an
+   ellipsis keeps the bar's height fixed, so the editor and the panels below do
+   not jump either. `flex: 1` and not `1 1 auto`: an `auto` basis makes the row
+   break lines on the message's own width, so a long one grew to 637px in a
+   371px slot and wrapped the buttons onto a second line. The full text is in
+   the element's title (see `setStatus`); anything longer belongs in the panels. */
+.status {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 12.5px;
+}
 .status.ok { color: var(--ok); }
 .status.bad { color: var(--bad); }
 
@@ -391,8 +432,12 @@ main {
 .bottom {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
-  height: 30vh;
-  min-height: 140px;
+  /* No height of its own: the row in .workspace owns it. A fixed 30vh here is a
+     floor rather than a preference, and on a short window a floor is what
+     pushes the toolbar out of the viewport, where `body { overflow: hidden }`
+     then clips it. */
+  min-height: 0;
+  overflow: hidden;
   background: var(--panel);
 }
 
@@ -492,10 +537,10 @@ main {
    reason to be here, so they are the last thing to go. */
 @media (max-width: 900px) {
   main { grid-template-columns: 190px 1fr; }
+  .workspace { grid-template-rows: auto minmax(80px, 1fr) auto minmax(120px, 42vh); }
   .bottom {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
-    height: 42vh;
   }
   .output-panel { border-right: 0; border-bottom: 1px solid var(--border); }
 }

@@ -114,6 +114,9 @@
   function setStatus(text, kind) {
     dom.status.textContent = text || "";
     dom.status.className = "status" + (kind ? " " + kind : "");
+    // One line with an ellipsis: the title is where the rest of a long message
+    // is still readable.
+    dom.status.title = text || "";
   }
 
   function setBusy(busy, text) {

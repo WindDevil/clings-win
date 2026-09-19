@@ -79,11 +79,12 @@
       <button id="save-button" class="primary">保存 <kbd>Ctrl-S</kbd></button>
       <button id="run-button">运行 <kbd>Ctrl-Enter</kbd></button>
       <button id="check-button">检查语法</button>
-      <span class="spacer"></span>
+      <!-- The message is the row's flexible slot, not a trailing item: here the
+           empty space already is, so a message appearing cannot shift a button. -->
+      <span id="status" class="status"></span>
       <button id="solution-button" class="ghost">看参考答案</button>
       <button id="apply-button" class="ghost" title="用参考答案覆盖你的文件">套用参考实现</button>
       <button id="reset-button" class="ghost" title="恢复练习的初始内容">重置</button>
-      <span id="status" class="status"></span>
     </div>
 
     <div class="bottom">
