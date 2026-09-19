@@ -12,7 +12,7 @@
 int print_greeting(void)
 {
     /* TODO: 打印 Hello, C! 并换行。 */
-    return printf("Hello, C!\n");
+    return printf("Hello, world!\n");
 }
 
 int main(void)
