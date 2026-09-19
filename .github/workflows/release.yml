@@ -156,4 +156,12 @@ jobs:
               `studio` 模块，双击和 `clings.cmd web` 都受影响），`clings.cmd run` 正常。
               换这一版即可。
 
+            这一版里学习者能感觉到的有两处。一是五道题（`00_basics/01_printf`、
+            `00_basics/02_printf_values`、`00_basics/07_include_header`、
+            `00_basics/09_compiler_diagnostics`、`13_character_io/05_getchar_putchar`）
+            以前只检查 `printf` 返回的字符数，现在比较真正打印出来的文本：「长度对、
+            内容错」的写法以前能通过，现在会被判错，失败信息里还会显示实际打印了什么
+            （换行写成 `\n`，少写一个看得见）。二是内置编辑器：窗口压得很扁时，
+            `保存 / 运行` 那一栏不会再被挤出屏幕。
+
             这一版具体改了什么，见下面的变更列表。
