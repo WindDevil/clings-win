@@ -1120,7 +1120,15 @@ COMMENTS: dict[str, str] = {
     "TODO: preserve the signed value.": "TODO: 保留有符号的值。",
     "TODO: print Hello, C! followed by a newline.":
         "TODO: 打印 Hello, C! 并换行。",
-    "TODO: print the integer value.": "TODO: 打印这个整数值。",
+    # Upstream asks for the newline only in the hint, and the check compares
+    # printf's return value - the character count of what was written - so a
+    # learner who follows this TODO literally and prints "%d" fails on a
+    # difference they cannot see in the output.  The Chinese says the
+    # requirement out loud, the way upstream's own 01_printf TODO does
+    # ("followed by a newline").  If upstream rewords the English, this key
+    # stops matching and `make sync` reports the new text as a missing entry
+    # instead of quietly reverting the line to English.
+    "TODO: print the integer value.": "TODO: 打印这个整数值并换行。",
     "TODO: put the character back into the stream.":
         "TODO: 把这个字符退回流里。",
     "TODO: read at most three digits.":
@@ -1281,10 +1289,51 @@ COMMENTS: dict[str, str] = {
         "实现放在 test.c 里，所以包含这个头文件并不会",
     "transitively provide stdio.h, stdlib.h, or string.h to exercise code.":
         "顺带把 stdio.h、stdlib.h、string.h 带进练习代码。",
+    # stdout capture added upstream in ef85228, for CLINGS_CHECK_STDOUT.
+    "Comparing printed text needs the text itself, and a function that returns":
+        "要比较打印出来的文本，就得先拿到文本本身；而一个返回 printf 结果的",
+    "printf's result hands the test a character count instead.  These three":
+        "函数交给测试的只是一个字符数。下面三个函数把进程的 stdout 临时改写",
+    "divert the process's stdout into a temporary file, put the original":
+        "到临时文件，检查结束后按描述符还原回去，再把写进去的内容抄进一个",
+    "descriptor back, and copy what was written into an internal buffer.":
+        "内部缓冲区。",
+    "Run `call`, then compare everything it printed with `expected`.  The call's":
+        "运行 `call`，把它打印出来的全部内容与 `expected` 比较。`call` 的",
+    "return value is not checked: when the text is right the count is right too,":
+        "返回值不检查：文本对了，字符数自然是对的；文本错了，字符数本来",
+    "and when the text is wrong the count was never the interesting part.":
+        "也不是重点。",
+    'One captured byte can escape to four characters ("\\x1f"), plus the NUL.':
+        '一个捕获到的字节最多转义成四个字符（"\\x1f"），再加上结尾的 NUL。',
+    "Enough for any exercise's expected output; a longer capture is compared up":
+        "足够容纳任何练习的期望输出；更长的捕获只比较到",
+    "Writing text so that what is not there can be seen: a report that printed":
+        "把文本写成「缺了什么一眼能看出来」的样子：如果报告原样打印，",
+    'the texts raw would show "42" and "42\\n" as the same thing on two lines,':
+        '"42" 和 "42\\n" 会变成两行看上去一样的东西，',
+    "which is the confusion these checks exist to remove.":
+        "而这正是这些检查要消除的困惑。",
+    "Either half failing means stdout is still where it was, so undo":
+        "两半里只要有一半失败，stdout 就还停在原地，",
+    "Diverting by descriptor rather than reopening a terminal keeps whatever":
+        "按描述符改写、而不是重新打开一个终端，stdout 原来是什么",
+    "stdout already was: a test run from a pipe, a file or a terminal all":
+        "就还是什么：测试从管道、文件还是终端启动，",
 }
 
 # Whole-line replacements for lines that are not plain comment payloads.
+#
+# The last three end their comment block on the same line ("> * text */"), which
+# the payload translator leaves alone, so the whole line is replaced here: the
+# value carries its own indentation, since the key is matched stripped.
 LINES: dict[str, str] = {
+    "* to this size and reported as truncated rather than silently trimmed. */":
+        " * 这个长度，并如实报告被截断，而不是悄悄裁掉。 */",
+    "* get their output back where it came from. */":
+        "     * 输出就会回到它原来该去的地方。 */",
+    "* whichever half succeeded and let the check report the failure. */":
+        "         * 就把成功的那一半撤掉，让检查如实报告失败。 */",
     "#if defined(__STDC_VERSION__) && /* TODO: test for C11 or newer. */":
         "#if defined(__STDC_VERSION__) && /* TODO: 判断是否为 C11 或更新版本。 */",
     "Run an exercise with:": "运行练习：",

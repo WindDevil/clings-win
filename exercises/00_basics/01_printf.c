@@ -12,11 +12,11 @@
 int print_greeting(void)
 {
     /* TODO: 打印 Hello, C! 并换行。 */
-    return printf("Hello, world!\n");
+    return printf("Hello, C!\n");
 }
 
 int main(void)
 {
-    CLINGS_CHECK_INT(print_greeting(), 10);
+    CLINGS_CHECK_STDOUT(print_greeting(), "Hello, C!\n");
     return clings_report();
 }

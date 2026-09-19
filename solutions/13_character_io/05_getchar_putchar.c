@@ -23,6 +23,6 @@ int main(void)
 {
     CLINGS_CHECK_INT(ungetc('x', stdin), 'x');
     CLINGS_CHECK_INT(read_one_character(), 'x');
-    CLINGS_CHECK_INT(write_one_character('y'), 'y');
+    CLINGS_CHECK_STDOUT(write_one_character('y'), "y");
     return clings_report();
 }

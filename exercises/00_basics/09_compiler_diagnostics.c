@@ -17,6 +17,6 @@ int print_number(int value)
 
 int main(void)
 {
-    CLINGS_CHECK_INT(print_number(42), 3);
+    CLINGS_CHECK_STDOUT(print_number(42), "42\n");
     return clings_report();
 }

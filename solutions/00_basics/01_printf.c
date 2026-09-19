@@ -16,6 +16,6 @@ int print_greeting(void)
 
 int main(void)
 {
-    CLINGS_CHECK_INT(print_greeting(), 10);
+    CLINGS_CHECK_STDOUT(print_greeting(), "Hello, C!\n");
     return clings_report();
 }

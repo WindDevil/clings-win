@@ -11,12 +11,14 @@
 
 int print_value(int value)
 {
-    /* TODO: 打印这个整数值。 */
+    /* TODO: 打印这个整数值并换行。 */
     return printf("value\n");
 }
 
 int main(void)
 {
-    CLINGS_CHECK_INT(print_value(42), 3);
+    CLINGS_CHECK_STDOUT(print_value(42), "42\n");
+    CLINGS_CHECK_STDOUT(print_value(7), "7\n");
+    CLINGS_CHECK_STDOUT(print_value(-1234), "-1234\n");
     return clings_report();
 }

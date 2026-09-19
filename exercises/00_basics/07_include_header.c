@@ -15,6 +15,6 @@ int print_greeting(void)
 
 int main(void)
 {
-    CLINGS_CHECK_INT(print_greeting(), 13);
+    CLINGS_CHECK_STDOUT(print_greeting(), "header works\n");
     return clings_report();
 }
