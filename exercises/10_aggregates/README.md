@@ -18,6 +18,5 @@
 | `08_container_of` | 由成员指针反推出外层结构体。 |
 | `09_struct_array` | 遍历结构体数组，找出最优元素。 |
 | `10_struct_pass` | 对比结构体值参数与结构体指针参数。 |
-| `11_struct_file` | 用 fwrite 写出结构体，再用 fread 读回来。 |
-| `12_complex_declarations` | 读懂并使用函数指针及其数组的 typedef。 |
-| `13_declaration_grammar` | 读懂函数指针数组的 typedef。 |
+| `11_complex_declarations` | 读懂并使用函数指针及其数组的 typedef。 |
+| `12_declaration_grammar` | 读懂函数指针数组的 typedef。 |

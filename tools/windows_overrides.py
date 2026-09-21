@@ -91,9 +91,6 @@ SUBSTITUTIONS: dict[str, list[tuple[str, str]]] = {
             '"clings_struct_file_test.bin"',
         ),
     ],
-    "12_standard_library/07_file_io": [
-        ('"/tmp/clings_file_io_test.txt"', '"clings_file_io_test.txt"'),
-    ],
     "14_file_io/01_fprintf_fscanf": [
         ('"/tmp/clings_fprintf_test.txt"', '"clings_fprintf_test.txt"'),
     ],

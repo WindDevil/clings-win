@@ -59,7 +59,7 @@ LISTING: bridge.Listing | None = None
 
 
 def listing() -> bridge.Listing:
-    """The exercise list, read once: 184 exercises, one runner launch."""
+    """The exercise list, read once: 182 exercises, one runner launch."""
     global LISTING
     if LISTING is None:
         LISTING = bridge.listing()

@@ -21,8 +21,8 @@
 | `11_strcat_strncat` | 在目标缓冲区大小的限制下追加字符串。 |
 | `12_strncpy_bounded` | 安全复制字符串，并保证目标以 NUL 结尾。 |
 | `13_sprintf_snprintf` | 用 snprintf 格式化文本，并理解截断行为。 |
-| `14_fgets_fputs_sort` | 用 fgets 读一行，并对字符串数组排序。 |
-| `15_strtod` | 用 strtod 解析 double，并拒绝多余的尾部输入。 |
-| `16_main_args` | 处理传给 main 的参数。 |
-| `17_state_machine` | 在扫描字符串的过程中跟踪状态。 |
-| `18_escaped_strings` | 在字符串字面量里使用转义序列，并显式续行。 |
+| `14_strtod` | 用 strtod 解析 double，并拒绝多余的尾部输入。 |
+| `15_main_args` | 处理传给 main 的参数。 |
+| `16_state_machine` | 在扫描字符串的过程中跟踪状态。 |
+| `17_escaped_strings` | 在字符串字面量里使用转义序列，并显式续行。 |
+| `18_x_macros` | 用同一份列表生成枚举和字符串表。 |

@@ -95,6 +95,22 @@ class TheCurriculum(unittest.TestCase):
                     self.assertEqual(len(found), 1)
                     self.assertEqual(body(found[0]), body(source))
 
+    def test_a_moved_exercise_lives_in_its_new_topic(self) -> None:
+        """Gone from the old topic, present in the new one, id line updated."""
+        for ident, target in curriculum.MOVED.items():
+            source_topic, name = ident.split("/", 1)
+            with self.subTest(ident=ident):
+                for role in curriculum.ROLES:
+                    self.assertEqual(
+                        list((ROOT / role / source_topic).glob(f"*_{name}.c")), []
+                    )
+                    found = list((ROOT / role / target).glob(f"*_{name}.c"))
+                    self.assertEqual(len(found), 1)
+                header = (ROOT / "exercises" / target / found[0].name).read_text(
+                    "utf-8"
+                )
+                self.assertIn(f"{target}/", header.splitlines()[1])
+
     def test_the_runner_lists_the_topics_in_the_same_order(self) -> None:
         result = subprocess.run(
             [sys.executable, str(ROOT / "clings"), "list", "--json"],

@@ -14,13 +14,11 @@
 | `04_math_functions` | 使用 math.h 里的 hypot 等函数。 |
 | `05_time_functions` | 使用 time_t 和 difftime。 |
 | `06_random` | 给随机数发生器设种子，并限制输出范围。 |
-| `07_file_io` | 用 fopen、fputs 和 fread 写读文本文件。 |
-| `08_memory_functions` | 正确使用按字节操作的内存函数。 |
-| `09_string_search` | 使用 strchr、strrchr 和 strstr。 |
-| `10_stdint_inttypes` | 使用 stdint.h 和 inttypes.h 里的 uint64_t 与 PRIu64。 |
-| `11_environment` | 用 getenv 和 _putenv_s 读写环境变量。 |
-| `12_printf_advanced` | 使用宽度、补零、精度和 * 宽度参数。 |
-| `13_scanf_advanced` | 在 sscanf 里使用字段宽度和扫描集。 |
-| `14_ctype_full` | 把参数转成 unsigned char 后再传给 isalnum 和 toupper。 |
-| `15_rand_max` | 不要假定 rand() 的返回值小于某个固定的小上界。 |
-| `16_default_argument_promotions` | 使用变参函数期望的提升后类型。 |
+| `07_memory_functions` | 正确使用按字节操作的内存函数。 |
+| `08_string_search` | 使用 strchr、strrchr 和 strstr。 |
+| `09_stdint_inttypes` | 使用 stdint.h 和 inttypes.h 里的 uint64_t 与 PRIu64。 |
+| `10_environment` | 用 getenv 和 _putenv_s 读写环境变量。 |
+| `11_printf_advanced` | 使用宽度、补零、精度和 * 宽度参数。 |
+| `12_scanf_advanced` | 在 sscanf 里使用字段宽度和扫描集。 |
+| `13_ctype_full` | 把参数转成 unsigned char 后再传给 isalnum 和 toupper。 |
+| `14_rand_max` | 不要假定 rand() 的返回值小于某个固定的小上界。 |

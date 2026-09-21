@@ -13,4 +13,3 @@
 | `03_input_validation` | 拒绝带有多余字符或超出范围的输入。 |
 | `04_iso646` | 使用 iso646.h 里的 and/or/not。 |
 | `05_getchar_putchar` | 直接使用标准的输入输出字符宏。 |
-| `06_include_ctypes` | 先引入声明 toupper 的头文件，再调用它。 |
