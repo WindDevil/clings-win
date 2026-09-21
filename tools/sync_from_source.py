@@ -243,6 +243,7 @@ def command_list(args: argparse.Namespace) -> int:
 
 JSON_RUN_BLOCK = r'''    json_mode = bool(getattr(args, "json", False))
     completed = load_progress()
+    record_progress = not args.all
     failures = 0
     results: list[dict[str, object]] = []
     for exercise in targets:
@@ -259,8 +260,9 @@ JSON_RUN_BLOCK = r'''    json_mode = bool(getattr(args, "json", False))
             }
         )
         if passed:
-            completed.add(exercise.ident)
-            save_progress(completed)
+            if record_progress:
+                completed.add(exercise.ident)
+                save_progress(completed)
             if not json_mode:
                 print(green("  passed"))
             if args.verbose and output and not json_mode:
@@ -357,9 +359,21 @@ def next_steps(exercise: Exercise) -> None:
     is what it teaches with.  This adds the sentence neither of them can: that
     the failure is the starting point, and which file to open.
     """
+    files = list(exercise.sources)
+    if exercise.is_project:
+        files.extend(sorted(exercise.path.parent.glob("*.h")))
+    todo_files = []
+    for path in files:
+        try:
+            if "TODO" in path.read_text(encoding="utf-8"):
+                todo_files.append(path)
+        except OSError:
+            continue
+    targets = todo_files or files
     print()
     print("  这道题一开始就是通不过的：文件里留了空（注释里的 TODO），报错就是它给的线索。")
-    print(f"  要改的文件:  {exercise.path.relative_to(ROOT)}")
+    for path in targets:
+        print(f"  要改的文件:  {path.relative_to(ROOT)}")
     print(f"  看提示:      {launcher()} hint {exercise.ident}")
     print(f"  改完重跑:    {launcher()} run {exercise.ident}")
 '''
@@ -637,6 +651,45 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
     (
         "def command_hint(args: argparse.Namespace) -> int:\n",
         NEXT_STEPS_BLOCK.lstrip("\n") + "\n\ndef command_hint(args: argparse.Namespace) -> int:\n",
+    ),
+    (
+        "    exercises.sort(key=lambda exercise: (exercise.topic, exercise.slug))\n",
+        '''    topic_order = {
+        "00_basics": 0,
+        "01_preprocessor": 1,
+        "03_types_variables": 2,
+        "02_macros": 3,
+        "04_operators": 4,
+        "05_control_flow": 5,
+        "06_functions": 6,
+        "07_pointers": 7,
+        "08_arrays_strings": 8,
+        "09_dynamic_memory": 9,
+        "10_aggregates": 10,
+        "11_data_representation": 11,
+        "12_standard_library": 12,
+        "13_character_io": 13,
+        "14_file_io": 14,
+        "15_ub_safety": 15,
+        "16_data_structures": 16,
+        "17_translation_units": 17,
+        "18_advanced_c": 18,
+        "19_modern_c_library": 19,
+    }
+    data_structure_order = {
+        "01_queue_adt": 0,
+        "03_dynamic_vector": 1,
+        "02_binary_search_tree": 2,
+    }
+    exercises.sort(
+        key=lambda exercise: (
+            topic_order.get(exercise.topic, len(topic_order)),
+            data_structure_order.get(exercise.slug, len(data_structure_order))
+            if exercise.topic == "16_data_structures"
+            else exercise.slug,
+        )
+    )
+''',
     ),
     (
         '        failures += 1\n'

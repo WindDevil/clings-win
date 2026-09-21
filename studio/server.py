@@ -57,7 +57,7 @@ class _State:
     def __init__(self) -> None:
         self.token = secrets.token_urlsafe(24)
         self.lock = threading.Lock()
-        self.origin = f"http://{HOST}"
+        self.origin: str | None = None
         self._listing: bridge.Listing | None = None
         self._toolchain: bridge.Toolchain | None = None
 
@@ -136,7 +136,8 @@ class Handler(BaseHTTPRequestHandler):
         site from posting here with a form.
         """
         origin = self.headers.get("Origin")
-        if origin is not None and origin != self.state.origin:
+        expected_origin = self.state.origin
+        if origin is not None and expected_origin is not None and origin != expected_origin:
             return False
         given = self.headers.get(TOKEN_HEADER, "")
         if not given:
