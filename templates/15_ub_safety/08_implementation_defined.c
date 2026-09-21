@@ -1,0 +1,41 @@
+/*
+ * clings 练习: 15_ub_safety/08_implementation_defined
+ * title: 实现定义行为
+ * objective: 观察实现定义的 char 符号性和打包编译指示。
+ * hint: CHAR_MIN 能看出 char 是否带符号；#pragma pack 改变填充。
+ */
+
+#include "clings/test.h"
+
+#include <limits.h>
+#include <stddef.h>
+
+int char_is_signed(void)
+{
+    return CHAR_MIN < 0;
+}
+
+int int_width_at_least_16(void)
+{
+    return (int)(sizeof(int) * CHAR_BIT) >= 16;
+}
+
+int packed_size(void)
+{
+/* TODO: 让结构体不带填充地打包。 */
+#pragma pack(push, 4)
+    struct packed {
+        char first;
+        int second;
+    };
+#pragma pack(pop)
+    return (int)sizeof(struct packed);
+}
+
+int main(void)
+{
+    CLINGS_CHECK_INT(char_is_signed() == 0 || char_is_signed() == 1, 1);
+    CLINGS_CHECK_INT(int_width_at_least_16(), 1);
+    CLINGS_CHECK_INT(packed_size(), (int)(sizeof(char) + sizeof(int)));
+    return clings_report();
+}

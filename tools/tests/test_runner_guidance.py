@@ -22,6 +22,13 @@ RUNNER = ROOT / "clings"
 SIMPLE = "00_basics/01_printf"
 # The runner prints paths the way the host spells them.
 SIMPLE_FILE = str(Path("exercises") / "00_basics" / "01_printf.c")
+PROJECT = "17_translation_units/02_extern_linkage"
+PROJECT_TODO = str(
+    Path("exercises")
+    / "17_translation_units"
+    / "02_extern_linkage"
+    / "config.c"
+)
 
 
 def run_runner(
@@ -57,6 +64,16 @@ class TheNextStepsAfterAFailure(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertEqual(payload["failures"], 1)
         self.assertNotIn("要改的文件", result.stdout)
+
+    def test_a_project_names_the_file_that_contains_the_todo(self) -> None:
+        result = run_runner("run", PROJECT)
+        if result.returncode == 0:
+            self.skipTest("这个练习在这个工作区里已经做过了")
+        self.assertIn(PROJECT_TODO, result.stdout)
+        self.assertNotIn(
+            "要改的文件:  exercises/17_translation_units/02_extern_linkage/main.c",
+            result.stdout,
+        )
 
     def test_a_listing_does_not_lecture(self) -> None:
         result = run_runner("list")

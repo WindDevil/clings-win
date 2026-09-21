@@ -24,6 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 
+import curriculum  # noqa: E402
 import windows_overrides as overrides  # noqa: E402
 import zh_glossary  # noqa: E402
 import zh_translate  # noqa: E402
@@ -243,6 +244,12 @@ def command_list(args: argparse.Namespace) -> int:
 
 JSON_RUN_BLOCK = r'''    json_mode = bool(getattr(args, "json", False))
     completed = load_progress()
+    # Only a single exercise is progress the learner made.  `run --all` is a
+    # maintainer's or a CI job's sweep over every exercise, and on a host where
+    # a Windows-only exercise happens to pass it used to record that as the
+    # learner's own work - the progress bar then claimed exercises they never
+    # opened.
+    record_progress = not args.all
     failures = 0
     results: list[dict[str, object]] = []
     for exercise in targets:
@@ -259,8 +266,9 @@ JSON_RUN_BLOCK = r'''    json_mode = bool(getattr(args, "json", False))
             }
         )
         if passed:
-            completed.add(exercise.ident)
-            save_progress(completed)
+            if record_progress:
+                completed.add(exercise.ident)
+                save_progress(completed)
             if not json_mode:
                 print(green("  passed"))
             if args.verbose and output and not json_mode:
@@ -356,10 +364,28 @@ def next_steps(exercise: Exercise) -> None:
     The blank in the exercise is the teaching device and the compiler output
     is what it teaches with.  This adds the sentence neither of them can: that
     the failure is the starting point, and which file to open.
+
+    A multi-file exercise has one file with the blank in it and the rest
+    complete, so naming the entry point sends the learner to a file that has
+    nothing to do; the file to open is the one that carries the TODO.  Every
+    file counts as a candidate, headers included, because that is where the
+    blank is in some of them.
     """
+    files = list(exercise.sources)
+    if exercise.is_project:
+        files.extend(sorted(exercise.path.parent.glob("*.h")))
+    todo_files = []
+    for path in files:
+        try:
+            if "TODO" in path.read_text(encoding="utf-8"):
+                todo_files.append(path)
+        except OSError:
+            continue
+    targets = todo_files or files
     print()
     print("  这道题一开始就是通不过的：文件里留了空（注释里的 TODO），报错就是它给的线索。")
-    print(f"  要改的文件:  {exercise.path.relative_to(ROOT)}")
+    for path in targets:
+        print(f"  要改的文件:  {path.relative_to(ROOT)}")
     print(f"  看提示:      {launcher()} hint {exercise.ident}")
     print(f"  改完重跑:    {launcher()} run {exercise.ident}")
 '''
@@ -638,6 +664,15 @@ RUNNER_PATCHES: list[tuple[str, str]] = [
         "def command_hint(args: argparse.Namespace) -> int:\n",
         NEXT_STEPS_BLOCK.lstrip("\n") + "\n\ndef command_hint(args: argparse.Namespace) -> int:\n",
     ),
+    # --- the order the topics are taught in ---------------------------------
+    # Upstream numbers its topic directories in authoring order, so a plain
+    # sort by (topic, slug) hands the learner macros before types.  The order
+    # itself lives in tools/curriculum.py, next to the exercises the twin adds
+    # and drops, so `clings list` and the numbering are read from one place.
+    (
+        "    exercises.sort(key=lambda exercise: (exercise.topic, exercise.slug))\n",
+        curriculum.runner_topic_order(),
+    ),
     (
         '        failures += 1\n'
         '        if not json_mode:\n'
@@ -832,12 +867,6 @@ def render(source: Path, destination: Path) -> None:
 
     overrides.apply(destination)
 
-    docs = destination / "docs"
-    docs.mkdir(parents=True, exist_ok=True)
-    (docs / "provenance.md").write_bytes(
-        provenance(source, destination).encode("utf-8")
-    )
-
     report = zh_translate.Report()
     zh_translate.translate_tree(destination, report)
     if report.missing:
@@ -849,6 +878,16 @@ def render(source: Path, destination: Path) -> None:
             + ("  ...\n" if len(unique) > 20 else "")
             + "add the missing entries, then run sync again"
         )
+
+    # Last, because it renames files and edits the topic pages in the
+    # translated tree, and because the provenance note counts what is left.
+    curriculum.apply(destination)
+
+    docs = destination / "docs"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "provenance.md").write_bytes(
+        provenance(source, destination).encode("utf-8")
+    )
 
 
 def compare(generated: Path, current: Path) -> list[str]:

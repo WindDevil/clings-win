@@ -234,7 +234,7 @@ def translate_tree(root: Path, report: Report) -> None:
                 path.write_bytes(translate_readme(path, report).encode("utf-8"))
 
 
-def rewrite(path: Path, report: Report, strict: bool) -> None:
+def rewrite(path: Path, report: Report) -> None:
     translate_tree(path, report)
 
 
@@ -246,7 +246,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     report = Report()
-    rewrite(Path(args.root), report, args.strict)
+    rewrite(Path(args.root), report)
 
     total_missing = sum(len(items) for items in report.missing.values())
     print(f"translated: {report.translated} lines")

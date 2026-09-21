@@ -1023,8 +1023,9 @@
       if (wanted) {
         await openExercise(wanted);
       } else {
+        const total = state.session.total || state.listing.total || 0;
         dom["exercise-title"].textContent = "所有练习都完成了";
-        dom["exercise-objective"].textContent = "185 个都通过了。想重做的话，从左边的列表里挑一个。";
+        dom["exercise-objective"].textContent = total + " 个都通过了。想重做的话，从左边的列表里挑一个。";
       }
     } catch (error) {
       setStatus(error.message, "bad");

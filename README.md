@@ -1,20 +1,22 @@
 # clings-win
 
 `clings-win` 是 [clings](https://github.com/WindDevil/clings) 的 Windows 版：
-同一套 185 个 C 练习，换成 Windows 的入口、工具链和分发包，给只用 Windows 的
+184 道 C 练习，换成 Windows 的入口、工具链和分发包，给只用 Windows 的
 初学者。题目的标题、学习目标、提示、注释和命令行输出都是中文，代码里的标识符、
 函数名和格式说明符保持英文，方便对着教材和报错查。分发包自带编译器和 Python，
 解压后双击 `clings.cmd` 就能开始。
 
 练习内容、参考答案、模板、测试框架和运行器都从上游同步过来，本仓库只保存差异，
-一共三处：
+一共四处：
 [`tools/windows_overrides.py`](tools/windows_overrides.py)（12 个练习需要平台变体）、
 [`tools/sync_from_source.py`](tools/sync_from_source.py) 里的 `RUNNER_PATCHES`
-（运行器的 Windows 适配，以及跑失败之后给新手的那三行提示）和
+（运行器的 Windows 适配，以及跑失败之后给新手的那三行提示）、
 [`tools/zh_glossary.py`](tools/zh_glossary.py)
 加 [`tools/zh_translate.py`](tools/zh_translate.py)（中英对照表，另有
-`./clings` 这类 POSIX 命令行的 Windows 改写）。`make check` 在 CI 里核对
-「上游 + 这三处差异」的结果，两边不会各写一份。
+`./clings` 这类 POSIX 命令行的 Windows 改写），以及
+[`tools/curriculum.py`](tools/curriculum.py)（课程序列：主题的教学顺序、不再重复
+的练习、补上的中间难度练习）。`make check` 在 CI 里核对「上游 + 这四处差异」
+的结果，两边不会各写一份。
 
 ## 学习者怎么用
 
@@ -33,7 +35,7 @@
 
 ```text
 ── 第一次用，先看这里 ─────────────────────────────────────
-  这个包里有 185 道 C 语言练习题，每道题都是一个能编译、能运行的程序，
+  这个包里有 184 道 C 语言练习题，每道题都是一个能编译、能运行的程序，
   里面留了一处空（注释里写着 TODO）。打开文件、把空补上、保存，再跑一遍就会通过。
 
   一开始不通过是正常的：报错就是这道题给你的线索，不是环境装坏了。
